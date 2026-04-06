@@ -111,6 +111,18 @@ Stack-specific bootstrap guides.
 
 Per-stack operational profiles: `node-ts-service`, `react-vite-app`, `python-service`, `mono-repo`, etc.
 
+### templates/task-modes/
+
+Structured workflows per task type. Each defines: model, mode, approval posture, step-by-step sequence, rules, anti-patterns.
+
+| File | Model | When to use |
+|------|-------|-------------|
+| `bugfix.md` | Sonnet (Opus if critical surface) | Reproducing and fixing a known bug |
+| `architecture.md` | Opus always | Mapping structure, boundary changes, structural debt |
+| `migration.md` | Opus always | Any schema change — additive, backfill, destructive |
+| `incident-response.md` | Opus always | Active production failures, elevated error rates |
+| `release-hardening.md` | Opus always | Release candidate validation, go/no-go assessment |
+
 ### templates/critical-surfaces/
 
 Reusable reference checklists per critical surface. Copy to `.claude/critical-surfaces/` or reference directly.
@@ -155,6 +167,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | heuristics/ | 1/6 — operational.md done |
 | templates/profiles/ | 0 — planned Fase 7 |
 | templates/critical-surfaces/ | 5/9 — auth, migrations, billing, deploy, pii |
+| templates/task-modes/ | 5/5 — bugfix, architecture, migration, incident-response, release-hardening |
 | INDEX.md | This file |
 
 ---
@@ -170,6 +183,6 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | 5 | Critical surfaces library (5 core) | **Done** |
 | 6 | Prompts expansion | **Done** |
 | 7 | Stack profiles foundation | Planned |
-| 8 | Task modes foundation | Planned |
+| 8 | Task modes foundation | **Done** |
 | 9 | install.sh (Unix) | Planned |
 | 10 | Cross-stack validation | Planned |
