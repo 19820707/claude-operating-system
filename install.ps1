@@ -31,7 +31,7 @@ Write-Host ""
 Write-Host "claude-operating-system install"
 Write-Host "Source : $Source"
 Write-Host "Target : $Target"
-if ($DryRun) { Write-Host "[DRY RUN — no files written]" }
+if ($DryRun) { Write-Host "[DRY RUN - no files written]" }
 Write-Host ""
 
 # 1. Global CLAUDE.md
