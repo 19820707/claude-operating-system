@@ -43,8 +43,9 @@ Binding operational rules. All are loaded via `CLAUDE.md` references.
 | `operating-modes.md` | Fast / Phase / Critical / Production mode definitions and transitions | All projects |
 | `engineering-governance.md` | Change philosophy; what requires approval; before/after change requirements | All projects |
 | `production-safety.md` | What is never autonomous; human gate rules | All projects |
-
-**Gaps (planned):** `token-economy.md`, `reporting-format.md`, `rollback-policy.md`
+| `token-economy.md` | Context/token discipline — reading, response, model economy | All sessions |
+| `reporting-format.md` | Standard response structure — diagnosis, pre-impl plan, exec result | All responses |
+| `rollback-policy.md` | Rollback requirements by change type; anti-patterns; staged rollback | Every change |
 
 ---
 
@@ -117,7 +118,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 |-----------|--------|
 | Global CLAUDE.md | Stable |
 | install.ps1 | Stable, dry-run validated |
-| policies/ | 4/7 — partial |
+| policies/ | 7/7 — complete |
 | prompts/ | 1/7 — partial |
 | templates/commands/ | 2/6 — partial |
 | heuristics/ | 1/6 — operational.md done |
@@ -133,7 +134,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 |------|-----------|--------|
 | 1 | INDEX.md + navigation | **Done** |
 | 2 | Heuristics library in repo | **Done** |
-| 3 | Policies completion (3 missing) | Planned |
+| 3 | Policies completion (3 missing) | **Done** |
 | 4 | Agents + generic commands globalized | Planned |
 | 5 | Critical surfaces library | Planned |
 | 6 | Prompts expansion | Planned |
