@@ -96,18 +96,18 @@ Reusable checklists per critical surface: `auth`, `billing`, `migrations`, `depl
 
 ---
 
-## heuristics/ *(planned — Fase 2)*
+## heuristics/
 
-Promoted operational patterns from real project evidence.
+Promoted operational patterns from real project evidence. Each entry: evidence → rule → how to apply.
 
-| Planned file | Content |
-|-------------|---------|
-| `operational.md` | Environment, git, tooling, Windows-specific patterns |
-| `architecture.md` | Boundary, coupling, fail-closed patterns |
-| `debugging.md` | Diagnosis, isolation, rollback patterns |
-| `token-economy.md` | Context compression, reading discipline |
-| `incident.md` | Triage, escalation, recovery patterns |
-| `refactoring.md` | Safe change, seam, wiring patterns |
+| File | Content | Status |
+|------|---------|--------|
+| `operational.md` | Environment, git, Windows tooling, security validation, architecture patterns (H1–H10) | **Done** |
+| `architecture.md` | Boundary, coupling, fail-closed, interface patterns | Planned Fase 3+ |
+| `debugging.md` | Diagnosis, isolation, rollback patterns | Planned |
+| `token-economy.md` | Context compression, reading discipline | Planned Fase 3 |
+| `incident.md` | Triage, escalation, recovery patterns | Planned |
+| `refactoring.md` | Safe change, seam, wiring patterns | Planned |
 
 ---
 
@@ -120,7 +120,7 @@ Promoted operational patterns from real project evidence.
 | policies/ | 4/7 — partial |
 | prompts/ | 1/7 — partial |
 | templates/commands/ | 2/6 — partial |
-| heuristics/ | 0 — planned Fase 2 |
+| heuristics/ | 1/6 — operational.md done |
 | templates/profiles/ | 0 — planned Fase 7 |
 | templates/critical-surfaces/ | 0 — planned Fase 5 |
 | INDEX.md | This file |
@@ -132,7 +132,7 @@ Promoted operational patterns from real project evidence.
 | Fase | Objective | Status |
 |------|-----------|--------|
 | 1 | INDEX.md + navigation | **Done** |
-| 2 | Heuristics library in repo | Planned |
+| 2 | Heuristics library in repo | **Done** |
 | 3 | Policies completion (3 missing) | Planned |
 | 4 | Agents + generic commands globalized | Planned |
 | 5 | Critical surfaces library | Planned |
