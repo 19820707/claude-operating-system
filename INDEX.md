@@ -56,8 +56,12 @@ Reusable session prompts. Reference in `.claude/prompts/` of each project.
 | File | Purpose | When to use |
 |------|---------|-------------|
 | `session-start.md` | Read order + session recovery sequence | Start of every session |
-
-**Gaps (planned):** `phase-close.md`, `bootstrap-project.md`, `task-classify.md`, `architecture-review.md`, `release-review.md`, `incident-triage.md`
+| `phase-close.md` | Evidence collection + state update + learning capture | End of every phase |
+| `bootstrap-project.md` | Phase 1/2/3 bootstrap sequence with exact commands | New project setup |
+| `task-classify.md` | Task type + critical surface + model + mode selection | Start of every task |
+| `architecture-review.md` | Module map + boundary analysis + structural risk proposals | Architecture work |
+| `release-review.md` | Go/no-go report with checks, blockers, rollback | Before any release |
+| `incident-triage.md` | Impact scope + evidence + hypothesis + mitigation options | Active incidents |
 
 ---
 
@@ -146,7 +150,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | Global CLAUDE.md | Stable |
 | install.ps1 | Stable, dry-run validated |
 | policies/ | 7/7 — complete |
-| prompts/ | 1/7 — partial |
+| prompts/ | 7/7 — complete |
 | templates/commands/ | 6/6 — complete |
 | heuristics/ | 1/6 — operational.md done |
 | templates/profiles/ | 0 — planned Fase 7 |
@@ -164,7 +168,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | 3 | Policies completion (3 missing) | **Done** |
 | 4 | Agents + generic commands globalized | **Done** |
 | 5 | Critical surfaces library (5 core) | **Done** |
-| 6 | Prompts expansion | Planned |
+| 6 | Prompts expansion | **Done** |
 | 7 | Stack profiles foundation | Planned |
 | 8 | Task modes foundation | Planned |
 | 9 | install.sh (Unix) | Planned |
