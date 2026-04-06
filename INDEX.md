@@ -80,8 +80,24 @@ Commands to copy into `.claude/commands/` of each project.
 |------|---------|---------|
 | `session-start.md` | Recover full operational context at session start | `/session-start` |
 | `phase-close.md` | Capture learning + update state at phase end | `/phase-close` |
+| `system-review.md` | Full architecture read + risk map + roadmap proposal | `/system-review` |
+| `hardening-pass.md` | Low-risk validation/logging/test hardening pass | `/hardening-pass` |
+| `production-guard.md` | Confirm approval + rollback before production action | `/production-guard` |
+| `release-readiness.md` | Go/no-go assessment with structured report | `/release-readiness` |
 
 **Gaps (planned):** `bootstrap-project.md`, `task-classify.md`
+
+### templates/agents/
+
+Agent definitions to copy into `.claude/agents/` of each project.
+
+| File | Model | Mission |
+|------|-------|---------|
+| `principal-architect.md` | Opus | Architecture mapping, boundary identification, structural debt |
+| `security-engineer.md` | Opus | Auth/authz, trust boundaries, attack surfaces, mitigations |
+| `release-manager.md` | Opus | Release readiness, rollback posture, go/no-go evidence |
+| `reliability-engineer.md` | Sonnet | Resilience, timeouts, idempotency, failure modes |
+| `qa-strategist.md` | Sonnet | Test gaps, regression protection, layered test strategy |
 
 ### templates/bootstrap/ *(planned — Fase 7)*
 
@@ -120,7 +136,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | install.ps1 | Stable, dry-run validated |
 | policies/ | 7/7 — complete |
 | prompts/ | 1/7 — partial |
-| templates/commands/ | 2/6 — partial |
+| templates/commands/ | 6/6 — complete |
 | heuristics/ | 1/6 — operational.md done |
 | templates/profiles/ | 0 — planned Fase 7 |
 | templates/critical-surfaces/ | 0 — planned Fase 5 |
@@ -135,7 +151,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | 1 | INDEX.md + navigation | **Done** |
 | 2 | Heuristics library in repo | **Done** |
 | 3 | Policies completion (3 missing) | **Done** |
-| 4 | Agents + generic commands globalized | Planned |
+| 4 | Agents + generic commands globalized | **Done** |
 | 5 | Critical surfaces library | Planned |
 | 6 | Prompts expansion | Planned |
 | 7 | Stack profiles foundation | Planned |
