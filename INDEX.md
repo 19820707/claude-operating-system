@@ -28,7 +28,8 @@ Navigation map. Every file, its purpose, and when to use it.
 | `CLAUDE.md` | Global engineering policy — mandate, session continuity, model selection, discipline | Auto-loaded by Claude Code every session |
 | `README.md` | Architecture overview + restore/bootstrap/update procedures | New machine, after format, onboarding |
 | `INDEX.md` | This file — navigation map | Whenever you need to find something |
-| `install.ps1` | Copies global files to `~/.claude/` | New machine, after format, system update |
+| `install.ps1` | Copies global files to `~/.claude/` on Windows | New Windows machine, after format |
+| `install.sh` | Copies global files to `~/.claude/` on Unix/macOS/Linux | New Unix machine, after clone |
 | `.gitignore` | Protects secrets and local files from commit | Maintained automatically |
 
 ---
@@ -161,6 +162,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 |-----------|--------|
 | Global CLAUDE.md | Stable |
 | install.ps1 | Stable, dry-run validated |
+| install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
 | policies/ | 7/7 — complete |
 | prompts/ | 7/7 — complete |
 | templates/commands/ | 6/6 — complete |
@@ -184,5 +186,5 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | 6 | Prompts expansion | **Done** |
 | 7 | Stack profiles foundation | Planned |
 | 8 | Task modes foundation | **Done** |
-| 9 | install.sh (Unix) | Planned |
+| 9 | install.sh (Unix) | **Done** |
 | 10 | Cross-stack validation | Planned |
