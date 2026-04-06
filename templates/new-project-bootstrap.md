@@ -79,10 +79,8 @@ Adjust allow/deny to match project toolchain.
 ### 1.5 Create `/session-start` and `/phase-close` commands
 ```powershell
 $cos = "C:\Users\pqjs2\claude-operating-system"
-# Copy from a project that already has them (e.g. Rallyo):
-$rallyo = "D:\Rallyos\Rallyo-Platform"
-cp "$rallyo\.claude\commands\session-start.md" .claude\commands\session-start.md
-cp "$rallyo\.claude\commands\phase-close.md"   .claude\commands\phase-close.md
+cp "$cos\templates\commands\session-start.md" .claude\commands\session-start.md
+cp "$cos\templates\commands\phase-close.md"   .claude\commands\phase-close.md
 ```
 
 - [ ] Commands created
