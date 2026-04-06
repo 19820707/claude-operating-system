@@ -3,6 +3,8 @@
 Source of truth for global Claude Code operational infrastructure.
 Persistent, versionable, restorable across machines and projects.
 
+**Navigation:** see [INDEX.md](INDEX.md) for a full map of every file and when to use it.
+
 ---
 
 ## Architecture
