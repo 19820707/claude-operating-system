@@ -90,7 +90,7 @@ Commands to copy into `.claude/commands/` of each project.
 | `production-guard.md` | Confirm approval + rollback before production action | `/production-guard` |
 | `release-readiness.md` | Go/no-go assessment with structured report | `/release-readiness` |
 
-**Gaps (planned):** `bootstrap-project.md`, `task-classify.md`
+**Note:** `bootstrap-project.md` and `task-classify.md` exist as reference prompts in `prompts/` — not yet promoted to slash commands in `templates/commands/`. Planned Fase 7.
 
 ### templates/agents/
 
