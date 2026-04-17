@@ -10,7 +10,10 @@ Navigation map. Every file, its purpose, and when to use it.
 |-------------|-------|
 | Start a new session | `templates/commands/session-start.md` |
 | Close a phase | `templates/commands/phase-close.md` |
-| Bootstrap a new project | `templates/new-project-bootstrap.md` |
+| Classify a task | `templates/commands/task-classify.md` |
+| Respond to an incident | `templates/commands/incident-triage.md` |
+| Review architecture | `templates/commands/architecture-review.md` |
+| Bootstrap a new project | `templates/new-project-bootstrap.md` → `/bootstrap-project` |
 | Restore after machine wipe | `README.md` → Bootstrap section |
 | Install on a new machine | `install.ps1` |
 | Choose the right model | `policies/model-selection.md` |
@@ -72,10 +75,11 @@ Reusable starting points for new projects. Copy and fill in project-specific con
 
 | File | Purpose | When to use |
 |------|---------|-------------|
-| `project-CLAUDE.md` | Template for a new project's `CLAUDE.md` | Bootstrapping new project |
+| `project-CLAUDE.md` | Template for a new project's `CLAUDE.md` (includes @imports) | Bootstrapping new project |
 | `session-state.md` | Empty template for `.claude/session-state.md` | Bootstrapping new project |
 | `learning-log.md` | Empty template for `.claude/learning-log.md` | Bootstrapping new project |
-| `new-project-bootstrap.md` | Step-by-step Phase 1/2/3 checklist for new project setup | Bootstrapping new project |
+| `settings.json` | Hook config + approval policy + allow/deny | Bootstrapping new project |
+| `new-project-bootstrap.md` | Step-by-step Phase 1/2/3 checklist (includes scripts + hooks) | Bootstrapping new project |
 
 ### templates/commands/
 
@@ -89,8 +93,21 @@ Commands to copy into `.claude/commands/` of each project.
 | `hardening-pass.md` | Low-risk validation/logging/test hardening pass | `/hardening-pass` |
 | `production-guard.md` | Confirm approval + rollback before production action | `/production-guard` |
 | `release-readiness.md` | Go/no-go assessment with structured report | `/release-readiness` |
+| `task-classify.md` | Classify mode/model/blast-radius before any edit | `/task-classify` |
+| `incident-triage.md` | Active incident: SEV classification + elite loop | `/incident-triage` |
+| `architecture-review.md` | Risk map + top-10 risks + phased plan | `/architecture-review` |
+| `bootstrap-project.md` | OS health checklist + restore sequence | `/bootstrap-project` |
 
-**Note:** `bootstrap-project.md` and `task-classify.md` exist as reference prompts in `prompts/` — not yet promoted to slash commands in `templates/commands/`. Planned Fase 7.
+### templates/scripts/
+
+Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
+
+| File | Purpose | Hook |
+|------|---------|------|
+| `preflight.sh` | Branch/WT/secrets/ratchet baseline check | `SessionStart` |
+| `session-end.sh` | Capture WT state to `wt-snapshot.tmp` | `SessionEnd` |
+| `pre-compact.sh` | Extract session-state.md summary before compaction | `PreCompact` |
+| `post-compact.sh` | Re-inject context summary after compaction | `PostCompact` |
 
 ### templates/agents/
 
@@ -165,7 +182,9 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
 | policies/ | 7/7 — complete |
 | prompts/ | 7/7 — complete |
-| templates/commands/ | 6/6 — complete |
+| templates/commands/ | 10/10 — complete |
+| templates/scripts/ | 4/4 — preflight, session-end, pre-compact, post-compact |
+| templates/settings.json | Stable — 4 hooks + permissions |
 | heuristics/ | 1/6 — operational.md done |
 | templates/profiles/ | 0 — planned Fase 7 |
 | templates/critical-surfaces/ | 5/9 — auth, migrations, billing, deploy, pii |

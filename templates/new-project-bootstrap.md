@@ -26,13 +26,15 @@ cd <project-name>
 ```powershell
 mkdir .claude
 mkdir .claude\commands
+mkdir .claude\scripts
 mkdir .claude\policies
 mkdir .claude\agents
+mkdir .claude\heuristics
 ```
 
 ### 1.3 Copy templates
 ```powershell
-$cos = "C:\Users\pqjs2\claude-operating-system"
+$cos = "C:\Users\<you>\claude-operating-system"
 
 # Core operational files
 cp "$cos\templates\project-CLAUDE.md"  CLAUDE.md
@@ -40,50 +42,40 @@ cp "$cos\templates\session-state.md"   .claude\session-state.md
 cp "$cos\templates\learning-log.md"    .claude\learning-log.md
 
 # Policies (generic — will be extended in Phase 2)
-cp "$cos\policies\model-selection.md"       .claude\policies\model-selection.md
-cp "$cos\policies\operating-modes.md"       .claude\policies\operating-modes.md
+cp "$cos\policies\model-selection.md"        .claude\policies\model-selection.md
+cp "$cos\policies\operating-modes.md"        .claude\policies\operating-modes.md
 cp "$cos\policies\engineering-governance.md" .claude\policies\engineering-governance.md
-cp "$cos\policies\production-safety.md"     .claude\policies\production-safety.md
+cp "$cos\policies\production-safety.md"      .claude\policies\production-safety.md
 
-# Commands
-cp "$cos\prompts\session-start.md" .claude\prompts\session-start.md
+# Hook scripts (LF-only — copy as-is, do not open in Windows Notepad)
+cp "$cos\templates\scripts\preflight.sh"    .claude\scripts\preflight.sh
+cp "$cos\templates\scripts\session-end.sh"  .claude\scripts\session-end.sh
+cp "$cos\templates\scripts\pre-compact.sh"  .claude\scripts\pre-compact.sh
+cp "$cos\templates\scripts\post-compact.sh" .claude\scripts\post-compact.sh
 ```
 
 - [ ] Templates copied without errors
+- [ ] Scripts are LF-only (verify: `Get-Content .claude\scripts\preflight.sh -Raw | Select-String "\r"` returns nothing)
 
-### 1.4 Create `.claude/settings.json`
-```json
-{
-  "approvalPolicy": "on-request",
-  "permissions": {
-    "allow": [
-      "Bash(git status *)",
-      "Bash(git diff *)",
-      "Bash(git log *)",
-      "Bash(npm run typecheck *)",
-      "Bash(npm run test:unit *)",
-      "Bash(npx vitest run *)"
-    ],
-    "deny": [
-      "Bash(git push --force *)",
-      "Bash(git reset --hard *)",
-      "Bash(rm -rf *)"
-    ]
-  }
-}
-```
-Adjust allow/deny to match project toolchain.
-
-- [ ] `settings.json` created
-
-### 1.5 Create `/session-start` and `/phase-close` commands
+### 1.4 Copy `.claude/settings.json`
 ```powershell
-$cos = "C:\Users\pqjs2\claude-operating-system"
-cp "$cos\templates\commands\session-start.md" .claude\commands\session-start.md
-cp "$cos\templates\commands\phase-close.md"   .claude\commands\phase-close.md
+cp "$cos\templates\settings.json" .claude\settings.json
+```
+Review and adjust `allow`/`deny` to match your project toolchain.
+
+- [ ] `settings.json` copied and adjusted
+
+### 1.5 Copy all slash commands
+```powershell
+$cos = "C:\Users\<you>\claude-operating-system"
+cp "$cos\templates\commands\*" .claude\commands\
 ```
 
-- [ ] Commands created
+Commands included: `session-start`, `phase-close`, `hardening-pass`, `system-review`,
+`production-guard`, `release-readiness`, `task-classify`, `incident-triage`,
+`architecture-review`, `bootstrap-project`.
+
+- [ ] Commands copied
 
 ---
 
@@ -152,22 +144,30 @@ Add first entry:
 
 ## Phase 3 — Verification
 
-### 3.1 Initial commit
+### 3.1 Add `.gitignore` entries
+```
+.claude/*.tmp
+.claude/*.local.json
+```
+
+- [ ] `.gitignore` updated
+
+### 3.2 Initial commit
 ```powershell
-git add CLAUDE.md .claude/
+git add CLAUDE.md .claude/ .gitignore
 git commit -m "ops: bootstrap Claude operational system"
 ```
 
 - [ ] Commit clean (no secrets, no temp files)
 - [ ] `.claude/settings.local.json` NOT committed
 
-### 3.2 Open Claude Code
+### 3.3 Open Claude Code
 ```powershell
 claude
 # or use desktop shortcut if configured
 ```
 
-### 3.3 Run `/session-start`
+### 3.4 Run `/session-start`
 Type `/session-start` and verify output includes:
 - correct branch
 - correct HEAD commit
@@ -176,7 +176,12 @@ Type `/session-start` and verify output includes:
 
 - [ ] `/session-start` returns clean state
 
-### 3.4 Verify model selection
+### 3.5 Run `/bootstrap-project` health check
+Type `/bootstrap-project` and confirm all OS health items pass.
+
+- [ ] All OS health checks pass
+
+### 3.6 Verify model selection
 Ask: "What model should I use for [a task]?" and confirm it follows the policy.
 
 - [ ] Model selection responding correctly
@@ -196,10 +201,20 @@ Project is operational. From now on:
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Project context + session continuity instructions |
-| `.claude/session-state.md` | Live operational state |
+| `CLAUDE.md` | Project context + session continuity + @imports |
+| `.claude/session-state.md` | Live operational state (auto-injected) |
 | `.claude/learning-log.md` | Cumulative phase learning |
+| `.claude/heuristics/operational.md` | Promoted heuristics (auto-injected) |
+| `.claude/settings.json` | Approval policy + hooks + allow/deny |
+| `.claude/scripts/preflight.sh` | SessionStart hook: branch/WT/secrets check |
+| `.claude/scripts/session-end.sh` | SessionEnd hook: WT snapshot |
+| `.claude/scripts/pre-compact.sh` | PreCompact hook: extract session summary |
+| `.claude/scripts/post-compact.sh` | PostCompact hook: re-inject context |
 | `.claude/policies/model-selection.md` | Task → model mapping |
 | `.claude/commands/session-start.md` | Session recovery command |
 | `.claude/commands/phase-close.md` | Phase close + learning capture |
+| `.claude/commands/task-classify.md` | Classify before edit |
+| `.claude/commands/incident-triage.md` | Active incident response |
+| `.claude/commands/architecture-review.md` | Structural risk map |
+| `.claude/commands/bootstrap-project.md` | OS health check + restore |
 | `~/.claude/CLAUDE.md` | Global policies (auto-loaded) |

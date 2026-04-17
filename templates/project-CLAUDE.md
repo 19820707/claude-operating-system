@@ -56,3 +56,11 @@ At the end of every phase: append to `.claude/learning-log.md` via `/phase-close
 ## Agents
 
 <!-- List agents available in .claude/agents/ -->
+
+---
+
+## Engineering OS — Auto-injected context
+
+@.claude/session-state.md
+@.agents/OPERATING_CONTRACT.md
+@.claude/heuristics/operational.md
