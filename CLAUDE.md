@@ -120,16 +120,23 @@ Operate as a cumulative learning system, not static execution:
 
 ## Model Selection
 
-Select the minimum sufficient model:
+Select the minimum sufficient model. Use the Agent tool to dispatch each task to the right model — do not run everything in the main session model.
 
-| Model | Use |
-|-------|-----|
-| **Haiku** | discovery, grep, search, file reads, triagem, context prep |
-| **Sonnet** | implementation, tests, refactors, observability, docs, validation |
-| **Opus** | architecture, auth/authz, billing, publish gates, entitlement, sensitive migrations, incidents, irreversible decisions |
+| Model | Use | Agent dispatch |
+|-------|-----|---------------|
+| **Haiku** | discovery, grep, search, file reads, triagem, context prep | `Agent(model:"haiku")` |
+| **Sonnet** | implementation, tests, refactors, observability, docs, validation | `Agent(model:"sonnet")` or main session |
+| **Opus** | architecture, auth/authz, billing, publish gates, entitlement, sensitive migrations, incidents, irreversible decisions | `Agent(model:"opus")` — mandatory |
 
-Rule: Haiku discovers → Sonnet executes → Opus decides.
-Never escalate model without demonstrable technical need.
+**Rule: Haiku discovers → Sonnet executes → Opus decides.**
+
+Dispatch discipline:
+- Run **parallel Haiku subagents** for independent file reads and searches — never use Sonnet/Opus for pure discovery
+- Run **Sonnet subagents** for scoped implementation where design is already settled
+- Run **Opus subagents** for any task touching critical surfaces (auth, CSRF, billing, SW, migrations, security headers)
+- Main session model handles **orchestration only** — classify, dispatch, synthesize results
+- Never run Opus on work Sonnet can do (wastes token budget)
+- Never run Sonnet on Opus-mandatory surfaces (insufficient reasoning depth for invariant detection)
 
 ---
 

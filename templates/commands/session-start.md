@@ -21,7 +21,19 @@ WT pendente: <ficheiros modificados/novos>
 Próximo passo: <acção mínima recomendada>
 Riscos activos: <lista curta>
 Heurísticas activas: H<n>, H<n>, ...
+Modelo activo: Haiku | Sonnet | Opus
+Dispatch recomendado: <se o próximo passo toca superfície crítica → Opus; se é leitura → Haiku>
 ```
+
+## Dispatch de modelo ao iniciar trabalho
+
+Após o resumo, antes de qualquer edição, classifica o próximo passo com `/task-classify` e usa o Agent tool com o modelo correcto:
+
+| Próximo passo | Modelo | Acção |
+|--------------|--------|-------|
+| Leitura, grep, exploração | Haiku | `Agent(model:"haiku", ...)` |
+| Implementação com design decidido | Sonnet | `Agent(model:"sonnet", ...)` ou sessão principal |
+| auth, CSRF, SW, billing, migrações, segurança | **Opus** | `Agent(model:"opus", ...)` obrigatório |
 
 ## Regras
 
@@ -30,3 +42,4 @@ Heurísticas activas: H<n>, H<n>, ...
 - Se learning-log.md não existir → avisar e criar template vazio
 - Não começar diagnóstico, plano ou edição antes de apresentar o resumo
 - Modo operacional por defeito: Fast (escalar se necessário)
+- **Nunca executar trabalho Opus-mandatory no modelo da sessão se este for Sonnet/Haiku**

@@ -6,17 +6,28 @@
 # /task-classify
 
 Classify a task before implementing it. Determines Mode, Model, blast radius, and approval requirement.
+**After classifying, dispatch work to the correct model via the Agent tool — never execute in a higher-cost model than needed.**
 
 ## Classification matrix
 
-| Surface | Mode | Model | Approval |
-|---------|------|-------|----------|
-| docs, templates, OS files | Fast | Sonnet | auto-accept permitted |
-| tests, refactor, wiring | Build | Sonnet | manual or semi |
-| boundaries, central flows | Review -> Build | Sonnet | manual |
-| auth, billing, SW, CSRF, OIDC, headers | Critical | **Opus mandatory** | manual always |
-| migrations (non-additive) | Migration | **Opus mandatory** | manual + staging |
-| pre-deploy, runbooks | Production-safe | **Opus mandatory** | manual + checklist |
+| Surface | Mode | Model | Agent dispatch |
+|---------|------|-------|---------------|
+| discovery, grep, file reads | Explore | **Haiku** | `Agent(model:"haiku")` |
+| docs, templates, OS files | Fast | Sonnet | main session or `Agent(model:"sonnet")` |
+| tests, refactor, wiring | Build | Sonnet | `Agent(model:"sonnet")` |
+| boundaries, central flows | Review -> Build | Sonnet | `Agent(model:"sonnet")` |
+| auth, billing, SW, CSRF, OIDC, headers | Critical | **Opus** | `Agent(model:"opus")` — mandatory |
+| migrations (non-additive) | Migration | **Opus** | `Agent(model:"opus")` — mandatory |
+| pre-deploy, runbooks | Production-safe | **Opus** | `Agent(model:"opus")` — mandatory |
+
+## Dispatch rules
+
+1. **Haiku** — any task that is pure reading, grep, file listing, context prep, status checks. Never edits.
+2. **Sonnet** — scoped implementation where the design is already decided. No critical surfaces.
+3. **Opus** — any task that touches auth, CSRF, session, cookies, billing, SW/cache, security headers, migrations, entitlement, or requires multi-constraint architectural reasoning.
+4. **Never run Opus on work Sonnet can do** — saves tokens, preserves Opus budget for decisions that require it.
+5. **Never run Sonnet on Opus-mandatory surfaces** — insufficient reasoning depth for invariant detection.
+6. **Main session model** handles only coordination, classification, and orchestration between subagents.
 
 ## Classification tags (OPERATING_CONTRACT.md)
 
@@ -34,7 +45,8 @@ Classify a task before implementing it. Determines Mode, Model, blast radius, an
 Task: (one line description)
 Classification (A-E): ...
 Mode: Fast | Build | Review | Critical | Migration | Production-safe
-Model: Haiku | Sonnet | Opus (mandatory if B/C/D touching runtime)
+Model: Haiku | Sonnet | Opus
+Dispatch: Agent(model:"haiku"|"sonnet"|"opus") | main session
 Blast radius: ...
 Human approval required: yes | no
 Rollback: ...
