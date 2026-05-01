@@ -18,6 +18,7 @@
   },
   "repoIntegrity": {
     "source/skills": { "include": "SKILL.md", "exact": 6, "recursive": true },
+    "templates/checklists": { "include": "*.md", "exact": 2 },
     "templates/commands": { "include": "*.md", "exact": 18 },
     "templates/agents": { "include": "*.md", "exact": 5 },
     "templates/critical-surfaces": { "include": "*.md", "exact": 5 },
@@ -77,6 +78,8 @@
       ".claude/docs-index.json",
       ".claude/os-capabilities.json",
       ".claude/workflow-manifest.json",
+      ".claude/checklists/SECURITY-CHECKLIST.md",
+      ".claude/checklists/RELEASE-CHECKLIST.md",
       ".claude/scripts/query-docs-index.ps1",
       ".claude/scripts/route-capability.ps1",
       ".claude/commands/session-start.md",
