@@ -32,9 +32,10 @@ Navigation map. Every file, its purpose, and when to use it.
 | `README.md` | Architecture overview + restore/bootstrap/update procedures | New machine, after format, onboarding |
 | `INDEX.md` | This file — navigation map | Whenever you need to find something |
 | `install.ps1` | Copies global files to `~/.claude/` on Windows; writes `os-install.json` provenance | New Windows machine, after format |
-| `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, 12-path validation | New app/repo on Windows |
-| `bootstrap-manifest.json` | Canonical counts for templates vs CI | When adding commands, agents, profiles, or scripts |
-| `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree drifts from manifest | CI, local pre-push |
+| `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, manifest-driven validation | New app/repo on Windows |
+| `bootstrap-manifest.json` | Canonical counts, project bootstrap script list, and critical-path list for CI drift detection | When adding commands, agents, profiles, scripts, or bootstrap critical paths |
+| `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push |
+| `tools/verify-doc-manifest.ps1` | Fails if INDEX.md summary drifts from manifest counts | CI, local pre-push |
 | `install.sh` | Copies global files to `~/.claude/` on Unix/macOS/Linux | New Unix machine, after clone |
 | `.gitignore` | Protects secrets and local files from commit | Maintained automatically |
 
@@ -86,12 +87,13 @@ Reusable starting points for new projects. Copy and fill in project-specific con
 
 ### templates/commands/
 
-Commands to copy into `.claude/commands/` of each project.
+Commands to copy into `.claude/commands/` of each project. Canonical count: **18/18** from `bootstrap-manifest.json`.
 
 | File | Purpose | Trigger |
 |------|---------|---------|
 | `session-start.md` | Recover full operational context at session start | `/session-start` |
 | `phase-close.md` | Capture learning + update state at phase end | `/phase-close` |
+| `session-end.md` | Close session with final state and evidence capture | `/session-end` |
 | `system-review.md` | Full architecture read + risk map + roadmap proposal | `/system-review` |
 | `hardening-pass.md` | Low-risk validation/logging/test hardening pass | `/hardening-pass` |
 | `production-guard.md` | Confirm approval + rollback before production action | `/production-guard` |
@@ -100,10 +102,17 @@ Commands to copy into `.claude/commands/` of each project.
 | `incident-triage.md` | Active incident: SEV classification + elite loop | `/incident-triage` |
 | `architecture-review.md` | Risk map + top-10 risks + phased plan | `/architecture-review` |
 | `bootstrap-project.md` | OS health checklist + restore sequence | `/bootstrap-project` |
+| `claim-module.md` | Claim coordination lease before editing shared surfaces | `/claim-module` |
+| `release-module.md` | Release a coordination lease after completing work | `/release-module` |
+| `audit-session.md` | Audit decision log and operational compliance | `/audit-session` |
+| `verify-invariants.md` | Run or review invariant verification evidence | `/verify-invariants` |
+| `epistemic-review.md` | Review assumptions, unknowns, and decision debt | `/epistemic-review` |
+| `simulate.md` | Simulate change impact before applying risky edits | `/simulate` |
+| `consolidate.md` | Consolidate session evidence into runbooks/state | `/consolidate` |
 
 ### templates/scripts/
 
-Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
+Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**. Canonical count: **38/38** from `bootstrap-manifest.json`; `init-project.ps1` consumes that manifest list directly.
 
 | File | Purpose | Hook |
 |------|---------|------|
@@ -133,6 +142,8 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `coordination-check.sh` | Multi-agente: **leases** / **intentions** / **shared_decisions** em `.claude/agent-state.json` vs paths (`--paths`, `COORDINATION_PATHS`, ou `COORDINATION_WT=1`) | `COORDINATION_CHECK=1` / manual |
 | `epistemic-check.sh` | **KNOWN/INFERRED/ASSUMED/DISPUTED** em `.claude/epistemic-state.json`; `--summary`; `--gate --depends`; `--score-decision`; `--score-all`; `--decision-debt` | `EPISTEMIC_CHECK=1` / manual |
 
+For the complete script list, use `bootstrap-manifest.json` → `projectBootstrap.scripts`; CI verifies every listed script exists and parses with `bash -n`.
+
 ### templates/invariant-engine/
 
 | Artefacto | Propósito |
@@ -141,7 +152,8 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `src/semantic-diff.ts` | Analisador de diff semântico (contratos AST + heurísticas) |
 | `dist/invariant-engine.cjs` | Bundle esbuild — copiado no init |
 | `dist/semantic-diff.cjs` | Bundle esbuild — copiado no init |
-| `package.json` | `npm run build` — gera **ambos** os `.cjs` |
+| `dist/simulate-contract-delta.cjs` | Bundle esbuild — simulação de delta contratual copiada no init |
+| `package.json` | `npm run build` — gera os bundles `.cjs` |
 
 ### templates/local/
 
@@ -233,16 +245,18 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | Global CLAUDE.md | Stable |
 | install.ps1 | Stable, dry-run validated |
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
+| bootstrap-manifest.json | Source of truth for repo counts, bootstrap scripts, and critical paths |
 | policies/ | 7/7 — complete |
 | prompts/ | 7/7 — complete |
-| templates/commands/ | 11/11 — incl. `/session-end` |
-| templates/scripts/ | 14/14 — hooks + drift + TS budget + ratchet + promote + telemetry + risk scan + complexity + causal + session-index + cross-project |
+| templates/commands/ | 18/18 — manifest verified |
+| templates/scripts/ | 38/38 — manifest verified; CI runs `bash -n` |
+| templates/invariant-engine/dist/ | 3/3 — invariant-engine, semantic-diff, simulate-contract-delta |
 | templates/profiles/ | 2/2 — node-ts-service, react-vite-app |
 | templates/settings.json | Stable — 4 hooks + permissions |
 | heuristics/ | operational.md + cross-project-evidence.json (MVP) |
 | templates/critical-surfaces/ | 5/9 — auth, migrations, billing, deploy, pii |
 | templates/task-modes/ | 5/5 — bugfix, architecture, migration, incident-response, release-hardening |
-| INDEX.md | This file |
+| INDEX.md | Manifest-aligned navigation map |
 
 ---
 
