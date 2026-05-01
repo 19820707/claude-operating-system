@@ -44,7 +44,6 @@ function Copy-ManagedDirectory {
 
 $target = [System.IO.Path]::GetFullPath($ProjectPath)
 if (-not (Test-Path -LiteralPath $target)) { throw "ProjectPath not found: $target" }
-Ensure-Dir = $null
 
 Write-Host 'claude-operating-system update-project'
 Write-Host "Source : $RepoRoot"
