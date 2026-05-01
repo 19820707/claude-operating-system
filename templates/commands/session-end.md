@@ -7,10 +7,10 @@ Fecho de sessão operacional: checks automáticos, actualização de estado, com
 1. **Executar checks** (local, na raiz do repo):
    - `bash .claude/scripts/drift-detect.sh`
    - `bash .claude/scripts/heuristic-ratchet.sh`
-   - `bash .claude/scripts/risk-surface-scan.sh`
    - `bash .claude/scripts/ts-error-budget.sh`
+   - `bash .claude/scripts/risk-surface-scan.sh`
    - `bash .claude/scripts/os-telemetry.sh` (ou `bash .claude/scripts/os-telemetry.sh --report` só para ler métricas sem incrementar `sessions`)
-   - O hook **SessionEnd** já corre `session-end.sh` (snapshot WT + `session-index-build.sh` se houver YAML opt-in no `session-state.md`).
+   - O hook **SessionEnd** corre `session-end.sh` (snapshot WT). O índice semântico actualiza-se no `/phase-close` com `session-index.sh`.
 2. **Actualizar** `.claude/session-state.md` com evidência real:
    - **Branch:** `git branch --show-current`
    - **HEAD:** `git log -1 --format="%h %s"`
@@ -22,7 +22,7 @@ Fecho de sessão operacional: checks automáticos, actualização de estado, com
 
 ```bash
 git add .claude/session-state.md .claude/learning-log.md
-# Se geras `.claude/session-index.json` (YAML opt-in no session-state):
+# Se actualizaste o índice no /phase-close:
 # git add .claude/session-index.json
 git commit -m "chore(os): session-end — <objectivo curto>"
 ```
@@ -39,7 +39,7 @@ Ratchet: <OK | RATCHET — H1/H5/H10>
 TS budget: <OK | REGRESSION — N vs baseline>
 Risk scan: <OK | NEW SURFACE — resumo>
 Telemetry: <score CLEAN|WATCH|ALERT>
-session-index.json: <updated | skipped>
+session-index.json: <actualizado no /phase-close | pendente>
 session-state.md: actualizado
 Commit: <hash ou skipped>
 ```

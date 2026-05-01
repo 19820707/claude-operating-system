@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Dynamic Risk Surface Scanner — infers high-risk code via git-grep heuristics vs CLAUDE.md declarations.
-# Advisory only; exit 0 always. H10: LF-only.
+# Dynamic risk surface scanner — filesystem walk + patterns vs CLAUDE.md Critical Surfaces. H10: LF-only; exit 0.
 set -euo pipefail
 
 echo "[OS-RISK-SCAN]"
@@ -10,134 +9,146 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 0
 fi
 
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
-  echo "  skip: not a git repository"
-  exit 0
-fi
+mkdir -p .claude
 
 python3 - <<'PY'
-import re, subprocess, sys
+import json, os, re
+from datetime import datetime, timezone
 from pathlib import Path
 
-CLAUDE = Path("CLAUDE.md")
-if not CLAUDE.is_file():
-    print("  skip: no CLAUDE.md")
-    sys.exit(0)
+SKIP_DIRS = {".git", "node_modules", "dist", ".claude", ".next", "build", "coverage", ".turbo", "vendor", ".local"}
+TEXT_EXT = {
+    ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts", ".vue", ".svelte",
+    ".py", ".go", ".rs", ".java", ".kt", ".sql", ".sh", ".yml", ".yaml", ".json",
+    ".md", ".rb", ".php",
+}
 
-text = CLAUDE.read_text(encoding="utf-8", errors="replace")
-declared: set[str] = set()
-in_crit = False
-for line in text.splitlines():
-    if line.startswith("## Critical Surfaces"):
-        in_crit = True
-        continue
-    if in_crit and line.startswith("## ") and "Critical Surfaces" not in line:
-        break
-    if not in_crit:
-        continue
-    if line.strip().startswith("<!--"):
-        continue
-    for m in re.finditer(r"`([^`]+)`", line):
-        declared.add(m.group(1).strip().replace("\\", "/"))
-    m2 = re.match(r"^\s*-\s*`([^`]+)`", line)
-    if m2:
-        declared.add(m2.group(1).strip().replace("\\", "/"))
-    m3 = re.match(r"^\s*-\s*(\S+)", line)
-    if m3 and not m3.group(1).startswith("<!--"):
-        p = m3.group(1).strip().rstrip("`").lstrip("`")
-        if "/" in p or p.endswith((".ts", ".tsx", ".js", ".jsx", ".mts")):
-            declared.add(p.replace("\\", "/"))
-
-# Categories: (label, combined ripgrep-style pattern)
-# Note: heuristic only — expect false positives; tune CLAUDE.md Critical Surfaces.
-# git grep -E (ERE): avoid PCRE-only tokens like \b
-# (internal_key, git grep -E pattern, short label for console — matches proposal wording)
-CATEGORIES = [
-    ("auth", r"jwt|jsonwebtoken|passport\.authenticate|express\.session", "jwt / session / passport"),
-    ("billing", r"stripe|@stripe|payment_intent|billing|subscription\.(create|update)", "stripe / payment / billing"),
-    ("crypto", r"bcrypt|scrypt|argon2|pbkdf2|createHash\(|\.createCipher", "bcrypt / crypto / hash"),
-    ("migrations", r"migrate|migration|drizzle.*push|prisma[[:space:]]+db[[:space:]]+push|ALTER[[:space:]]+TABLE", "migrate / drizzle / prisma / ALTER TABLE"),
-    ("publish", r"npm[[:space:]]+publish|semantic-release|release-it|production[[:space:]]+deploy", "publish / deploy / release"),
-    ("secrets", r"apiKey|api_key|credential|client_secret|process\.env\.[A-Z0-9_]{4,}", "secret / token / apiKey"),
-    ("destructive_sql", r"DELETE[[:space:]]+FROM|DROP[[:space:]]+TABLE|TRUNCATE[[:space:]]+TABLE", "DELETE / DROP / TRUNCATE"),
-    ("comms_pii", r"sendEmail|sendMail|sendSMS|sendNotification|twilio\.messages", "sendEmail / SMS / notifications (PII)"),
+PATTERNS = [
+    ("AUTH", re.compile(r"jwt|jsonwebtoken|passport\.authenticate|express-session|express\.session|connect-pg-simple", re.I)),
+    ("BILLING", re.compile(r"stripe|paymentIntent|subscription|webhook.*payment|billing", re.I)),
+    ("CRYPTO", re.compile(r"bcrypt|createHash|crypto\.subtle|pbkdf2|argon2", re.I)),
+    ("MIGRATE", re.compile(r"drizzle.*push|migrate\(\)|ALTER\s+TABLE|CREATE\s+TABLE|DROP\s+TABLE", re.I)),
+    ("PUBLISH", re.compile(r"npm.*publish|deploy\.sh|release\.sh", re.I)),
+    ("SECRETS", re.compile(r"process\.env\.(SECRET|KEY|TOKEN|PASSWORD|STRIPE|JWT)", re.I)),
+    ("DESTRUCTIVE", re.compile(r"DELETE\s+FROM|DROP\s+TABLE|TRUNCATE", re.I)),
+    ("PII", re.compile(r"sendEmail|sendSMS|sendNotification|personalData|gdpr", re.I)),
 ]
 
-PATHSPECS = [
-    "*.ts",
-    "*.tsx",
-    "*.js",
-    "*.jsx",
-    "*.mts",
-    "*.cts",
-    "*.mjs",
-    "*.cjs",
-    "*.vue",
-    "*.py",
-    "*.go",
-]
+def load_declared() -> set[str]:
+    out: set[str] = set()
+    cl = Path("CLAUDE.md")
+    if not cl.is_file():
+        return out
+    text = cl.read_text(encoding="utf-8", errors="replace")
+    sec = False
+    for line in text.splitlines():
+        if line.startswith("## Critical Surfaces"):
+            sec = True
+            continue
+        if sec and line.startswith("## ") and "Critical Surfaces" not in line:
+            break
+        if not sec:
+            continue
+        if "server/" in line or "client/" in line:
+            for m in re.finditer(r"`([^`]+)`", line):
+                out.add(m.group(1).strip().replace("\\", "/"))
+            for m in re.finditer(r"([\w./-]*(?:server|client)/[\w./-]+)", line):
+                p = m.group(1).strip().strip("`").replace("\\", "/")
+                if "/" in p:
+                    out.add(p)
+    return out
 
 
 def norm(p: str) -> str:
     return p.replace("\\", "/").lstrip("./")
 
 
-def is_declared(rel: str) -> bool:
+def is_declared(rel: str, declared: set[str]) -> bool:
     r = norm(rel).lower()
-    if not declared:
-        return False
     for d in declared:
         dn = norm(d).lower().strip("*")
         if not dn:
             continue
         if dn in r or r in dn:
             return True
-        # glob-ish **/auth/** → strip stars
         core = dn.strip("*").strip("/")
         if core and core in r:
             return True
     return False
 
 
-def git_grep_files(pattern: str) -> set[str]:
-    cmd = ["git", "-c", "core.quotepath=false", "grep", "-l", "-E", "--no-color", pattern, "--"] + PATHSPECS
+def should_skip_dir(name: str) -> bool:
+    return name in SKIP_DIRS or name.startswith(".")
+
+
+def iter_repo_files(root: Path):
+    for dirpath, dirnames, filenames in os.walk(root, topdown=True):
+        dirnames[:] = [d for d in dirnames if not should_skip_dir(d)]
+        for fn in filenames:
+            p = Path(dirpath) / fn
+            if p.suffix.lower() not in TEXT_EXT and p.suffix:
+                continue
+            try:
+                if p.stat().st_size > 1_500_000:
+                    continue
+            except OSError:
+                continue
+            yield p
+
+
+def scan_file(path: Path) -> list[str]:
     try:
-        out = subprocess.check_output(cmd, stderr=subprocess.DEVNULL, text=True)
-    except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            return set()
-        return set()
-    return {norm(x) for x in out.splitlines() if x.strip()}
+        data = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+    hits = []
+    for name, rx in PATTERNS:
+        if rx.search(data):
+            hits.append(name)
+    return hits
 
-hits: dict[str, list[tuple[str, str]]] = {}
-for key, pat, human in CATEGORIES:
-    for f in git_grep_files(pat):
-        hits.setdefault(f, []).append((key, human))
 
-if not hits:
-    print("  ok: no heuristic risk hits in tracked code (or no matching extensions)")
-    sys.exit(0)
+def main():
+    root = Path(".").resolve()
+    declared = load_declared()
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    detected: list[dict] = []
+    undeclared: list[dict] = []
+    confirmed: list[str] = []
 
-new_surfaces = [(f, labs) for f, labs in sorted(hits.items()) if not is_declared(f)]
-if not new_surfaces:
-    print(f"  ok: {len(hits)} heuristic hit(s) covered by CLAUDE.md Critical Surfaces")
-    sys.exit(0)
-
-print(f"  review: {len(new_surfaces)} path(s) match risk heuristics but are not clearly declared in Critical Surfaces:")
-for f, labs in new_surfaces[:25]:
-    seen_h = set()
-    print(f"  NEW SURFACE DETECTED: {f}")
-    for _k, human in labs:
-        if human in seen_h:
+    for fp in iter_repo_files(root):
+        rel = norm(str(fp.relative_to(root)))
+        hits = scan_file(fp)
+        if not hits:
             continue
-        seen_h.add(human)
-        print(f"    pattern: {human}")
-    print("    not declared in CLAUDE.md Critical Surfaces")
-    print("    ACTION: review and add to Opus-mandatory list (CLAUDE.md → Critical Surfaces)")
-if len(new_surfaces) > 25:
-    print(f"  ... and {len(new_surfaces) - 25} more (cap 25)")
-if not declared:
-    print("  hint: Critical Surfaces section has no extracted paths — add backtick paths or bullets")
+        uniq = sorted(set(hits))
+        rec = {"path": rel, "patterns": uniq}
+        detected.append(rec)
+        if is_declared(rel, declared):
+            print(f"  ok: confirmed {rel}")
+            confirmed.append(rel)
+        else:
+            for pname in uniq:
+                print(f"  NEW SURFACE DETECTED: {rel}")
+                print(f"    pattern: {pname}")
+                print("    not declared in CLAUDE.md Critical Surfaces")
+                print("    ACTION: review and add to Opus-mandatory list")
+            undeclared.append(rec)
+
+    out = {
+        "scanned_at": ts,
+        "declared": sorted(declared),
+        "detected": detected,
+        "undeclared": undeclared,
+    }
+    Path(".claude/risk-surfaces.json").write_text(
+        json.dumps(out, indent=2), encoding="utf-8"
+    )
+    print(f"  wrote .claude/risk-surfaces.json ({len(detected)} risky files, {len(undeclared)} undeclared records)")
+
+
+if __name__ == "__main__":
+    main()
 PY
 
 exit 0

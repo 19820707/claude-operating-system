@@ -8,8 +8,8 @@ Executa no arranque de cada sessão para recuperar contexto operacional completo
 2. Lê `CLAUDE.md` — contexto específico do repo
 3. Lê `.claude/session-state.md` — estado operacional: branch, commits, decisões, riscos, próximos passos
 4. Lê `.claude/learning-log.md` — heurísticas activas e anti-padrões desta fase
-5. O hook **SessionStart** executa `preflight.sh`, que corre **drift-detect**, **heuristic-ratchet**, **risk-surface-scan**, **cross-project-inherit**, **ts-error-budget** e **os-telemetry**. Interpreta `[OS-DRIFT]`, `[OS-HEURISTIC-RATCHET]`, `[OS-RISK-SCAN]`, `[OS-CROSS-PROJECT]`, `[OS-TS-BUDGET]` e o resumo de métricas — não ignores regressões antes de planear trabalho.
-6. Opcional: se usares front-matter YAML no topo de `session-state.md`, lê `.claude/session-index.json` para decisões por módulo; para histórico de um ficheiro: `bash .claude/scripts/module-complexity.sh --days=90 caminho.ts`.
+5. O hook **SessionStart** executa `preflight.sh`, que corre **drift-detect**, **heuristic-ratchet**, **ts-error-budget**, **risk-surface-scan** e **os-telemetry**. Interpreta `[OS-DRIFT]`, `[OS-HEURISTIC-RATCHET]`, `[OS-TS-BUDGET]`, `[OS-RISK-SCAN]` e o resumo de métricas — não ignores regressões antes de planear trabalho.
+6. Índice de sessões: `.claude/session-index.json` é actualizado com `bash .claude/scripts/session-index.sh` (típico no `/phase-close`). Consulta por módulo: `bash .claude/scripts/session-index.sh --query server/auth`. Complexidade git: `bash .claude/scripts/module-complexity.sh <ficheiro.ts>`.
 
 ## Output esperado (formato compacto)
 

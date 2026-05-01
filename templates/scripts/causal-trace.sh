@@ -1,84 +1,176 @@
 #!/usr/bin/env bash
-# Causal Chain Tracker — finds decision IDs D-NNN in git history for a commit or path. H10: LF-only.
+# Causal chain trace — file / commit / incident vs session-index.json. H10: LF-only; exit 0.
 set -euo pipefail
 
 echo "[OS-CAUSAL-TRACE]"
 
-COMMIT="HEAD"
-PATHSPEC=""
-
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --path=*)
-      PATHSPEC="${1#--path=}"
-      shift
-      ;;
-    --path)
-      PATHSPEC="${2:-}"
-      shift 2
-      ;;
-    --help|-h)
-      echo "Usage: bash causal-trace.sh [COMMIT|RANGE] [--path=relative/path.ts]"
-      echo "  Examples:"
-      echo "    bash causal-trace.sh HEAD"
-      echo "    bash causal-trace.sh abc1234 --path=server/middleware/auth.ts"
-      exit 0
-      ;;
-    *)
-      COMMIT="$1"
-      shift
-      ;;
-  esac
-done
-
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
-  echo "  skip: not a git repository"
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "  skip: python3 not available"
   exit 0
 fi
 
-if ! git rev-parse "$COMMIT" >/dev/null 2>&1; then
-  echo "  skip: invalid commit/ref: $COMMIT"
-  exit 0
-fi
+python3 - "$@" <<'PY'
+import json, re, subprocess, sys
+from pathlib import Path
 
-echo "  commit/ref: $COMMIT"
-if [ -n "$PATHSPEC" ]; then
-  echo "  path       : $PATHSPEC"
-fi
 
-# Messages mentioning D- digits (commit messages / bodies)
-if [ -n "$PATHSPEC" ]; then
-  MSGS=$(git log -n 60 --format=%B "$COMMIT" -- "$PATHSPEC" 2>/dev/null | grep -oE 'D-[0-9]+' | sort -u | head -20 || true)
-else
-  MSGS=$(git log -n 60 --format=%B "$COMMIT" 2>/dev/null | grep -oE 'D-[0-9]+' | sort -u | head -20 || true)
-fi
+def load_index() -> dict:
+    p = Path(".claude/session-index.json")
+    if not p.is_file():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 
-if [ -f ".claude/session-state.md" ]; then
-  SS=$(grep -oE 'D-[0-9]+' .claude/session-state.md 2>/dev/null | sort -u | head -20 || true)
-  if [ -n "${SS}" ]; then
-    echo "  session-state.md references:"
-    echo "${SS}" | sed 's/^/    /'
-  fi
-fi
 
-if [ -n "$PATHSPEC" ]; then
-  echo "  commits (subject) mentioning D-NNN for path:"
-  git log -n 25 --grep='D-[0-9][0-9]*' --extended-regexp --format='%h %s (%ci)' "$COMMIT" -- "$PATHSPEC" 2>/dev/null | sed 's/^/    /' || true
-else
-  echo "  commits (subject) mentioning D-NNN:"
-  git log -n 25 --grep='D-[0-9][0-9]*' --extended-regexp --format='%h %s (%ci)' "$COMMIT" 2>/dev/null | sed 's/^/    /' || true
-fi
+def git_text(cmd: list[str]) -> str:
+    try:
+        return subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return ""
 
-if [ -z "${MSGS}" ]; then
-  echo "  (no D-NNN in recent commit bodies for this scope — subjects may still list IDs above)"
-  echo "  hint: reference decisions in commits, e.g. chore(auth): rate limit D-043"
-  exit 0
-fi
 
-echo "  decision ids in recent commit bodies:"
-echo "${MSGS}" | sed 's/^/    /'
+def decisions_for_commit_hash(idx: dict, short7: str) -> list[dict]:
+    out = []
+    s = short7.strip()[:7]
+    seen = set()
+    for sess in idx.get("sessions", []):
+        for d in sess.get("decisions", []) or []:
+            c = (d.get("commit") or "").strip()
+            if not c:
+                continue
+            cp = c[:7]
+            if cp == s or c.startswith(s) or s.startswith(cp):
+                key = (d.get("id"), cp)
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append({**d, "_session": sess.get("id", "")})
+    return out
 
-SUBJ=$(git log -1 --format='%h %s' "$COMMIT" 2>/dev/null || true)
-echo "  tip-of-ref : ${SUBJ}"
+
+def mode_file(filepath: str):
+    idx = load_index()
+    log = git_text(
+        ["git", "log", "-n", "20", "--format=%h|%ci|%s", "--follow", "--", filepath]
+    )
+    print(f"  file: {filepath}")
+    if not log.strip():
+        print("  (no git history for this path)")
+        return
+    for line in log.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split("|", 2)
+        h = parts[0]
+        dt = parts[1] if len(parts) > 1 else ""
+        msg = parts[2] if len(parts) > 2 else ""
+        dday = dt[:10] if len(dt) >= 10 else "????-??-??"
+        print(f"  ── {dday} {h} {msg}")
+        rel = decisions_for_commit_hash(idx, h[:7])
+        if rel:
+            d = rel[-1]
+            print(f"     decision: {d.get('id')} — {d.get('text')}")
+            print(f"     risk accepted: {d.get('risk') or 'unknown'}")
+        else:
+            print("     unknown decision (undocumented change)")
+
+
+def mode_commit(commit: str):
+    idx = load_index()
+    short = commit[:7]
+    head = git_text(
+        ["git", "show", "-s", "--format=%h %ci %s", commit]
+    ).strip()
+    print(f"  commit: {commit}")
+    if head:
+        print(f"  {head}")
+    files = git_text(
+        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", commit]
+    )
+    paths = [f.strip() for f in files.splitlines() if f.strip()]
+    decs = decisions_for_commit_hash(idx, short)
+    for fp in paths[:40]:
+        print(f"  file: {fp}")
+        hit = None
+        for d in decs:
+            files_col = d.get("files") or ""
+            if not files_col or fp in files_col or files_col in fp:
+                hit = d
+                break
+        if not hit and decs:
+            hit = decs[-1]
+        if hit:
+            print(f"    decision: {hit.get('id')} — {hit.get('text')}")
+            print(f"    risk accepted: {hit.get('risk') or 'unknown'}")
+        else:
+            print("    unknown decision (undocumented change)")
+
+
+def mode_incident():
+    idx = load_index()
+    st = Path(".claude/session-state.md")
+    if not st.is_file():
+        print("  skip: no session-state.md")
+        return
+    md = st.read_text(encoding="utf-8", errors="replace")
+    sec = ""
+    for tag in ("## Riscos abertos", "## Open risks"):
+        if tag in md:
+            i = md.find(tag)
+            rest = md[i + len(tag) :]
+            for line in rest.splitlines():
+                if line.startswith("## ") and not line.startswith(tag):
+                    break
+                sec += line + "\n"
+            break
+    risks = []
+    for line in sec.splitlines():
+        if "|" not in line or re.match(r"^\|\s*-+", line):
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) > 2 and parts[1] and parts[1].lower() not in ("risco", "risk", "severity"):
+            risks.append(parts[1])
+    print("  incident / open-risk trace:")
+    for r in risks:
+        if not r:
+            continue
+        print(f"  risk: {r}")
+        found = False
+        for sess in reversed(idx.get("sessions", [])):
+            for d in sess.get("decisions", []) or []:
+                t = (d.get("text") or "") + " " + (d.get("files") or "")
+                if r.lower() in t.lower():
+                    print(f"    → decision: {d.get('id')} — {d.get('text')}")
+                    print(f"    → commit: {d.get('commit')}  files: {d.get('files')}")
+                    print(f"    → risk accepted then: {d.get('risk') or 'unknown'}")
+                    found = True
+                    break
+            if found:
+                break
+        if not found:
+            print("    → no matching decision in session-index (undocumented)")
+
+
+def main():
+    a = sys.argv[1:]
+    if not a:
+        print("  usage: causal-trace.sh --file <path> | --commit <hash> | --incident")
+        return
+    if a[0] == "--file" and len(a) > 1:
+        mode_file(a[1])
+    elif a[0] == "--commit" and len(a) > 1:
+        mode_commit(a[1])
+    elif a[0] == "--incident":
+        mode_incident()
+    else:
+        print("  usage: causal-trace.sh --file <path> | --commit <hash> | --incident")
+
+
+if __name__ == "__main__":
+    main()
+PY
 
 exit 0

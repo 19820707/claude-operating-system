@@ -80,48 +80,10 @@ function Copy-ClaudeMd {
     Copy-FileAlways -From $From -To $To
 }
 
-function Add-CrossProjectLearningSeed {
-    param([string]$ProjectRoot, [string]$Source, [switch]$DryRun)
-    $marker = '<!-- OS-CROSS-PROJECT-SEED -->'
-    $ll = Join-Path $ProjectRoot '.claude\learning-log.md'
-    $ev = Join-Path $Source 'heuristics\cross-project-evidence.json'
-    if ($DryRun -or -not (Test-Path -LiteralPath $ll) -or -not (Test-Path -LiteralPath $ev)) { return }
-    $raw = Get-Content -LiteralPath $ll -Raw -ErrorAction SilentlyContinue
-    if ($null -eq $raw -or $raw.Contains($marker)) { return }
-    try {
-        $j = Get-Content -LiteralPath $ev -Raw -Encoding utf8 | ConvertFrom-Json
-    } catch {
-        Write-Host "  (warn) could not parse cross-project-evidence.json: $_"
-        return
-    }
-    $lines = @()
-    $lines += ''
-    $lines += '### Padrões herdados (cross-project)'
-    $lines += ''
-    $lines += $marker
-    $lines += ''
-    $added = $false
-    foreach ($prop in $j.patterns.PSObject.Properties) {
-        $name = [string]$prop.Name
-        $m = $prop.Value
-        $tc = 0
-        if ($null -ne $m.total_confirmations) { $tc = [int]$m.total_confirmations }
-        if ($tc -lt 2) { continue }
-        $pr = if ($null -ne $m.promoted_to) { [string]$m.promoted_to } else { 'pending' }
-        $imp = if ($null -ne $m.impact) { [string]$m.impact } else { '' }
-        $lines += "- **$name** — confirmações=$tc promoted=$pr"
-        if ($imp) { $lines += "  - _Impacto:_ $imp" }
-        $added = $true
-    }
-    if (-not $added) { return }
-    Add-Content -LiteralPath $ll -Value (($lines -join "`n") + "`n") -Encoding utf8
-    Write-Host '  appended cross-project seed block to learning-log.md (patterns with confirmations >= 2)'
-}
-
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -215,7 +177,7 @@ Get-ChildItem -LiteralPath $criticalSrc -Filter '*.md' -File -ErrorAction Silent
 $scriptNames = @(
     'preflight.sh', 'session-end.sh', 'pre-compact.sh', 'post-compact.sh',
     'drift-detect.sh', 'ts-error-budget.sh', 'heuristic-ratchet.sh', 'promote-heuristics.sh', 'os-telemetry.sh',
-    'risk-surface-scan.sh', 'module-complexity.sh', 'causal-trace.sh', 'session-index-build.sh', 'cross-project-inherit.sh'
+    'risk-surface-scan.sh', 'module-complexity.sh', 'causal-trace.sh', 'session-index.sh', 'cross-project-sync.sh'
 )
 foreach ($n in $scriptNames) {
     $sf = Join-Path $scriptsSrc $n
@@ -233,7 +195,6 @@ if (Test-Path -LiteralPath (Join-Path $heuristicsSrc 'cross-project-evidence.jso
 
 Copy-IfMissing -From (Join-Path $templates 'session-state.md') -To (Join-Path $ProjectRoot '.claude\session-state.md') -Label 'session-state.md'
 Copy-IfMissing -From (Join-Path $templates 'learning-log.md') -To (Join-Path $ProjectRoot '.claude\learning-log.md') -Label 'learning-log.md'
-Add-CrossProjectLearningSeed -ProjectRoot $ProjectRoot -Source $Source -DryRun:$DryRun
 Copy-IfMissing -From (Join-Path $templates 'settings.json') -To (Join-Path $ProjectRoot '.claude\settings.json') -Label 'settings.json'
 
 if (Test-Path -LiteralPath (Join-Path $localTpl 'ts-error-budget.json')) {
@@ -270,8 +231,8 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\promote-heuristics.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\os-telemetry.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\risk-surface-scan.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\session-index-build.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\cross-project-inherit.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\session-index.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {
@@ -304,4 +265,5 @@ Write-Host '  2. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD
 Write-Host '  3. Review .claude/settings.json permissions'
 Write-Host ("  4. cd `"" + $ProjectRoot + "`" ; claude")
 Write-Host '  5. /session-start'
+Write-Host '  6. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
 Write-Host ''

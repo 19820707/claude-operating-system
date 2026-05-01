@@ -35,14 +35,12 @@ fi
 if [ -f "${SCRIPTS_DIR}/heuristic-ratchet.sh" ]; then
   bash "${SCRIPTS_DIR}/heuristic-ratchet.sh" || true
 fi
-if [ -f "${SCRIPTS_DIR}/risk-surface-scan.sh" ]; then
-  bash "${SCRIPTS_DIR}/risk-surface-scan.sh" || true
-fi
-if [ -f "${SCRIPTS_DIR}/cross-project-inherit.sh" ]; then
-  bash "${SCRIPTS_DIR}/cross-project-inherit.sh" || true
-fi
 if [ -f "${SCRIPTS_DIR}/ts-error-budget.sh" ]; then
   bash "${SCRIPTS_DIR}/ts-error-budget.sh" || true
+fi
+if [ -f "${SCRIPTS_DIR}/risk-surface-scan.sh" ]; then
+  bash "${SCRIPTS_DIR}/risk-surface-scan.sh" || true
+  echo ""
 fi
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true

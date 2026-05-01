@@ -50,6 +50,20 @@ Se um padrão novo foi confirmado nesta fase:
 - `git log --oneline -3` — confirmar HEAD
 - Testes alvo da fase — PASS/FAIL
 
+### 5. Actualizar índice semântico de sessões
+Na raiz do repo do projecto:
+
+```bash
+bash .claude/scripts/session-index.sh
+```
+
+### 6. Contribuir padrões para o OS (opcional)
+Se o clone `claude-operating-system` estiver acessível nesta máquina, sincroniza blocos YAML do `learning-log.md` para o ficheiro central de evidência:
+
+```bash
+bash .claude/scripts/cross-project-sync.sh --contribute "/caminho/absoluto/para/claude-operating-system"
+```
+
 ## Regras
 
 - Distinguir sempre: evidência / inferência / decisão
