@@ -14,6 +14,6 @@
     "policies": { "include": "*.md", "minimum": 7 },
     "prompts": { "include": "*.md", "minimum": 7 },
     "heuristics": { "include": "*.md", "minimum": 1 },
-    "templates/scripts": { "include": "*.sh", "exact": 14 }
+    "templates/scripts": { "include": "*.sh", "exact": 15 }
   }
 }

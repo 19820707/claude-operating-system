@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "description": "Architectural layers for boundary checks. Edges from_code -> to_code that violate forbidden_pairs are reported by living-arch-graph.sh.",
+  "forbidden_pairs": [
+    {
+      "from_prefix": "server/",
+      "to_prefix": "client/",
+      "reason": "server must not import client UI — bidirectional coupling risk"
+    }
+  ]
+}

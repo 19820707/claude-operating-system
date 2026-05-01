@@ -64,3 +64,15 @@ bash .claude/scripts/module-complexity.sh caminho/relativo/ao/ficheiro.ts
 - Interpreta o bloco **`[OS-MODULE-COMPLEXITY]`** conforme o score.
 - Resultado **CRITICAL** ou **ELEVATED** → **Opus obrigatório** independentemente do tipo de tarefa.
 - Resultado em `.claude/complexity-map.json` após `bash .claude/scripts/module-complexity.sh --scan` (requer `.claude/risk-surfaces.json` do `risk-surface-scan.sh`).
+
+## Living architecture graph (blast radius transitivo)
+
+O grafo em `.claude/architecture-graph.json` é **extraído de imports estáticos** (não é só texto do `CLAUDE.md`). Antes de editar um ficheiro sob `server/`, `client/`, `shared/` ou `src/`:
+
+```bash
+bash .claude/scripts/living-arch-graph.sh --blast-radius caminho/relativo/ao/ficheiro.ts
+```
+
+- **Dependentes directos / transitivos** = módulos que importam a cadeia à volta do ficheiro (propagação reversa do grafo).
+- Se a recomendação indicar **Review / Opus** → tratar como classificação conservadora mesmo que a tarefa pareça pequena.
+- Ajustar fronteiras em `.claude/architecture-boundaries.json` (copiado do template em init) quando a stack tiver camadas diferentes.

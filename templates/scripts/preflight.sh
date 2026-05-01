@@ -42,6 +42,10 @@ if [ -f "${SCRIPTS_DIR}/risk-surface-scan.sh" ]; then
   bash "${SCRIPTS_DIR}/risk-surface-scan.sh" || true
   echo ""
 fi
+if [ -z "${LIVING_ARCH_SKIP:-}" ] && [ -f "${SCRIPTS_DIR}/living-arch-graph.sh" ]; then
+  bash "${SCRIPTS_DIR}/living-arch-graph.sh" || true
+  echo ""
+fi
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi

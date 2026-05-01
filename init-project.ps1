@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -177,7 +177,8 @@ Get-ChildItem -LiteralPath $criticalSrc -Filter '*.md' -File -ErrorAction Silent
 $scriptNames = @(
     'preflight.sh', 'session-end.sh', 'pre-compact.sh', 'post-compact.sh',
     'drift-detect.sh', 'ts-error-budget.sh', 'heuristic-ratchet.sh', 'promote-heuristics.sh', 'os-telemetry.sh',
-    'risk-surface-scan.sh', 'module-complexity.sh', 'causal-trace.sh', 'session-index.sh', 'cross-project-sync.sh'
+    'risk-surface-scan.sh', 'module-complexity.sh', 'causal-trace.sh', 'session-index.sh', 'cross-project-sync.sh',
+    'living-arch-graph.sh'
 )
 foreach ($n in $scriptNames) {
     $sf = Join-Path $scriptsSrc $n
@@ -226,6 +227,9 @@ if (Test-Path -LiteralPath (Join-Path $localTpl 'ts-error-budget.json')) {
 if (Test-Path -LiteralPath (Join-Path $localTpl 'heuristic-violations.json')) {
     Copy-IfMissing -From (Join-Path $localTpl 'heuristic-violations.json') -To (Join-Path $ProjectRoot '.local\heuristic-violations.json') -Label 'heuristic-violations.json'
 }
+if (Test-Path -LiteralPath (Join-Path $localTpl 'architecture-boundaries.json')) {
+    Copy-IfMissing -From (Join-Path $localTpl 'architecture-boundaries.json') -To (Join-Path $ProjectRoot '.claude\architecture-boundaries.json') -Label 'architecture-boundaries.json'
+}
 
 Copy-ClaudeMd -From (Join-Path $templates 'project-CLAUDE.md') -To (Join-Path $ProjectRoot 'CLAUDE.md')
 
@@ -238,7 +242,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (18 critical paths):'
+Write-Host 'Validation (19 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -257,7 +261,8 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\session-index.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\causal-trace.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\module-complexity.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\module-complexity.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\living-arch-graph.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {

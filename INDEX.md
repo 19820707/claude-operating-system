@@ -107,7 +107,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 | File | Purpose | Hook |
 |------|---------|------|
-| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, telemetria + secrets/WT | `SessionStart` |
+| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (opcional `LIVING_ARCH_SKIP=1`), telemetria + secrets/WT | `SessionStart` |
 | `session-end.sh` | WT snapshot (`wt-snapshot.tmp`) | `SessionEnd` (antes de `os-telemetry.sh` na cadeia) |
 | `pre-compact.sh` | Extract session-state.md summary before compaction | `PreCompact` |
 | `post-compact.sh` | Re-inject context summary after compaction | `PostCompact` |
@@ -121,6 +121,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `causal-trace.sh` | `--file` / `--commit` / `--incident` vs `session-index.json` | post-mortem |
 | `session-index.sh` | Parse `session-state.md` → `session-index.json`; `--query <módulo>` | `/phase-close` |
 | `cross-project-sync.sh` | `--contribute` / `--inherit` / `--report` vs OS `heuristics/cross-project-evidence.json` | `/phase-close` + init (doc) |
+| `living-arch-graph.sh` | Grafo de imports real (`server/`, `client/`, `shared/`, `src/`) → `.claude/architecture-graph.json`; `--blast-radius <ficheiro>`; violações vs `.claude/architecture-boundaries.json` | `preflight` + `/task-classify` |
 
 ### templates/local/
 
@@ -128,6 +129,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 |------|---------|
 | `ts-error-budget.json` | Schema `baseline` / `ts` / `reset_by` — copiado para `.local/` |
 | `heuristic-violations.json` | Baseline H1/H5/H10 — copiado para `.local/` |
+| `architecture-boundaries.json` | Regras `from_prefix` → `to_prefix` para deteção de violações de camada — copiado para `.claude/` (se ausente) |
 
 ### templates/profiles/
 
