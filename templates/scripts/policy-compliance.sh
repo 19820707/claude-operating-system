@@ -7,7 +7,7 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$REPO_ROOT"
 
 if ! command -v python3 >/dev/null 2>&1; then
-  echo "  skip: python3 not available"
+  echo "[OS-AUDIT] skip: python3 not available"
   exit 0
 fi
 
@@ -71,8 +71,8 @@ def check_row(r: dict) -> tuple[str, str]:
 
 
 def main():
-    print("[OS-AUDIT]")
     if not LOG.is_file():
+        print("[OS-AUDIT]")
         print("  skip: no decision-log.jsonl")
         rep = {
             "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -80,6 +80,7 @@ def main():
             "total": 0,
             "compliant": 0,
             "violations": [],
+            "weak": [],
             "rate": None,
         }
         OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -107,6 +108,7 @@ def main():
     checked_types = ("model_selection", "scope_boundary", "risk_acceptance")
     lines_out = []
     violations = []
+    weak_rows = []
     compliant = 0
     total = 0
 
@@ -127,7 +129,7 @@ def main():
             compliant += 1
             lines_out.append(f"  {label} : COMPLIANT")
         elif status == "WEAK":
-            violations.append({"id": rid, "type": typ, "reason": detail, "kind": "WEAK"})
+            weak_rows.append({"id": rid, "type": typ, "reason": detail})
             lines_out.append(f"  {label} : WEAK ({detail})")
         else:
             violations.append({"id": rid, "type": typ, "reason": detail, "kind": "NON-COMPLIANT"})
@@ -135,12 +137,15 @@ def main():
 
     rate = (compliant / total * 100.0) if total else None
     sess = session_filter or "(all sessions)"
-    print(f"[OS-AUDIT] session: {sess}")
+    print("[OS-AUDIT]")
+    print(f"  session: {sess}")
     for ln in lines_out[-40:]:
         print(ln)
     if total:
         print(f"  compliance rate: {rate:.1f}% ({compliant}/{total})")
-        print(f"  violations: {len(violations)}")
+        print(f"  violations (NON-COMPLIANT): {len(violations)}")
+        if weak_rows:
+            print(f"  weak signals (risk_acceptance): {len(weak_rows)}")
         if rate is not None and rate < 85.0:
             print("  WARN: policy compliance degraded — review policies or discipline")
     else:
@@ -152,6 +157,7 @@ def main():
         "total": total,
         "compliant": compliant,
         "violations": violations,
+        "weak": weak_rows,
         "rate": round(rate, 2) if rate is not None else None,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

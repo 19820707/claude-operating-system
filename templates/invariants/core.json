@@ -93,11 +93,8 @@
       "description": "Migration files should declare down/rollback paths",
       "heuristic_ref": null,
       "check": {
-        "type": "pattern_count",
-        "pattern": "down\\s*\\(|rollback",
-        "scope": "migrations",
-        "operator": ">=",
-        "expected": 1
+        "type": "migration_rollback_coverage",
+        "scope": "migrations"
       },
       "violation_severity": "MEDIUM",
       "status": "UNKNOWN",

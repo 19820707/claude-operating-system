@@ -153,6 +153,43 @@ def check_env_not_tracked(_chk: dict) -> tuple:
         return "UNKNOWN", str(e)
 
 
+def check_migration_rollback_coverage(chk: dict) -> tuple:
+    """Heuristic: each migration file that declares an `up` path should also declare down/rollback."""
+    scope = chk.get("scope", "migrations")
+    base = ROOT / str(scope).replace("/", os.sep)
+    if not base.is_dir():
+        return "PASS", "no migrations directory"
+    files = [
+        p
+        for p in base.rglob("*")
+        if p.is_file() and p.suffix in {".ts", ".js", ".sql", ".mts", ".cts"}
+        and not any(x in p.parts for x in SKIP)
+    ]
+    if not files:
+        return "PASS", "no migration files"
+    up_rx = re.compile(
+        r"\bfunction\s+up\b|\basync\s+function\s+up\b|export\s+async\s+function\s+up\b|\bup\s*\(",
+        re.I,
+    )
+    down_rx = re.compile(r"down\s*\(|rollback", re.I)
+    n_up = 0
+    n_down = 0
+    for p in files:
+        try:
+            txt = p.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if up_rx.search(txt):
+            n_up += 1
+        if down_rx.search(txt):
+            n_down += 1
+    if n_up == 0:
+        return "PASS", "no up-migration pattern matched"
+    if n_down >= n_up:
+        return "PASS", f"rollback/down coverage: {n_down} signals vs {n_up} up-bearing files"
+    return "FAIL", f"rollback/down signals {n_down} < up-bearing files {n_up}"
+
+
 def check_dependency_absent(chk: dict) -> tuple:
     kg = load_json(KG, {})
     edges = kg.get("edges") or []
@@ -186,6 +223,8 @@ def run_check(inv: dict) -> tuple:
         return check_env_not_tracked(chk)
     if t == "dependency_absent":
         return check_dependency_absent(chk)
+    if t == "migration_rollback_coverage":
+        return check_migration_rollback_coverage(chk)
     return "UNKNOWN", f"unknown check type {t}"
 
 

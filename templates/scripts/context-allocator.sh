@@ -75,7 +75,24 @@ GRAPH_TOK=$(( (GRAPH_CHARS + 3) / 4 ))
 
 CODE_TOK=$(sum_subgraph_code "$SG")
 
-POLICY_TOK=15000
+# Policies: sum ~/.claude/CLAUDE.md + project .claude/policies/*.md (chars/4), bounded.
+POLICY_CHARS=0
+if [[ -f "${HOME}/.claude/CLAUDE.md" ]]; then
+  POLICY_CHARS=$((POLICY_CHARS + $(wc -c <"${HOME}/.claude/CLAUDE.md" 2>/dev/null | tr -d " " || echo 0)))
+fi
+if [[ -d "${REPO_ROOT}/.claude/policies" ]]; then
+  for pf in "${REPO_ROOT}/.claude/policies/"*.md; do
+    [[ -f "$pf" ]] || continue
+    POLICY_CHARS=$((POLICY_CHARS + $(wc -c <"$pf" 2>/dev/null | tr -d " " || echo 0)))
+  done
+fi
+POLICY_TOK=$(( (POLICY_CHARS + 3) / 4 ))
+if [[ "$POLICY_TOK" -lt 15000 ]]; then
+  POLICY_TOK=15000
+fi
+if [[ "$POLICY_TOK" -gt 50000 ]]; then
+  POLICY_TOK=50000
+fi
 
 SESS_TOK=0
 for f in "${REPO_ROOT}/.claude/session-state.md" "${REPO_ROOT}/.claude/learning-log.md"; do
@@ -95,7 +112,16 @@ echo "  ────────────────────────
 echo "  operational budget: ~${BUDGET} tokens"
 echo ""
 echo "  WARNING: if session exceeds 140,000 tokens → trigger /pre-compact"
-echo "  SUBGRAPH: ${SG} ready for injection"
+if [[ -f "$SG" ]]; then
+  IDX="${REPO_ROOT}/.claude/subgraph-index.json"
+  if cp -f "$SG" "$IDX" 2>/dev/null; then
+    echo "  SUBGRAPH: ${IDX} ready for injection (copy of subgraph snapshot)"
+  else
+    echo "  SUBGRAPH: ${SG} ready for injection"
+  fi
+else
+  echo "  SUBGRAPH: (run knowledge-graph.sh --build first if missing)"
+fi
 
 if [[ "$BUDGET" -lt 60000 ]]; then
   echo "  WARN: context budget tight — consider splitting session"

@@ -111,8 +111,9 @@ def session_id() -> str:
         ).stdout.strip() or "unknown"
     except Exception:
         br = "unknown"
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    return f"{br}-{ts}"
+    # Align with agent-coordinator / policy-compliance --session: branch + UTC hour (approx session).
+    hour = datetime.now(timezone.utc).strftime("%H")
+    return f"{br}-{hour}"
 
 
 def next_id_fixed() -> str:

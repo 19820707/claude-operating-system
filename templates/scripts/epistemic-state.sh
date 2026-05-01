@@ -150,7 +150,15 @@ def main():
         score = base - 0.2 * assumed_pen - 0.3 * disp_pen - 0.4 * unk_pen
         score = max(0.0, min(1.0, score))
         print(f"[OS-EPISTEMIC] {did} epistemic quality: {score:.2f}")
-        print(f"  {buckets['KNOWN']} KNOWN, {buckets['INFERRED']} INFERRED, {buckets['ASSUMED']} ASSUMED, {buckets['DISPUTED']} DISPUTED, {buckets['UNKNOWN']} UNKNOWN")
+        kconf = [float(m.get("confidence") or 0) for _, m in linked if str(m.get("status", "")).upper() == "KNOWN"]
+        iconf = [float(m.get("confidence") or 0) for _, m in linked if str(m.get("status", "")).upper() == "INFERRED"]
+        kavg = sum(kconf) / len(kconf) if kconf else 0.0
+        iavg = sum(iconf) / len(iconf) if iconf else 0.0
+        print(f"  {buckets['KNOWN']} KNOWN (avg confidence: {kavg:.2f})")
+        print(f"  {buckets['INFERRED']} INFERRED (avg confidence: {iavg:.2f})")
+        print(
+            f"  {buckets['ASSUMED']} ASSUMED, {buckets['DISPUTED']} DISPUTED, {buckets['UNKNOWN']} UNKNOWN"
+        )
         if score >= 0.65:
             print("  solid decision — evidence base is strong")
         else:

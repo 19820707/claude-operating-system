@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/subgraph-index.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
