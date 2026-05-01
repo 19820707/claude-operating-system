@@ -17,6 +17,7 @@
     "criticalSurfaces": 5
   },
   "repoIntegrity": {
+    "source/skills": { "include": "SKILL.md", "exact": 6, "recursive": true },
     "templates/commands": { "include": "*.md", "exact": 18 },
     "templates/agents": { "include": "*.md", "exact": 5 },
     "templates/critical-surfaces": { "include": "*.md", "exact": 5 },
@@ -74,6 +75,12 @@
       ".claude/learning-log.md",
       ".claude/settings.json",
       ".claude/commands/session-start.md",
+      ".claude/skills/bootstrap-governance/SKILL.md",
+      ".claude/skills/production-safety/SKILL.md",
+      ".claude/skills/token-economy/SKILL.md",
+      ".claude/skills/invariant-engineering/SKILL.md",
+      ".claude/skills/multi-agent-coordination/SKILL.md",
+      ".claude/skills/epistemic-discipline/SKILL.md",
       ".claude/heuristics/cross-project-evidence.json",
       ".claude/scripts/preflight.sh",
       ".claude/scripts/session-end.sh",
