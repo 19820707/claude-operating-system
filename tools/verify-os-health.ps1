@@ -111,12 +111,14 @@ Write-Host ''
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
 Invoke-HealthStep -Name 'skills' -Script { & (Join-Path $RepoRoot 'tools/verify-skills.ps1') }
 Invoke-HealthStep -Name 'docs' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1') }
+Invoke-HealthStep -Name 'docs-index' -Script { & (Join-Path $RepoRoot 'tools/verify-docs-index.ps1') }
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
     Test-PowerShellSyntax -Files @(
         (Join-Path $RepoRoot 'install.ps1'),
         (Join-Path $RepoRoot 'init-project.ps1'),
         (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-docs-index.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
     )
