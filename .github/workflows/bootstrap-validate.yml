@@ -59,8 +59,34 @@ jobs:
         shell: pwsh
         run: |
           # Invariant: -DryRun must parse manifest-driven bootstrap lists without writing project files.
-          $target = Join-Path $env:RUNNER_TEMP 'claude-os-bootstrap-smoke'
+          $target = Join-Path $env:RUNNER_TEMP 'claude-os-bootstrap-smoke-dry'
           ${{ github.workspace }}/init-project.ps1 -ProjectPath $target -DryRun -SkipGitInit
+
+      - name: Bootstrap real scaffold smoke test
+        shell: pwsh
+        run: |
+          # Invariant: canonical source/skills must materialize into .claude/skills during project bootstrap.
+          $manifest = Get-Content -LiteralPath "${{ github.workspace }}/bootstrap-manifest.json" -Raw | ConvertFrom-Json
+          $target = Join-Path $env:RUNNER_TEMP 'claude-os-bootstrap-smoke-real'
+          ${{ github.workspace }}/init-project.ps1 -ProjectPath $target -SkipGitInit
+
+          $missing = @()
+          foreach ($rel in @($manifest.projectBootstrap.criticalPaths)) {
+            $path = Join-Path $target ([string]$rel)
+            if (-not (Test-Path -LiteralPath $path)) { $missing += $rel }
+          }
+          if ($missing.Count -gt 0) {
+            Write-Host 'Missing scaffold critical paths:'
+            $missing | ForEach-Object { Write-Host "  $_" }
+            exit 1
+          }
+
+          $skillFiles = @(Get-ChildItem -LiteralPath (Join-Path $target '.claude/skills') -Filter 'SKILL.md' -File -Recurse)
+          if ($skillFiles.Count -ne [int]$manifest.skills.exact) {
+            Write-Host "Expected $($manifest.skills.exact) bootstrapped skills, found $($skillFiles.Count)"
+            exit 1
+          }
+          Write-Host "OK: real scaffold contains $($skillFiles.Count) skills and all manifest critical paths"
 
       - name: Bash syntax (install + template scripts)
         shell: bash
