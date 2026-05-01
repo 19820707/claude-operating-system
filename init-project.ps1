@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/.simulation-delta-*.json', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/subgraph-index.json', '.claude/simulation-report.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/.simulation-delta-*.json', '.claude/contracts/.last-compare.json', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/subgraph-index.json', '.claude/simulation-report.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -139,6 +139,7 @@ Ensure-Dir (Join-Path $ProjectRoot '.claude\commands')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\agents')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\policies')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\scripts')
+Ensure-Dir (Join-Path $ProjectRoot '.claude\contracts')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\heuristics')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\runbooks')
 Ensure-Dir (Join-Path $ProjectRoot '.local')
@@ -179,10 +180,11 @@ $scriptNames = @(
     'agent-coordinator.sh',
     'autonomous-learning-loop.sh',
     'causal-trace.sh',
-    'change-simulation.sh',
     'consolidate-runbook.sh',
     'context-allocator.sh',
+    'context-builder.sh',
     'context-topology.sh',
+    'contract-delta.sh',
     'coordination-check.sh',
     'cross-project-sync.sh',
     'decision-append.sh',
@@ -206,10 +208,12 @@ $scriptNames = @(
     'probabilistic-risk-model.sh',
     'promote-heuristics.sh',
     'risk-surface-scan.sh',
+    'runbook-inject.sh',
     'salience-score.sh',
     'semantic-diff-analyze.sh',
     'session-end.sh',
     'session-index.sh',
+    'simulate-change.sh',
     'ts-error-budget.sh'
 )
 foreach ($n in $scriptNames) {
@@ -332,7 +336,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (40 critical paths):'
+Write-Host 'Validation (43 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -371,7 +375,10 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\agent-coordinator.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\salience-score.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\change-simulation.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\contract-delta.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\simulate-change.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\context-builder.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\runbook-inject.sh'),
     (Join-Path $ProjectRoot '.claude\invariant-engine\simulate-contract-delta.cjs'),
     (Join-Path $ProjectRoot '.claude\scripts\consolidate-runbook.sh')
 )

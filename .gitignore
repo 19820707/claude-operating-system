@@ -15,6 +15,7 @@ settings.local.json
 .claude/compliance-report.json
 .claude/subgraph-index.json
 .claude/simulation-report.json
+.claude/contracts/.last-compare.json
 .claude/invariant-lifecycle-report.json
 .claude/coordination-report.json
 .claude/epistemic-report.json

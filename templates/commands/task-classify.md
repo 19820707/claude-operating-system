@@ -29,18 +29,19 @@ Classify a task before implementing it. Determines Mode, Model, blast radius, an
 5. **Never run Sonnet on Opus-mandatory surfaces** — insufficient reasoning depth for invariant detection.
 6. **Main session model** handles only coordination, classification, and orchestration between subagents.
 
-## Forward simulation (Build / Review / Critical / Migration)
+## Forward simulation (obrigatório para Build+ quando o módulo tem saliência > 60)
 
-After classification, **before the first implementation edit** in **Build** or higher (when the change is not pure exploration), run **Change Simulation** so impact is anticipated, not only observed post-hoc:
+Quando o digest de `salience-score.sh` ou a classificação indicar **módulo / superfície com score > 60** (ou modo **Build** ou superior), **antes da primeira edição** executa:
 
 ```bash
-bash .claude/scripts/knowledge-graph.sh --build   # if graph missing or stale
-bash .claude/scripts/change-simulation.sh --change "<one line>" \
-  --baseline <repo-path.ts> --proposed <scratch-path.ts> \
-  --files "<comma-separated seeds>"
+bash .claude/scripts/knowledge-graph.sh --build   # se o grafo estiver ausente ou desactualizado
+bash .claude/scripts/contract-delta.sh --snapshot <ficheiro-alvo.ts>   # só na primeira vez (baseline ausente)
+bash .claude/scripts/simulate-change.sh --target <ficheiro-alvo.ts> --change "<uma linha>" [--type unknown]
 ```
 
-Use `/simulate-change` for the full protocol. Resolve **CONTRACT DELTA** conflicts and **INVARIANTS AT RISK** before editing production paths.
+- Usa `/simulate` para o protocolo completo e decisão `PROCEED | SPLIT | RESOLVE_FIRST | REDESIGN`.
+- Resultado **SPLIT** ou **RESOLVE_FIRST** → **não** avançar para implementação até resolver.
+- Resolve conflitos de **CONTRACT DELTA** e **INVARIANTS AT RISK** antes de editar caminhos de produção.
 
 ## Classification tags (OPERATING_CONTRACT.md)
 

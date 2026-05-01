@@ -42,7 +42,8 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime, timezone
+import subprocess
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(os.environ["RB_REPO"])
@@ -123,9 +124,68 @@ def main():
             if row_touches_module(row, needle):
                 decisions.append(row)
 
+    def parse_row_ts(row):
+        ts = row.get("ts") or ""
+        if not isinstance(ts, str) or not ts.strip():
+            return None
+        try:
+            s = ts.strip()
+            if s.endswith("Z"):
+                s = s[:-1] + "+00:00"
+            return datetime.fromisoformat(s.replace("Z", "+00:00"))
+        except Exception:
+            return None
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=180)
+    decisions = [r for r in decisions if (t := parse_row_ts(r)) is None or t >= cutoff]
+
     successes = sum(1 for r in decisions if is_success_signal(r))
     total = len(decisions)
-    conf = round(successes / max(total, 1), 2)
+
+    def git_commit_stats(path: str) -> tuple[int, int]:
+        try:
+            cp = subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(ROOT),
+                    "log",
+                    "--since=180 days ago",
+                    "--oneline",
+                    "--",
+                    path,
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            lines = [ln for ln in (cp.stdout or "").strip().splitlines() if ln.strip()]
+        except Exception:
+            return 0, 0
+        n_tot = len(lines)
+        n_ok = sum(
+            1
+            for ln in lines
+            if not re.search(r"\brevert\b|\bhotfix\b|\bfix\b", ln, re.I)
+        )
+        return n_tot, n_ok
+
+    n_git_total, n_git_ok = git_commit_stats(needle)
+    N_TOTAL = n_git_total if n_git_total > 0 else total
+    N_SUCCESS = n_git_ok if n_git_total > 0 else successes
+    if N_TOTAL < 3:
+        conf = 0.4
+    else:
+        conf = round(N_SUCCESS / max(N_TOTAL, 1), 3)
+        if N_TOTAL >= 10:
+            conf = round(min(conf, 0.95), 3)
+
+    risk_touch = [
+        r
+        for r in decisions
+        if str(r.get("type", "")).lower() == "risk_acceptance"
+        and needle.lower() in json.dumps(r, ensure_ascii=False).lower()
+    ]
 
     learn_path = ROOT / ".claude" / "learning-log.md"
     learn_text = ""
@@ -133,12 +193,34 @@ def main():
         learn_text = learn_path.read_text(encoding="utf-8", errors="replace")
 
     failure_snippets = []
-    for ln in learn_text.splitlines():
-        low = ln.lower()
-        if needle.lower() not in low and Path(needle).parent.as_posix().lower() not in low:
-            continue
-        if re.search(r"avoid|failure|incident|lesson|never|anti-pattern|revert", low):
-            failure_snippets.append(ln.strip()[:240])
+    phase_hits = []
+    if learn_text:
+        blocks = re.split(r"(?m)^###\s+", learn_text)
+        for blk in blocks:
+            if needle.lower() not in blk.lower():
+                continue
+            first = blk.splitlines()[0] if blk.splitlines() else ""
+            if re.search(r"Falhou|Passou a regra|Evitar|avoid|failure", blk, re.I):
+                phase_hits.append(f"### {first.strip()[:120]}\n" + "\n".join(blk.splitlines()[1:8]))
+        for ln in learn_text.splitlines():
+            low = ln.lower()
+            if needle.lower() not in low and Path(needle).parent.as_posix().lower() not in low:
+                continue
+            if re.search(r"avoid|failure|incident|lesson|never|anti-pattern|revert", low):
+                failure_snippets.append(ln.strip()[:240])
+
+    heur_lines = []
+    for hp in (
+        ROOT / ".claude" / "heuristics" / "operational.md",
+        ROOT / "heuristics" / "operational.md",
+    ):
+        if hp.is_file():
+            for ln in hp.read_text(encoding="utf-8", errors="replace").splitlines():
+                low = ln.lower()
+                if needle.lower() in low or Path(needle).name.lower() in low:
+                    heur_lines.append(ln.strip()[:220])
+            if heur_lines:
+                break
 
     inv_path = ROOT / ".claude" / "invariants.json"
     matched_invs = []
@@ -181,9 +263,12 @@ def main():
     lines.append(f"<!-- .claude/runbooks/{slug}.md — procedural consolidation (generated) -->")
     lines.append(f"<!-- module: {mod_raw} | generated_at: {ts} -->")
     lines.append(
-        f"<!-- evidence: {total} decision-log rows touching module | successful_signal_heuristic: {successes} -->"
+        f"<!-- evidence: {total} decision rows (180d) | git_commits_180d: {n_git_total} ok_heuristic: {n_git_ok} | decision_success_signal: {successes} -->"
     )
-    lines.append(f"<!-- confidence: {conf} | sessions_sample: {', '.join(session_ids) or 'n/a'} -->")
+    lines.append(
+        f"<!-- confidence: {conf} | draft: {'yes' if N_TOTAL < 3 else 'no'} | risk_acceptance_rows: {len(risk_touch)} -->"
+    )
+    lines.append(f"<!-- sessions_sample: {', '.join(session_ids) or 'n/a'} -->")
     lines.append("")
     lines.append(f"# Runbook: safe change — `{mod_raw}`")
     lines.append("")
@@ -233,12 +318,29 @@ def main():
         )
     seq_n += 1
     lines.append(
-        f"{seq_n}. **Forward simulation** — `bash .claude/scripts/change-simulation.sh --change \"…\" --files \"{mod_raw}\"` (+ `--baseline` / `--proposed` when you have a scratch snapshot)."
+        f"{seq_n}. **Forward simulation** — `bash .claude/scripts/simulate-change.sh --target \"{mod_raw}\" --change \"…\"`"
     )
     seq_n += 1
     lines.append(
         f"{seq_n}. **Typecheck incrementally** — `npx tsc --noEmit` (or project equivalent) after each coherent sub-change on critical paths."
     )
+    lines.append("")
+
+    lines.append("## Learning-log phases (auto-excerpt)")
+    if phase_hits:
+        for ph in phase_hits[:4]:
+            lines.append(ph[:1200])
+            lines.append("")
+    else:
+        lines.append("- (no ### sections matched this module path)")
+    lines.append("")
+
+    lines.append("## Heuristic references (operational.md)")
+    if heur_lines:
+        for h in heur_lines[:10]:
+            lines.append(f"- {h}")
+    else:
+        lines.append("- (no operational.md lines matched)")
     lines.append("")
 
     lines.append("## Known failure modes (from learning-log + decision heuristics)")
@@ -269,6 +371,10 @@ def main():
         "generated_at": ts,
         "decision_rows_total": total,
         "decision_rows_success_heuristic": successes,
+        "git_commits_180d_total": n_git_total,
+        "git_commits_180d_ok_heuristic": n_git_ok,
+        "N_TOTAL_effective": N_TOTAL,
+        "N_SUCCESS_effective": N_SUCCESS,
         "confidence": conf,
         "invariants_matched": [i.get("id") for i in matched_invs],
         "runbook_path": str(out_md.relative_to(ROOT)).replace("\\", "/"),
