@@ -29,6 +29,19 @@ Classify a task before implementing it. Determines Mode, Model, blast radius, an
 5. **Never run Sonnet on Opus-mandatory surfaces** — insufficient reasoning depth for invariant detection.
 6. **Main session model** handles only coordination, classification, and orchestration between subagents.
 
+## Forward simulation (Build / Review / Critical / Migration)
+
+After classification, **before the first implementation edit** in **Build** or higher (when the change is not pure exploration), run **Change Simulation** so impact is anticipated, not only observed post-hoc:
+
+```bash
+bash .claude/scripts/knowledge-graph.sh --build   # if graph missing or stale
+bash .claude/scripts/change-simulation.sh --change "<one line>" \
+  --baseline <repo-path.ts> --proposed <scratch-path.ts> \
+  --files "<comma-separated seeds>"
+```
+
+Use `/simulate-change` for the full protocol. Resolve **CONTRACT DELTA** conflicts and **INVARIANTS AT RISK** before editing production paths.
+
 ## Classification tags (OPERATING_CONTRACT.md)
 
 | Tag | Scope |

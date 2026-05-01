@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/subgraph-index.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/.simulation-delta-*.json', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/subgraph-index.json', '.claude/simulation-report.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -178,6 +178,7 @@ $scriptNames = @(
     'agent-coordinator.sh',
     'autonomous-learning-loop.sh',
     'causal-trace.sh',
+    'change-simulation.sh',
     'context-allocator.sh',
     'context-topology.sh',
     'coordination-check.sh',
@@ -230,6 +231,14 @@ if (Test-Path -LiteralPath $semBundle) {
     Copy-FileAlways -From $semBundle -To (Join-Path $invDstDir 'semantic-diff.cjs')
 } else {
     Write-Host '  (warn) templates\invariant-engine\dist\semantic-diff.cjs missing — run npm run build in templates\invariant-engine'
+}
+
+$simDelta = Join-Path $Source 'templates\invariant-engine\dist\simulate-contract-delta.cjs'
+if (Test-Path -LiteralPath $simDelta) {
+    Ensure-Dir $invDstDir
+    Copy-FileAlways -From $simDelta -To (Join-Path $invDstDir 'simulate-contract-delta.cjs')
+} else {
+    Write-Host '  (warn) templates\invariant-engine\dist\simulate-contract-delta.cjs missing'
 }
 
 $invJsonSrc = Join-Path $Source 'templates\local\invariants'
@@ -321,7 +330,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (37 critical paths):'
+Write-Host 'Validation (39 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -359,7 +368,9 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\invariant-engine.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\agent-coordinator.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\salience-score.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\salience-score.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\change-simulation.sh'),
+    (Join-Path $ProjectRoot '.claude\invariant-engine\simulate-contract-delta.cjs')
 )
 $allOk = $true
 foreach ($p in $critical) {

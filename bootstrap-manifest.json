@@ -2,19 +2,19 @@
   "schemaVersion": 1,
   "description": "Canonical counts for project bootstrap and CI drift detection. Update when adding/removing template files.",
   "initProjectValidation": {
-    "slashCommands": 16,
+    "slashCommands": 17,
     "agents": 5,
     "criticalSurfaces": 5
   },
   "repoIntegrity": {
-    "templates/commands": { "include": "*.md", "exact": 16 },
+    "templates/commands": { "include": "*.md", "exact": 17 },
     "templates/agents": { "include": "*.md", "exact": 5 },
     "templates/critical-surfaces": { "include": "*.md", "exact": 5 },
     "templates/profiles": { "include": "*.md", "exact": 2 },
     "policies": { "include": "*.md", "minimum": 7 },
     "prompts": { "include": "*.md", "minimum": 7 },
     "heuristics": { "include": "*.md", "minimum": 1 },
-    "templates/scripts": { "include": "*.sh", "exact": 33 },
-    "templates/invariant-engine/dist": { "include": "*.cjs", "exact": 2 }
+    "templates/scripts": { "include": "*.sh", "exact": 34 },
+    "templates/invariant-engine/dist": { "include": "*.cjs", "exact": 3 }
   }
 }

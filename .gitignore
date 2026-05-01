@@ -6,6 +6,7 @@ settings.local.json
 *.log
 .DS_Store
 .claude/*.tmp
+.claude/.simulation-delta-*.json
 .claude/invariant-report.json
 .claude/risk-model.json
 .claude/semantic-diff-report.json
@@ -13,6 +14,7 @@ settings.local.json
 .claude/policy-audit-report.json
 .claude/compliance-report.json
 .claude/subgraph-index.json
+.claude/simulation-report.json
 .claude/invariant-lifecycle-report.json
 .claude/coordination-report.json
 .claude/epistemic-report.json
