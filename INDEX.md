@@ -8,6 +8,7 @@ Navigation map. Every file, its purpose, and when to use it.
 
 | I need to... | Go to |
 |-------------|-------|
+| Check full OS health | `pwsh ./tools/verify-os-health.ps1` |
 | Start a new session | `templates/commands/session-start.md` |
 | Close a phase | `templates/commands/phase-close.md` |
 | Classify a task | `templates/commands/task-classify.md` |
@@ -33,11 +34,29 @@ Navigation map. Every file, its purpose, and when to use it.
 | `INDEX.md` | This file — navigation map | Whenever you need to find something |
 | `install.ps1` | Copies global files to `~/.claude/` on Windows; writes `os-install.json` provenance | New Windows machine, after format |
 | `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, manifest-driven validation | New app/repo on Windows |
-| `bootstrap-manifest.json` | Canonical counts, project bootstrap script list, and critical-path list for CI drift detection | When adding commands, agents, profiles, scripts, or bootstrap critical paths |
-| `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push |
-| `tools/verify-doc-manifest.ps1` | Fails if INDEX.md summary drifts from manifest counts | CI, local pre-push |
+| `bootstrap-manifest.json` | Canonical counts, skills, project bootstrap script list, and critical-path list for CI drift detection | When adding skills, commands, agents, profiles, scripts, or bootstrap critical paths |
+| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, and Bash checks with concise timing output | Primary local and CI health check |
+| `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push, health check component |
+| `tools/verify-skills.ps1` | Fails if `source/skills/*/SKILL.md` frontmatter, categories, links, or counts drift from manifest | CI, local pre-push, health check component |
+| `tools/verify-doc-manifest.ps1` | Fails if INDEX.md summary drifts from manifest counts | CI, local pre-push, health check component |
 | `install.sh` | Copies global files to `~/.claude/` on Unix/macOS/Linux | New Unix machine, after clone |
 | `.gitignore` | Protects secrets and local files from commit | Maintained automatically |
+
+---
+
+## source/skills/
+
+Canonical skill layer. `source/skills` is source of truth; `init-project.ps1` installs it into `.claude/skills/`.
+Canonical count: **6/6** from `bootstrap-manifest.json`.
+
+| Skill | Category | Purpose |
+|-------|----------|---------|
+| `bootstrap-governance` | governance | Bootstrap, manifests, scripts, critical paths, drift detection |
+| `production-safety` | safety | Auth, billing, PII, deploy, rollback, approval gates |
+| `token-economy` | economy | Context minimization, cheap checks, proportional validation |
+| `invariant-engineering` | verification | Invariants, semantic diff, contract deltas, verification gates |
+| `multi-agent-coordination` | coordination | Leases, intentions, shared decisions, collision prevention |
+| `epistemic-discipline` | verification | KNOWN / INFERRED / ASSUMED / DISPUTED / UNKNOWN discipline |
 
 ---
 
@@ -245,11 +264,13 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | Global CLAUDE.md | Stable |
 | install.ps1 | Stable, dry-run validated |
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
-| bootstrap-manifest.json | Source of truth for repo counts, bootstrap scripts, and critical paths |
+| bootstrap-manifest.json | Source of truth for repo counts, skills, bootstrap scripts, and critical paths |
+| tools/verify-os-health.ps1 | Primary health entrypoint — manifest, skills, docs, syntax, bootstrap, Bash |
+| source/skills/ | 6/6 — manifest verified and bootstrapped to `.claude/skills/` |
 | policies/ | 7/7 — complete |
 | prompts/ | 7/7 — complete |
 | templates/commands/ | 18/18 — manifest verified |
-| templates/scripts/ | 38/38 — manifest verified; CI runs `bash -n` |
+| templates/scripts/ | 38/38 — manifest verified; health check runs `bash -n` |
 | templates/invariant-engine/dist/ | 3/3 — invariant-engine, semantic-diff, simulate-contract-delta |
 | templates/profiles/ | 2/2 — node-ts-service, react-vite-app |
 | templates/settings.json | Stable — 4 hooks + permissions |
@@ -274,3 +295,5 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | 8 | Task modes foundation | **Done** |
 | 9 | install.sh (Unix) | **Done** |
 | 10 | Cross-stack validation | Planned |
+| 11 | Skills layer | **Done** |
+| 12 | Aggregate OS health check | **Done** |
