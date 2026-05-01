@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "description": "Progressive delivery workflow for Claude OS work. Inspired by artifact-first MVP workflows: define intent, requirements, technical plan, agent context, execute, verify, and close.",
+  "phases": [
+    {
+      "id": "intent",
+      "title": "Intent Capture",
+      "purpose": "Clarify what is being changed and why before reading or editing broadly.",
+      "requiredArtifacts": ["task summary", "success criteria", "constraints"],
+      "recommendedCapability": "os.epistemic-review",
+      "gate": "User intent and constraints are explicit enough to choose a safe route."
+    },
+    {
+      "id": "requirements",
+      "title": "Requirements & Acceptance",
+      "purpose": "Convert intent into observable acceptance criteria and exclusions.",
+      "requiredArtifacts": ["acceptance criteria", "out-of-scope list", "risk classification"],
+      "recommendedCapability": "os.token-economy",
+      "gate": "The work has a bounded outcome and known non-goals."
+    },
+    {
+      "id": "technical-plan",
+      "title": "Technical Plan",
+      "purpose": "Choose the smallest safe implementation path, validation plan, and rollback posture.",
+      "requiredArtifacts": ["implementation plan", "validation commands", "rollback notes"],
+      "recommendedCapability": "os.bootstrap-project",
+      "gate": "A reviewer can tell which files may change and how correctness will be proven."
+    },
+    {
+      "id": "agent-context",
+      "title": "Agent Context Setup",
+      "purpose": "Load only the docs, skills, capabilities, and local context required for the task.",
+      "requiredArtifacts": ["selected capability", "selected skill", "docs-index sections"],
+      "recommendedCapability": "os.token-economy",
+      "gate": "The agent has enough context to act without brute-reading the repo."
+    },
+    {
+      "id": "execute",
+      "title": "Incremental Execution",
+      "purpose": "Apply one bounded change at a time while preserving compatibility.",
+      "requiredArtifacts": ["diff summary", "changed files", "invariants touched"],
+      "recommendedCapability": "os.coordination",
+      "gate": "Each change is reviewable and tied to an acceptance criterion."
+    },
+    {
+      "id": "verify",
+      "title": "Verification",
+      "purpose": "Run the cheapest sufficient checks first, then escalate for high-risk surfaces.",
+      "requiredArtifacts": ["validation output", "known gaps", "residual risk"],
+      "recommendedCapability": "os.health",
+      "gate": "Validation evidence exists or the gap is explicitly stated."
+    },
+    {
+      "id": "close",
+      "title": "Closure & Handoff",
+      "purpose": "Record final state, decisions, rollback notes, and next steps.",
+      "requiredArtifacts": ["final summary", "decision log note", "follow-up list"],
+      "recommendedCapability": "os.epistemic-review",
+      "gate": "The next agent or human can continue without relying on chat memory."
+    }
+  ],
+  "globalRules": [
+    "Use route-capability before selecting commands for non-trivial work.",
+    "Use query-docs-index before reading full documentation files.",
+    "Ask for human approval before critical or high-risk mutation.",
+    "Run verify-os-health after changes to manifests, bootstrap, skills, validators, or docs-index.",
+    "Do not expose secrets, PII, stack traces, or raw generated reports in user-facing output."
+  ],
+  "artifactFirstPaths": [
+    "CLAUDE.md",
+    ".claude/session-state.md",
+    ".claude/learning-log.md",
+    ".claude/docs-index.json",
+    ".claude/os-capabilities.json",
+    ".claude/workflow-manifest.json",
+    ".claude/decision-log.jsonl"
+  ]
+}
