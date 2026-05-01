@@ -203,6 +203,7 @@ $scriptNames = @(
     'probabilistic-risk-model.sh',
     'promote-heuristics.sh',
     'risk-surface-scan.sh',
+    'salience-score.sh',
     'semantic-diff-analyze.sh',
     'session-end.sh',
     'session-index.sh',
@@ -320,7 +321,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (36 critical paths):'
+Write-Host 'Validation (37 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -357,7 +358,8 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\context-allocator.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\invariant-engine.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\agent-coordinator.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\salience-score.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {

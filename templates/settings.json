@@ -95,7 +95,8 @@
       "Bash(bash .claude/scripts/context-allocator.sh *)",
       "Bash(bash .claude/scripts/invariant-engine.sh *)",
       "Bash(bash .claude/scripts/agent-coordinator.sh *)",
-      "Bash(bash .claude/scripts/epistemic-state.sh *)"
+      "Bash(bash .claude/scripts/epistemic-state.sh *)",
+      "Bash(bash .claude/scripts/salience-score.sh *)"
     ],
     "deny": [
       "Read(.env)",
