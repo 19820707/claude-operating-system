@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "invariants": [
+    {
+      "id": "INV-001",
+      "name": "single-auth-boundary",
+      "description": "Auth decision signals present in middleware layer",
+      "heuristic_ref": "H9",
+      "check": {
+        "type": "pattern_count",
+        "pattern": "requireAuth|isAuthenticated|checkPermission|verifyToken",
+        "scope": "server/middleware",
+        "operator": ">=",
+        "expected": 1
+      },
+      "violation_severity": "CRITICAL",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-002",
+      "name": "fail-closed-default",
+      "description": "No permissive default: allowed true in entitlement switches",
+      "heuristic_ref": null,
+      "check": {
+        "type": "pattern_absent",
+        "pattern": "default\\s*:\\s*[^\\n]*allowed[^\\n]*true",
+        "scope_globs": ["**/*entitlement*", "**/*Entitlement*", "**/*tierGat*", "**/*TierGat*"]
+      },
+      "violation_severity": "CRITICAL",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-003",
+      "name": "no-secrets-in-logs",
+      "description": "Console/logger sinks must not echo obvious secret-bearing payloads",
+      "heuristic_ref": null,
+      "check": {
+        "type": "pattern_absent",
+        "pattern": "console\\.(log|error|debug|info)\\([^)]*(password|secret|token|apiKey)",
+        "scope_globs": ["server/**/*.ts", "server/**/*.tsx"]
+      },
+      "violation_severity": "CRITICAL",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-004",
+      "name": "env-not-tracked",
+      "description": ".env files must not be tracked by git",
+      "heuristic_ref": null,
+      "check": { "type": "env_not_tracked" },
+      "violation_severity": "CRITICAL",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-005",
+      "name": "no-client-server-import",
+      "description": "No direct import edge from client to server (or reverse) without shared layer",
+      "heuristic_ref": null,
+      "check": { "type": "dependency_absent", "from_prefix": "client/", "to_prefix": "server/" },
+      "violation_severity": "CRITICAL",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-006",
+      "name": "correlation-id-middleware",
+      "description": "Correlation / request id referenced in middleware",
+      "heuristic_ref": "H10",
+      "check": {
+        "type": "pattern_count",
+        "pattern": "x-correlation-id|X-Correlation-ID|correlationId|requestId",
+        "scope": "server/middleware",
+        "operator": ">=",
+        "expected": 1
+      },
+      "violation_severity": "WARN",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-007",
+      "name": "migrations-have-rollback",
+      "description": "Migration files should declare down/rollback paths",
+      "heuristic_ref": null,
+      "check": {
+        "type": "pattern_count",
+        "pattern": "down\\s*\\(|rollback",
+        "scope": "migrations",
+        "operator": ">=",
+        "expected": 1
+      },
+      "violation_severity": "MEDIUM",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-008",
+      "name": "no-hardcoded-secrets",
+      "description": "No obvious hard-coded secret literals in server code",
+      "heuristic_ref": null,
+      "check": {
+        "type": "pattern_absent",
+        "pattern": "(password|secret|apiKey|api_key)\\s*=\\s*['\"][^'\"]{8,}['\"]",
+        "scope_globs": ["server/**/*.ts", "server/**/*.tsx"]
+      },
+      "violation_severity": "HIGH",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "UNKNOWN"
+    }
+  ]
+}

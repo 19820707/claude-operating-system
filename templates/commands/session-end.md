@@ -5,6 +5,7 @@ Fecho de sessão operacional: checks automáticos, actualização de estado, com
 ## Sequência obrigatória
 
 1. **Executar checks** (local, na raiz do repo):
+   - `bash .claude/scripts/policy-compliance.sh --session "$(git branch --show-current)"`
    - `bash .claude/scripts/drift-detect.sh`
    - `bash .claude/scripts/heuristic-ratchet.sh`
    - `bash .claude/scripts/ts-error-budget.sh`

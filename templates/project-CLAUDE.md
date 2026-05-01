@@ -52,11 +52,21 @@ Structural import graph (computed): run `bash .claude/scripts/living-arch-graph.
 
 **Invariant engine (AST):** `bash .claude/scripts/invariant-verify.sh` — specs `.claude/invariants/*.json`, report `.claude/invariant-report.json`.
 
+**Invariant lifecycle (temporal):** `bash .claude/scripts/invariant-lifecycle.sh` — registry `.claude/invariants.json`, report `invariant-lifecycle-report.json` (staleness / obsolescence / genealogy); opcional `--for <path>` e `--apply`.
+
+**Multi-agent coordination:** `bash .claude/scripts/coordination-check.sh` — `.claude/agent-state.json` (leases, intentions, shared decisions) vs paths; `--paths` ou `COORDINATION_PATHS` / `COORDINATION_WT`; relatório `coordination-report.json`. Pré-flight: `COORDINATION_CHECK=1`, `COORDINATION_SESSION`, `COORDINATION_WT=0` se só quiseres paths explícitos.
+
+**Epistemic state:** `bash .claude/scripts/epistemic-check.sh` — `.claude/epistemic-state.json`; `--summary`, `--gate --depends`, `--score-decision`, `--decision-debt`; `epistemic-report.json`. Pré-flight: `EPISTEMIC_CHECK=1`, `EPISTEMIC_PLAN_DEPENDS`. No decision log: campo opcional `epistemic_fact_keys` (ver `decision-log.schema.json`).
+
 **Probabilistic risk:** `bash .claude/scripts/probabilistic-risk-model.sh --file <path>` → `.claude/risk-model.json`.
 
 **Semantic diff:** `bash .claude/scripts/semantic-diff-analyze.sh --file <path.ts>` → `.claude/semantic-diff-report.json`.
 
 **Learning loop:** `bash .claude/scripts/autonomous-learning-loop.sh` → `.claude/learning-loop-report.json` (anomalias / hipóteses; promoção manual).
+
+**Decision audit:** append-only `.claude/decision-log.jsonl` via `decision-append.sh`; auditor `policy-compliance-audit.sh` → `policy-audit-report.json`.
+
+**Context topology:** `context-topology.sh` → `.claude/knowledge-graph.json`; `--inject` / `--budget`.
 
 ---
 

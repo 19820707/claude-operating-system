@@ -8,8 +8,9 @@ Executa no arranque de cada sessão para recuperar contexto operacional completo
 2. Lê `CLAUDE.md` — contexto específico do repo
 3. Lê `.claude/session-state.md` — estado operacional: branch, commits, decisões, riscos, próximos passos
 4. Lê `.claude/learning-log.md` — heurísticas activas e anti-padrões desta fase
-5. O hook **SessionStart** executa `preflight.sh`, que corre **drift-detect**, **heuristic-ratchet**, **ts-error-budget**, **risk-surface-scan** e **os-telemetry**. Interpreta `[OS-DRIFT]`, `[OS-HEURISTIC-RATCHET]`, `[OS-TS-BUDGET]`, `[OS-RISK-SCAN]` e o resumo de métricas — não ignores regressões antes de planear trabalho.
+5. O hook **SessionStart** executa `preflight.sh`: **drift-detect**, **agent-coordinator** (`--expire`, `--status`), **heuristic-ratchet**, **ts-error-budget**, **invariant-engine** (`--staleness`), **risk-surface-scan**, **policy-compliance** (sessão = branch actual), **os-telemetry**. Interpreta `[OS-DRIFT]`, `[OS-COORDINATOR]`, `[OS-INVARIANTS]`, `[OS-AUDIT]`, `[OS-RISK-SCAN]` e métricas — não ignores regressões antes de planear trabalho.
 6. Índice de sessões: `.claude/session-index.json` é actualizado com `bash .claude/scripts/session-index.sh` (típico no `/phase-close`). Consulta por módulo: `bash .claude/scripts/session-index.sh --query server/auth`. Complexidade git: `bash .claude/scripts/module-complexity.sh <ficheiro.ts>`.
+7. **Legado / opcional:** `policy-compliance-audit.sh`, `context-topology.sh`, `invariant-lifecycle.sh`, `coordination-check.sh`, `epistemic-check.sh` — ainda disponíveis para fluxos antigos ou gates manuais.
 
 ## Output esperado (formato compacto)
 
@@ -26,6 +27,24 @@ Heurísticas activas: H<n>, H<n>, ...
 Modelo activo: Haiku | Sonnet | Opus
 Dispatch recomendado: <se o próximo passo toca superfície crítica → Opus; se é leitura → Haiku>
 ```
+
+## Context allocation (opcional mas recomendado para sessões longas)
+
+```bash
+bash .claude/scripts/knowledge-graph.sh --build
+bash .claude/scripts/knowledge-graph.sh --subgraph <ficheiro-alvo.ts>
+bash .claude/scripts/context-allocator.sh --target <ficheiro-alvo.ts>
+```
+
+- Gera `.claude/knowledge-graph.json` e subgrafo `.claude/subgraph-<basename>.json`; o allocator estima orçamento de tokens (~4 chars/token) e avisa se o budget operacional fica apertado.
+
+## Epistemic state (para sessões em módulos críticos)
+
+```bash
+bash .claude/scripts/epistemic-state.sh --debt
+```
+
+- Se a dívida epistémica for alta (saída do script), resolver **ASSUMED** / **UNKNOWN** antes de trabalho em modo **Critical**.
 
 ## Dispatch de modelo ao iniciar trabalho
 

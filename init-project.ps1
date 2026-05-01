@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/invariant-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/invariant-report.json', '.claude/invariant-lifecycle-report.json', '.claude/coordination-report.json', '.claude/epistemic-report.json', '.claude/compliance-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json', '.claude/policy-audit-report.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -175,14 +175,38 @@ Get-ChildItem -LiteralPath $criticalSrc -Filter '*.md' -File -ErrorAction Silent
 }
 
 $scriptNames = @(
-    'preflight.sh', 'session-end.sh', 'pre-compact.sh', 'post-compact.sh',
-    'drift-detect.sh', 'ts-error-budget.sh', 'heuristic-ratchet.sh', 'promote-heuristics.sh', 'os-telemetry.sh',
-    'risk-surface-scan.sh', 'module-complexity.sh', 'causal-trace.sh', 'session-index.sh', 'cross-project-sync.sh',
-    'living-arch-graph.sh',
+    'agent-coordinator.sh',
+    'autonomous-learning-loop.sh',
+    'causal-trace.sh',
+    'context-allocator.sh',
+    'context-topology.sh',
+    'coordination-check.sh',
+    'cross-project-sync.sh',
+    'decision-append.sh',
+    'decision-audit.sh',
+    'drift-detect.sh',
+    'epistemic-check.sh',
+    'epistemic-state.sh',
+    'heuristic-ratchet.sh',
+    'invariant-engine.sh',
+    'invariant-lifecycle.sh',
     'invariant-verify.sh',
+    'knowledge-graph.sh',
+    'living-arch-graph.sh',
+    'module-complexity.sh',
+    'os-telemetry.sh',
+    'policy-compliance-audit.sh',
+    'policy-compliance.sh',
+    'post-compact.sh',
+    'pre-compact.sh',
+    'preflight.sh',
     'probabilistic-risk-model.sh',
+    'promote-heuristics.sh',
+    'risk-surface-scan.sh',
     'semantic-diff-analyze.sh',
-    'autonomous-learning-loop.sh'
+    'session-end.sh',
+    'session-index.sh',
+    'ts-error-budget.sh'
 )
 foreach ($n in $scriptNames) {
     $sf = Join-Path $scriptsSrc $n
@@ -262,6 +286,28 @@ if (Test-Path -LiteralPath (Join-Path $localTpl 'architecture-boundaries.json'))
 if (Test-Path -LiteralPath (Join-Path $localTpl 'learning-loop-state.json')) {
     Copy-IfMissing -From (Join-Path $localTpl 'learning-loop-state.json') -To (Join-Path $ProjectRoot '.claude\learning-loop-state.json') -Label 'learning-loop-state.json'
 }
+if (Test-Path -LiteralPath (Join-Path $localTpl 'knowledge-graph.seed.json')) {
+    Copy-IfMissing -From (Join-Path $localTpl 'knowledge-graph.seed.json') -To (Join-Path $ProjectRoot '.claude\knowledge-graph.json') -Label 'knowledge-graph.json'
+}
+if (Test-Path -LiteralPath (Join-Path $localTpl 'decision-log.schema.json')) {
+    Copy-IfMissing -From (Join-Path $localTpl 'decision-log.schema.json') -To (Join-Path $ProjectRoot '.claude\decision-log.schema.json') -Label 'decision-log.schema.json'
+}
+$coreInv = Join-Path $Source 'templates\invariants\core.json'
+if (Test-Path -LiteralPath $coreInv) {
+    Copy-IfMissing -From $coreInv -To (Join-Path $ProjectRoot '.claude\invariants.json') -Label 'invariants.json (core pack)'
+}
+if (Test-Path -LiteralPath (Join-Path $localTpl 'agent-state.seed.json')) {
+    Copy-IfMissing -From (Join-Path $localTpl 'agent-state.seed.json') -To (Join-Path $ProjectRoot '.claude\agent-state.json') -Label 'agent-state.json'
+}
+if (Test-Path -LiteralPath (Join-Path $localTpl 'epistemic-state.seed.json')) {
+    Copy-IfMissing -From (Join-Path $localTpl 'epistemic-state.seed.json') -To (Join-Path $ProjectRoot '.claude\epistemic-state.json') -Label 'epistemic-state.json'
+}
+
+$decisionLog = Join-Path $ProjectRoot '.claude\decision-log.jsonl'
+if (-not $DryRun -and -not (Test-Path -LiteralPath $decisionLog)) {
+    New-Item -ItemType File -Path $decisionLog -Force | Out-Null
+    Write-Host '  touch    decision-log.jsonl'
+}
 
 Copy-ClaudeMd -From (Join-Path $templates 'project-CLAUDE.md') -To (Join-Path $ProjectRoot 'CLAUDE.md')
 
@@ -274,7 +320,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (23 critical paths):'
+Write-Host 'Validation (36 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -298,7 +344,20 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\invariant-verify.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\probabilistic-risk-model.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\semantic-diff-analyze.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\autonomous-learning-loop.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\autonomous-learning-loop.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\decision-append.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\policy-compliance-audit.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\context-topology.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\invariant-lifecycle.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\coordination-check.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\epistemic-check.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\decision-audit.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\policy-compliance.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\knowledge-graph.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\context-allocator.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\invariant-engine.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\agent-coordinator.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {
@@ -333,4 +392,7 @@ Write-Host ("  4. cd `"" + $ProjectRoot + "`" ; claude")
 Write-Host '  5. /session-start'
 Write-Host '  6. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
 Write-Host '  7. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
+Write-Host '  8. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
+Write-Host '  9. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
+Write-Host ' 10. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
 Write-Host ''

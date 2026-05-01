@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-decision-log-entry",
+  "title": "OS Decision Log entry (append-only JSONL line)",
+  "type": "object",
+  "required": ["id", "ts", "type", "trigger", "policy_applied", "decision"],
+  "properties": {
+    "id": { "type": "string", "description": "e.g. D-2026-01-05-001" },
+    "ts": { "type": "string", "format": "date-time" },
+    "session": { "type": "string" },
+    "type": {
+      "type": "string",
+      "enum": [
+        "model_selection",
+        "scope_boundary",
+        "risk_acceptance",
+        "invariant_override",
+        "mode_escalation",
+        "approval_gate",
+        "mode_selection",
+        "approval",
+        "other"
+      ]
+    },
+    "trigger": { "type": "string" },
+    "policy_applied": { "type": "string" },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "alternatives_considered": { "type": "array", "items": { "type": "string" } },
+    "decision": { "type": "string" },
+    "confidence": { "type": "string" },
+    "overridable": { "type": "boolean" },
+    "scope_expansion_requested": { "type": "boolean" },
+    "epistemic_fact_keys": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Keys (or substrings) matching entries in .claude/epistemic-state.json facts — used by epistemic-check.sh for quality scoring"
+    }
+  },
+  "additionalProperties": true
+}

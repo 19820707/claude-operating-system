@@ -126,3 +126,68 @@ bash .claude/scripts/autonomous-learning-loop.sh
 
 - Saída: blocos `ANOMALY DETECTED`, `HYPOTHESIS H-AUTO-…`, `POLICY SUGGESTION`; JSON em `.claude/learning-loop-report.json`; estado numérico em `.claude/learning-loop-state.json` (template `templates/local/learning-loop-state.json`).
 - Pré-flight opcional: `LEARNING_LOOP=1` (ver `preflight.sh`). Depois de validar evidência: copiar regra para `learning-log.md` (YAML) e usar `promote-heuristics.sh --promote` se aplicável.
+
+## Governance I — Decision audit trail (verificabilidade)
+
+Regista a decisão **antes** de actuar (append-only `.claude/decision-log.jsonl`) e audita com políticas **codificáveis** no script (não substitui revisão humana).
+
+```bash
+echo '{"id":"D-2026-05-01-001","ts":"2026-05-01T12:00:00Z","session":"main","type":"model_selection","trigger":"server/auth/index.ts","policy_applied":"model-selection.md","evidence":["AUTH"],"alternatives_considered":["Sonnet"],"decision":"Opus","confidence":"HIGH","overridable":false}' | bash .claude/scripts/decision-append.sh
+bash .claude/scripts/policy-compliance-audit.sh
+```
+
+- Schema: `.claude/decision-log.schema.json`. Auditor: **`[OS-AUDIT]`**, taxa de compliance; se ≥10 decisões auditadas e taxa **&lt;85%** → **DRIFT WARNING**. Pré-flight: `POLICY_AUDIT=1`.
+
+## Governance II — Context topology (grafo + orçamento)
+
+```bash
+bash .claude/scripts/context-topology.sh --refresh
+bash .claude/scripts/context-topology.sh --inject server/auth/index.ts
+bash .claude/scripts/context-topology.sh --budget --for server/auth/index.ts
+```
+
+- Persiste `.claude/knowledge-graph.json` (merge de `architecture-graph` + `complexity-map`). Orçamento de tokens é **heurístico** (~chars/4). Pré-flight: `CONTEXT_TOPOLOGY=1` e opcional `CONTEXT_TOPOLOGY_FOR=path`.
+
+## Governance III — Temporal consistency (invariantes com ciclo de vida)
+
+O motor AST verifica **specs** em `.claude/invariants/*.json`. O registo **`.claude/invariants.json`** (template `invariants-registry.seed.json`) guarda metadado de ciclo de vida: `last_verified`, `watched_paths`, `obsolescence_probe`, `genealogy`.
+
+```bash
+bash .claude/scripts/invariant-lifecycle.sh
+bash .claude/scripts/invariant-lifecycle.sh --for server/billing/stripe.ts
+bash .claude/scripts/invariant-lifecycle.sh --apply
+```
+
+- **`[OS-INVARIANTS]`**: resumo STALE (commits git após `last_verified` nos paths vigiados), avisos **MAY_BE_OBSOLETE** (reality ≠ spec assumida), linhas **GENEALOGY** (incidente / condição que mudou).
+- Relatório máquina: `.claude/invariant-lifecycle-report.json`. **`--apply`** actualiza `status`→`STALE` e `staleness_risk` no registo (não apaga violações nem substitui revisão humana).
+- Pré-flight: `INVARIANT_LIFECYCLE=1`; filtro por ficheiro: `INVARIANT_LIFECYCLE_FOR=path/relativo.ts`.
+
+## Governance IV — Multi-agent coordination (leases + intentions)
+
+Ficheiro **`.claude/agent-state.json`**: `leases` (holder, `module`, `blocking` globs, `expires`), `intentions` (opcional `conflict_with` lease ids), `shared_decisions` (`affects` globs, texto da decisão). Protocolo **optimista** — sem servidor central; conflitos e decisões tornam-se observáveis no preflight.
+
+```bash
+bash .claude/scripts/coordination-check.sh --paths shared/types/auth.ts,server/auth/index.ts
+COORDINATION_PATHS=server/billing COORDINATION_SESSION=my-laptop-01 bash .claude/scripts/coordination-check.sh
+COORDINATION_WT=1 bash .claude/scripts/coordination-check.sh
+```
+
+- **`[OS-COORDINATION]`**: `CONFLICT DETECTED` se um path cruza lease activo de **outro** holder; aviso **NOTICE** se só há `shared_decisions` aplicáveis; relatório `.claude/coordination-report.json`.
+- Pré-flight: `COORDINATION_CHECK=1` (por defeito `COORDINATION_WT=1` para usar o worktree git). Para desligar o scan WT: `COORDINATION_WT=0` e usar `COORDINATION_PATHS=...`.
+- Podes fazer commit de `agent-state.json` no repo da equipa para partilha via git (opcional).
+
+## Governance V — Epistemic state (o agente sabe o que não sabe)
+
+Registo **`.claude/epistemic-state.json`**: cada entrada em `facts` tem `status` (`KNOWN`, `INFERRED`, `ASSUMED`, `UNKNOWN`, `DISPUTED`), `confidence`, evidência ou `risk_if_wrong`. Lista `unknown_required` para lacunas bloqueantes.
+
+```bash
+bash .claude/scripts/epistemic-check.sh --summary
+bash .claude/scripts/epistemic-check.sh --gate --depends "orgId,Session"
+bash .claude/scripts/epistemic-check.sh --score-decision D-2026-05-01-001
+bash .claude/scripts/epistemic-check.sh --score-all
+bash .claude/scripts/epistemic-check.sh --decision-debt
+```
+
+- **`[OS-EPISTEMIC]`**: resumo de **assumption debt** (factos `ASSUMED`), `unknown_required`, aviso se dívida alta. **`--gate`** alinha com o plano (`--depends` ou env `EPISTEMIC_PLAN_DEPENDS`) e assinala dependências `ASSUMED`/`DISPUTED` — mensagem forte se `risk_if_wrong` contém HIGH.
+- No **decision log**, usa `epistemic_fact_keys: ["substring or fact key", ...]` para permitir **quality score** por decisão (heurística — não substitui revisão humana).
+- Pré-flight: `EPISTEMIC_CHECK=1`; gate opcional no mesmo arranque com `EPISTEMIC_PLAN_DEPENDS=...`.

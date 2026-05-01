@@ -73,6 +73,12 @@ bash .claude/scripts/autonomous-learning-loop.sh
 
 - Rever `ANOMALY` / `HYPOTHESIS` / `POLICY SUGGESTION` em consola ou `.claude/learning-loop-report.json`. Só promover regras a `operational.md` após evidência humana (p.ex. YAML no `learning-log.md` + `promote-heuristics.sh`).
 
+### 8. Trilho de decisão (opcional, recomendado para mudanças de alto risco)
+Se usas `decision-log.jsonl`, acrescenta **antes** de merges sensíveis uma entrada com `decision-audit.sh` (ou `decision-append.sh` legado) — ver `task-classify` / `.claude/decision-log.schema.json`. Isto separa *raciocínio declarado* de *racionalização post-hoc*.
+
+### 9. Estado epistémico (relatório)
+`bash .claude/scripts/epistemic-state.sh --report` — snapshot legível de `facts` e `unknown_required` para fecho de fase.
+
 ## Regras
 
 - Distinguir sempre: evidência / inferência / decisão

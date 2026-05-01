@@ -32,36 +32,37 @@ fi
 if [ -f "${SCRIPTS_DIR}/drift-detect.sh" ]; then
   bash "${SCRIPTS_DIR}/drift-detect.sh" || true
 fi
+echo ""
+
+if [ -f "${SCRIPTS_DIR}/agent-coordinator.sh" ]; then
+  bash "${SCRIPTS_DIR}/agent-coordinator.sh" --expire || true
+  bash "${SCRIPTS_DIR}/agent-coordinator.sh" --status || true
+fi
+echo ""
+
 if [ -f "${SCRIPTS_DIR}/heuristic-ratchet.sh" ]; then
   bash "${SCRIPTS_DIR}/heuristic-ratchet.sh" || true
 fi
 if [ -f "${SCRIPTS_DIR}/ts-error-budget.sh" ]; then
   bash "${SCRIPTS_DIR}/ts-error-budget.sh" || true
 fi
+echo ""
+
+if [ -f "${SCRIPTS_DIR}/invariant-engine.sh" ]; then
+  bash "${SCRIPTS_DIR}/invariant-engine.sh" --staleness || true
+fi
+echo ""
+
 if [ -f "${SCRIPTS_DIR}/risk-surface-scan.sh" ]; then
   bash "${SCRIPTS_DIR}/risk-surface-scan.sh" || true
-  echo ""
 fi
-if [ -z "${LIVING_ARCH_SKIP:-}" ] && [ -f "${SCRIPTS_DIR}/living-arch-graph.sh" ]; then
-  bash "${SCRIPTS_DIR}/living-arch-graph.sh" || true
-  echo ""
+echo ""
+
+if [ -f "${SCRIPTS_DIR}/policy-compliance.sh" ]; then
+  bash "${SCRIPTS_DIR}/policy-compliance.sh" --session "${BRANCH}" || true
 fi
-if [ "${INVARIANT_VERIFY:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/invariant-verify.sh" ]; then
-  bash "${SCRIPTS_DIR}/invariant-verify.sh" || true
-  echo ""
-fi
-if [ "${RISK_MODEL:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/probabilistic-risk-model.sh" ] && [ -n "${RISK_MODEL_TARGET:-}" ]; then
-  bash "${SCRIPTS_DIR}/probabilistic-risk-model.sh" --file "${RISK_MODEL_TARGET}" || true
-  echo ""
-fi
-if [ "${SEMANTIC_DIFF:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/semantic-diff-analyze.sh" ] && [ -n "${SEMANTIC_DIFF_TARGET:-}" ]; then
-  bash "${SCRIPTS_DIR}/semantic-diff-analyze.sh" "${SEMANTIC_DIFF_TARGET}" || true
-  echo ""
-fi
-if [ "${LEARNING_LOOP:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/autonomous-learning-loop.sh" ]; then
-  bash "${SCRIPTS_DIR}/autonomous-learning-loop.sh" || true
-  echo ""
-fi
+echo ""
+
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi

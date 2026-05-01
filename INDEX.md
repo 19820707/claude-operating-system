@@ -107,7 +107,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 | File | Purpose | Hook |
 |------|---------|------|
-| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** (`INVARIANT_VERIFY=1`), **probabilistic-risk-model** (`RISK_MODEL=1` + `RISK_MODEL_TARGET`), **semantic-diff-analyze** (`SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET`), **autonomous-learning-loop** (`LEARNING_LOOP=1`, lê `session-index.json`), telemetria + secrets/WT | `SessionStart` |
+| `preflight.sh` | drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** (`INVARIANT_VERIFY=1`), **invariant-lifecycle** (`INVARIANT_LIFECYCLE=1`, `INVARIANT_LIFECYCLE_FOR=`), **coordination-check** (`COORDINATION_CHECK=1`, `COORDINATION_SESSION=`, `COORDINATION_WT=`), **epistemic-check** (`EPISTEMIC_CHECK=1`, `EPISTEMIC_PLAN_DEPENDS=`), **risk-model** (`RISK_MODEL=1`+target), **semantic-diff** (`SEMANTIC_DIFF=1`+target), **learning-loop** (`LEARNING_LOOP=1`), **policy-compliance-audit** (`POLICY_AUDIT=1`), **context-topology** (`CONTEXT_TOPOLOGY=1`, `CONTEXT_TOPOLOGY_FOR=`), telemetria | `SessionStart` |
 | `session-end.sh` | WT snapshot (`wt-snapshot.tmp`) | `SessionEnd` (antes de `os-telemetry.sh` na cadeia) |
 | `pre-compact.sh` | Extract session-state.md summary before compaction | `PreCompact` |
 | `post-compact.sh` | Re-inject context summary after compaction | `PostCompact` |
@@ -126,6 +126,12 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `probabilistic-risk-model.sh` | P(incident), P(regression condicionado a coverage, blast esperado (git 180d + grafo opcional) → `.claude/risk-model.json` | `/task-classify` ou `RISK_MODEL=1` + `RISK_MODEL_TARGET` |
 | `semantic-diff-analyze.sh` | Diff semântico TS: contratos exportados, heurística de refactor, padrões de risco (ex. role → roles) → `.claude/semantic-diff-report.json` | `/task-classify` ou `SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET` |
 | `autonomous-learning-loop.sh` | Anomalias (sessões + git revert) → hipóteses `H-AUTO-*` → rascunho de política; relatório `.claude/learning-loop-report.json` — **gate humano** antes de `operational.md` | `/phase-close` / manual / `LEARNING_LOOP=1` |
+| `decision-append.sh` | Append **uma** linha JSON a `.claude/decision-log.jsonl` (trilho de decisão verificável) | antes de actuar / automação |
+| `policy-compliance-audit.sh` | Lê `decision-log.jsonl` → `[OS-AUDIT]` + taxa de compliance + aviso de **drift** se abaixo de 85% (com volume mínimo) | `POLICY_AUDIT=1` / manual |
+| `context-topology.sh` | Gera/atualiza `.claude/knowledge-graph.json`; `--inject <ficheiro>`; `--budget [--for path]` | `CONTEXT_TOPOLOGY=1` / manual |
+| `invariant-lifecycle.sh` | Registo temporal `.claude/invariants.json`: **staleness** (git após `last_verified`), **obsolescence_probe**, **genealogy**; `--for path`; `--apply` persiste `STALE` | `INVARIANT_LIFECYCLE=1` / manual |
+| `coordination-check.sh` | Multi-agente: **leases** / **intentions** / **shared_decisions** em `.claude/agent-state.json` vs paths (`--paths`, `COORDINATION_PATHS`, ou `COORDINATION_WT=1`) | `COORDINATION_CHECK=1` / manual |
+| `epistemic-check.sh` | **KNOWN/INFERRED/ASSUMED/DISPUTED** em `.claude/epistemic-state.json`; `--summary`; `--gate --depends`; `--score-decision`; `--score-all`; `--decision-debt` | `EPISTEMIC_CHECK=1` / manual |
 
 ### templates/invariant-engine/
 
@@ -146,6 +152,11 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `architecture-boundaries.json` | Regras `from_prefix` → `to_prefix` para deteção de violações de camada — copiado para `.claude/` (se ausente) |
 | `invariants/default.json` | Pack exemplo INV-001…004 — copiado para `.claude/invariants/` (se ausente) |
 | `learning-loop-state.json` | Contador `H-AUTO-NNN` para o loop autónomo — copiado para `.claude/` (se ausente) |
+| `decision-log.schema.json` | Schema JSON das entradas do **decision log** — referência em `.claude/` (se ausente) |
+| `knowledge-graph.seed.json` | Shell inicial do **grafo de conhecimento** → `.claude/knowledge-graph.json` (se ausente) |
+| `invariants-registry.seed.json` | Registo de invariantes com ciclo de vida → `.claude/invariants.json` (se ausente); complementa `.claude/invariants/*.json` do motor AST |
+| `agent-state.seed.json` | Coordenação multi-sessão → `.claude/agent-state.json` (leases, intentions, shared_decisions) |
+| `epistemic-state.seed.json` | Factos + `unknown_required` → `.claude/epistemic-state.json` (modelo epistémico) |
 
 ### templates/profiles/
 

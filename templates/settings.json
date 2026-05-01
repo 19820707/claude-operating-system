@@ -80,9 +80,22 @@
       "Bash(bash .claude/scripts/semantic-diff-analyze.sh *)",
       "Bash(node .claude/invariant-engine/semantic-diff.cjs *)",
       "Bash(bash .claude/scripts/autonomous-learning-loop.sh *)",
+      "Bash(bash .claude/scripts/decision-append.sh *)",
+      "Bash(bash .claude/scripts/policy-compliance-audit.sh *)",
+      "Bash(bash .claude/scripts/context-topology.sh *)",
+      "Bash(bash .claude/scripts/invariant-lifecycle.sh *)",
+      "Bash(bash .claude/scripts/coordination-check.sh *)",
+      "Bash(bash .claude/scripts/epistemic-check.sh *)",
       "Bash(node .claude/invariant-engine/invariant-engine.cjs *)",
       "Bash(bash .claude/scripts/preflight.sh)",
-      "Bash(bash .claude/scripts/session-end.sh)"
+      "Bash(bash .claude/scripts/session-end.sh)",
+      "Bash(bash .claude/scripts/decision-audit.sh *)",
+      "Bash(bash .claude/scripts/policy-compliance.sh *)",
+      "Bash(bash .claude/scripts/knowledge-graph.sh *)",
+      "Bash(bash .claude/scripts/context-allocator.sh *)",
+      "Bash(bash .claude/scripts/invariant-engine.sh *)",
+      "Bash(bash .claude/scripts/agent-coordinator.sh *)",
+      "Bash(bash .claude/scripts/epistemic-state.sh *)"
     ],
     "deny": [
       "Read(.env)",

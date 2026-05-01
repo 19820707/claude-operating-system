@@ -10,6 +10,11 @@ settings.local.json
 .claude/risk-model.json
 .claude/semantic-diff-report.json
 .claude/learning-loop-report.json
+.claude/policy-audit-report.json
+.claude/compliance-report.json
+.claude/invariant-lifecycle-report.json
+.claude/coordination-report.json
+.claude/epistemic-report.json
 
 # OS invariant-engine dev deps (bundled dist is committed)
 templates/invariant-engine/node_modules/
