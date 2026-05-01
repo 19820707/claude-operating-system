@@ -5,7 +5,7 @@ Le primeiro (por esta ordem — obrigatorio):
 4. .claude/policies/production-safety.md
 
 Depois executa por esta ordem:
-1. verificar branch e ultimo commit em session-state.md;
+1. verificar branch e ultimo commit em session-state.md (e reconciliar com o output do hook preflight: blocos `[CONTEXT-DRIFT]` e `[TS-BUDGET]` quando existirem);
 2. mapear a arquitetura real do repositorio;
 3. identificar os fluxos criticos;
 4. identificar os 10 maiores riscos estruturais, operacionais e de seguranca;

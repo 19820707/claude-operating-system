@@ -65,19 +65,37 @@ echo ""
 # 1. Global CLAUDE.md
 copy_safe "$SOURCE/CLAUDE.md" "$TARGET/CLAUDE.md"
 
-# 2. Global policies
-for f in model-selection.md operating-modes.md engineering-governance.md production-safety.md; do
-    copy_safe "$SOURCE/policies/$f" "$TARGET/policies/$f"
+# 2. Global policies (all *.md in policies/)
+shopt -s nullglob
+for from in "$SOURCE/policies"/*.md; do
+    base="$(basename "$from")"
+    copy_safe "$from" "$TARGET/policies/$base"
+done
+shopt -u nullglob
+
+# 3. Global prompts (all *.md in prompts/)
+shopt -s nullglob
+for from in "$SOURCE/prompts"/*.md; do
+    base="$(basename "$from")"
+    copy_safe "$from" "$TARGET/prompts/$base"
 done
 
-# 3. Global prompts
-copy_safe "$SOURCE/prompts/session-start.md" "$TARGET/prompts/session-start.md"
+# 4. Global heuristics (all *.md in heuristics/)
+if [[ -d "$SOURCE/heuristics" ]]; then
+    for from in "$SOURCE/heuristics"/*.md; do
+        [[ -e "$from" ]] || continue
+        base="$(basename "$from")"
+        copy_safe "$from" "$TARGET/heuristics/$base"
+    done
+fi
+shopt -u nullglob
 
 echo ""
 echo "Done. ~/.claude/ is ready."
 echo ""
 echo "Next steps:"
 echo "  1. Install Claude Code: https://claude.ai/download"
-echo "  2. Clone each project repo (contains .claude/ with session-state, learning-log, commands, agents)"
-echo "  3. Open Claude Code in the project directory"
-echo "  4. Type /session-start to recover operational context"
+echo '  2. New project (Windows): powershell -ExecutionPolicy Bypass -File ./init-project.ps1 -ProjectPath "$env:USERPROFILE\claude\<project>"  (or -Name <project>)'
+echo "  3. Clone each project repo (contains .claude/ with session-state, learning-log, commands, agents)"
+echo "  4. Open Claude Code in the project directory"
+echo "  5. Type /session-start to recover operational context"

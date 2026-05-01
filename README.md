@@ -13,6 +13,7 @@ Persistent, versionable, restorable across machines and projects.
 claude-operating-system/          ← this repo (global source of truth)
 ├── CLAUDE.md                     ← global engineering policy
 ├── install.ps1                   ← bootstrap script for new machine
+├── init-project.ps1              ← scaffold a new project (Windows)
 ├── policies/                     ← global policies (generic, no project paths)
 ├── prompts/                      ← global prompts
 └── templates/                    ← bootstrap templates for new projects
@@ -35,6 +36,13 @@ claude-operating-system/          ← this repo (global source of truth)
 ```
 
 **Key principle:** `~/.claude/` is disposable. Everything important lives either here (global) or inside project repos.
+
+### Advanced engineering (project hooks)
+
+Templates ship **proactive** checks, not only policy text:
+
+- **Context drift** — `templates/scripts/context-drift-detect.sh` compares the **Identificação** table in `.claude/session-state.md` to live `git` (branch, HEAD, commits after the documented SHA). Invoked from `preflight.sh` (warn-only). Set **`OS_STRICT_GATES=1`** so `session-end.sh` runs the same scripts with **`--enforce`** and blocks the hook on drift or TS regression.
+- **TypeScript error budget** — `.local/ts-error-budget.json` (template under `templates/local/`) holds `baselineErrors` and the `tsc` command. Run **`bash .claude/scripts/ts-error-budget-init.sh`** once to capture the baseline; each session **`ts-error-budget-check.sh`** warns if errors increased above baseline.
 
 ---
 
@@ -90,6 +98,26 @@ git push
 ---
 
 ## Start a new project
+
+**Fast path (Windows):** from your `claude-operating-system` clone:
+
+```powershell
+cd <path-to>\claude-operating-system
+powershell -ExecutionPolicy Bypass -File .\init-project.ps1 -ProjectPath "$env:USERPROFILE\claude\my-new-project"
+cd $env:USERPROFILE\claude\my-new-project
+claude
+# Type: /session-start
+```
+
+Or a short name under `%USERPROFILE%\claude\`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\init-project.ps1 -Name my-new-project
+```
+
+Creates `CLAUDE.md`, `.claude/` (session-state, learning-log, settings, policies, commands, agents, critical-surfaces, heuristics, scripts), runs `git init`, validates counts (10 commands, 5 agents, 5 critical surfaces), and appends minimal `.gitignore` rules. **Protected:** `session-state.md` and `learning-log.md` are never overwritten if they already exist. **CLAUDE.md** is skipped when present unless `-Force`. Use `-DryRun` to preview. See `templates/new-project-bootstrap.md` for the full manual checklist.
+
+**Manual path (any OS):**
 
 ```powershell
 # 1. Create project repo

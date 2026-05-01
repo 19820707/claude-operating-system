@@ -52,6 +52,11 @@ cp "$cos\templates\scripts\preflight.sh"    .claude\scripts\preflight.sh
 cp "$cos\templates\scripts\session-end.sh"  .claude\scripts\session-end.sh
 cp "$cos\templates\scripts\pre-compact.sh"  .claude\scripts\pre-compact.sh
 cp "$cos\templates\scripts\post-compact.sh" .claude\scripts\post-compact.sh
+cp "$cos\templates\scripts\context-drift-detect.sh" .claude\scripts\context-drift-detect.sh
+cp "$cos\templates\scripts\ts-error-budget-check.sh" .claude\scripts\ts-error-budget-check.sh
+cp "$cos\templates\scripts\ts-error-budget-init.sh" .claude\scripts\ts-error-budget-init.sh
+mkdir .local 2>nul
+cp "$cos\templates\local\ts-error-budget.json" .local\ts-error-budget.json
 ```
 
 - [ ] Templates copied without errors

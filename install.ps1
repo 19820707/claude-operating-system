@@ -37,19 +37,52 @@ Write-Host ""
 # 1. Global CLAUDE.md
 Copy-Safe "$Source\CLAUDE.md" "$Target\CLAUDE.md"
 
-# 2. Global policies
-foreach ($f in @("model-selection.md","operating-modes.md","engineering-governance.md","production-safety.md")) {
-    Copy-Safe "$Source\policies\$f" "$Target\policies\$f"
+# 2. Global policies (all *.md in policies/)
+Get-ChildItem -Path "$Source\policies" -Filter "*.md" -File | ForEach-Object {
+    Copy-Safe $_.FullName "$Target\policies\$($_.Name)"
 }
 
-# 3. Global prompts
-Copy-Safe "$Source\prompts\session-start.md" "$Target\prompts\session-start.md"
+# 3. Global prompts (all *.md in prompts/)
+Get-ChildItem -Path "$Source\prompts" -Filter "*.md" -File | ForEach-Object {
+    Copy-Safe $_.FullName "$Target\prompts\$($_.Name)"
+}
+
+# 4. Global heuristics (all *.md in heuristics/)
+if (Test-Path "$Source\heuristics") {
+    Get-ChildItem -Path "$Source\heuristics" -Filter "*.md" -File | ForEach-Object {
+        Copy-Safe $_.FullName "$Target\heuristics\$($_.Name)"
+    }
+}
+
+# 5. Install provenance (audit / support — no secrets)
+if (-not $DryRun) {
+    $meta = [ordered]@{
+        schemaVersion = 1
+        installedAt   = (Get-Date).ToString("o")
+        sourcePath    = (Resolve-Path -LiteralPath $Source).Path
+        targetPath    = (Resolve-Path -LiteralPath $Target).Path
+        sourceSha     = $null
+    }
+    $gitHead = Join-Path $Source ".git\HEAD"
+    if (Test-Path -LiteralPath $gitHead) {
+        try {
+            Push-Location $Source
+            $sha = (& git rev-parse HEAD 2>$null)
+            if ($LASTEXITCODE -eq 0 -and $sha) { $meta.sourceSha = $sha.Trim() }
+        } catch { }
+        finally { Pop-Location }
+    }
+    $installRecord = Join-Path $Target "os-install.json"
+    ($meta | ConvertTo-Json -Depth 5) | Set-Content -LiteralPath $installRecord -Encoding utf8
+    Write-Host "  wrote  $installRecord"
+}
 
 Write-Host ""
 Write-Host "Done. ~/.claude/ is ready."
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. Install Claude Code: https://claude.ai/download"
-Write-Host "  2. Clone each project repo (contains .claude/ with session-state, learning-log, commands, agents)"
-Write-Host "  3. Open Claude Code in the project directory"
-Write-Host "  4. Type /session-start to recover operational context"
+Write-Host "  2. New Windows project: .\init-project.ps1 -ProjectPath `"$env:USERPROFILE\claude\<project>`"  (or -Name <project>)"
+Write-Host "  3. Clone each project repo (contains .claude/ with session-state, learning-log, commands, agents)"
+Write-Host "  4. Open Claude Code in the project directory"
+Write-Host "  5. Type /session-start to recover operational context"

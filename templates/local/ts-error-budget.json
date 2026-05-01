@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "baselineErrors": -1,
+  "command": "npx tsc --noEmit --pretty false",
+  "notes": "Run: bash .claude/scripts/ts-error-budget-init.sh  (sets baselineErrors from current tsc output). Preflight warns if count exceeds baseline."
+}

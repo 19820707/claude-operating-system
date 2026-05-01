@@ -35,3 +35,13 @@ fi
 if [ -n "${SECRETS}" ]; then
   echo "  WARN   : secrets tracked -> ${SECRETS}"
 fi
+
+# Context drift (session-state vs git) — warn-only here; strict on session-end if OS_STRICT_GATES=1
+if [ -f ".claude/scripts/context-drift-detect.sh" ]; then
+  bash .claude/scripts/context-drift-detect.sh 2>/dev/null || true
+fi
+
+# TypeScript error budget — warn-only; baseline via ts-error-budget-init.sh
+if [ -f ".claude/scripts/ts-error-budget-check.sh" ]; then
+  bash .claude/scripts/ts-error-budget-check.sh 2>/dev/null || true
+fi

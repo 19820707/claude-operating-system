@@ -22,4 +22,14 @@ TS=$(date -u +"%Y-%m-%dT%H:%MZ" 2>/dev/null || echo unknown)
   fi
 } > .claude/wt-snapshot.tmp
 
+# Optional strict gates (set OS_STRICT_GATES=1 in environment to block session end on drift / TS regression)
+if [ "${OS_STRICT_GATES:-0}" = "1" ]; then
+  if [ -f ".claude/scripts/ts-error-budget-check.sh" ]; then
+    bash .claude/scripts/ts-error-budget-check.sh --enforce
+  fi
+  if [ -f ".claude/scripts/context-drift-detect.sh" ]; then
+    bash .claude/scripts/context-drift-detect.sh --enforce
+  fi
+fi
+
 exit 0

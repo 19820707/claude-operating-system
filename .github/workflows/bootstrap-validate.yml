@@ -1,0 +1,38 @@
+# Validates template cardinality vs bootstrap-manifest.json and PowerShell script syntax.
+name: bootstrap-validate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Manifest vs repository tree
+        shell: pwsh
+        run: ${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1
+
+      - name: PowerShell syntax (install + init)
+        shell: pwsh
+        run: |
+          $files = @(
+            "${{ github.workspace }}/install.ps1",
+            "${{ github.workspace }}/init-project.ps1",
+            "${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1"
+          )
+          foreach ($f in $files) {
+            $tok = $null
+            $err = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($f, [ref]$tok, [ref]$err)
+            if ($err -and $err.Count -gt 0) {
+              Write-Host "Parse errors in $f"
+              $err | ForEach-Object { Write-Host $_ }
+              exit 1
+            }
+            Write-Host "OK: $f"
+          }

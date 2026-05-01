@@ -59,6 +59,7 @@
       "Bash(wc *)",
       "Bash(npm run build *)",
       "Bash(npm run check *)",
+      "Bash(npx tsc *)",
       "Bash(npx vitest run *)",
       "Bash(npx playwright test *)"
     ],
