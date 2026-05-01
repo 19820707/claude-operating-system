@@ -53,7 +53,7 @@ if [ -n "$DOC_HEAD" ] && [ -n "$GIT_HEAD" ]; then
     UNDOC=$(git rev-list --count "${DOC_HEAD}..HEAD" 2>/dev/null || echo 0)
     UNDOC=${UNDOC:-0}
     if [ "$UNDOC" -gt 0 ] 2>/dev/null; then
-      echo "DRIFT: ${UNDOC} undocumented commits (session-state HEAD behind git)"
+      echo "DRIFT: ${UNDOC} undocumented commits (doc HEAD ${DOC_HEAD} .. git ${GIT_HEAD})"
       git log --oneline "${DOC_HEAD}..HEAD" 2>/dev/null | head -5 | sed 's/^/  /' || true
       DRIFT=1
     fi
@@ -63,14 +63,18 @@ if [ -n "$DOC_HEAD" ] && [ -n "$GIT_HEAD" ]; then
   fi
 fi
 
-# stale: session-state mtime older than 24h
+# stale: file not touched in 24h+, or file mtime older than HEAD commit (doc behind last commit)
 NOW=$(date +%s 2>/dev/null || echo 0)
 MT=$(stat -c %Y "$STATE" 2>/dev/null || stat -f %m "$STATE" 2>/dev/null || echo 0)
+HEAD_CT=$(git log -1 --format=%ct HEAD 2>/dev/null || echo 0)
 if [ "$NOW" -gt 0 ] && [ "$MT" -gt 0 ]; then
   AGE=$((NOW - MT))
   if [ "$AGE" -gt 86400 ]; then
-    echo "WARN: stale session-state.md (>${AGE}s since file mtime)"
+    echo "WARN: stale session-state.md (no save in 24h+; mtime age ${AGE}s)"
   fi
+fi
+if [ "$HEAD_CT" -gt 0 ] && [ "$MT" -gt 0 ] && [ "$MT" -lt "$HEAD_CT" ]; then
+  echo "WARN: stale session-state.md (file mtime older than HEAD commit — refresh vs git)"
 fi
 
 # WT grew vs snapshot

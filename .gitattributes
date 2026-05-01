@@ -1,0 +1,2 @@
+# H10: shell hooks and OS scripts must stay LF-only in the index
+*.sh text eol=lf

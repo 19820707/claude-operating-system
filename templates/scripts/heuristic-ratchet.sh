@@ -32,11 +32,7 @@ read_h1() { grep -o '"h1"[[:space:]]*:[[:space:]]*[0-9]*' "$CONFIG" 2>/dev/null 
 read_h5() { grep -o '"h5"[[:space:]]*:[[:space:]]*[0-9]*' "$CONFIG" 2>/dev/null | grep -oE '[0-9]+$' | head -1 || echo 0; }
 read_h10() { grep -o '"h10"[[:space:]]*:[[:space:]]*[0-9]*' "$CONFIG" 2>/dev/null | grep -oE '[0-9]+$' | head -1 || echo 0; }
 
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
-  echo "  skip: not a git repository"
-  exit 0
-fi
-
+# H1: tracked text-like files containing CRLF (read loop avoids empty-xargs pitfalls)
 H1=0
 while IFS= read -r f; do
   [ -z "$f" ] && continue
