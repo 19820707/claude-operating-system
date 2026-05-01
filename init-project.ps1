@@ -27,6 +27,7 @@ function Test-OsRepo {
         (Join-Path $Root 'bootstrap-manifest.json'),
         (Join-Path $Root 'docs-index.json'),
         (Join-Path $Root 'os-capabilities.json'),
+        (Join-Path $Root 'workflow-manifest.json'),
         (Join-Path $Root 'tools\query-docs-index.ps1'),
         (Join-Path $Root 'tools\route-capability.ps1'),
         (Join-Path $Root 'source\skills'),
@@ -242,6 +243,8 @@ Copy-FileAlways -From (Join-Path $Source 'tools\query-docs-index.ps1') -To (Join
 # Invariant: os-capabilities.json is the local routing contract for choosing the cheapest safe OS capability.
 Copy-FileAlways -From (Join-Path $Source 'os-capabilities.json') -To (Join-Path $ProjectRoot '.claude\os-capabilities.json')
 Copy-FileAlways -From (Join-Path $Source 'tools\route-capability.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\route-capability.ps1')
+# Invariant: workflow-manifest.json defines the progressive delivery gates for artifact-first work.
+Copy-FileAlways -From (Join-Path $Source 'workflow-manifest.json') -To (Join-Path $ProjectRoot '.claude\workflow-manifest.json')
 
 Get-ChildItem -LiteralPath $commandsSrc -Filter '*.md' -File | ForEach-Object {
     Copy-FileAlways -From $_.FullName -To (Join-Path $ProjectRoot (Join-Path '.claude\commands' $_.Name))
@@ -415,14 +418,15 @@ Write-Host ''
 Write-Host 'Next steps:'
 Write-Host '  1. bash .claude/scripts/ts-error-budget.sh   # set TS baseline (TypeScript repos)'
 Write-Host '  2. Route task: pwsh .claude/scripts/route-capability.ps1 -Query "bootstrap"'
-Write-Host '  3. Query OS docs: pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap'
-Write-Host '  4. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD)'
-Write-Host '  5. Review .claude/settings.json permissions'
-Write-Host ("  6. cd `"" + $ProjectRoot + "`" ; claude")
-Write-Host '  7. /session-start'
-Write-Host '  8. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
-Write-Host '  9. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
-Write-Host ' 10. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
-Write-Host ' 11. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
-Write-Host ' 12. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
+Write-Host '  3. Check workflow gates: open .claude/workflow-manifest.json'
+Write-Host '  4. Query OS docs: pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap'
+Write-Host '  5. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD)'
+Write-Host '  6. Review .claude/settings.json permissions'
+Write-Host ("  7. cd `"" + $ProjectRoot + "`" ; claude")
+Write-Host '  8. /session-start'
+Write-Host '  9. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
+Write-Host ' 10. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
+Write-Host ' 11. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
+Write-Host ' 12. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
+Write-Host ' 13. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
 Write-Host ''
