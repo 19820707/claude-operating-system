@@ -64,7 +64,8 @@ function Test-DirCount {
         [string]$RelativePath,
         [string]$Include,
         [int]$Exact = -1,
-        [int]$Minimum = -1
+        [int]$Minimum = -1,
+        [bool]$Recursive = $false
     )
     $safeRel = Test-RelativeManifestPath -Path $RelativePath -Field 'repoIntegrity'
     if (-not $safeRel) { return $false }
@@ -74,16 +75,24 @@ function Test-DirCount {
         Write-Host "FAIL: missing directory $safeRel"
         return $false
     }
-    $n = (Get-ChildItem -LiteralPath $full -Filter $Include -File).Count
+
+    $items = if ($Recursive) {
+        Get-ChildItem -LiteralPath $full -Filter $Include -File -Recurse
+    } else {
+        Get-ChildItem -LiteralPath $full -Filter $Include -File
+    }
+    $n = @($items).Count
+    $scope = if ($Recursive) { 'recursive ' } else { '' }
+
     if ($Exact -ge 0 -and $n -ne $Exact) {
-        Write-Host "FAIL: $RelativePath — expected exactly $Exact $Include files, found $n"
+        Write-Host "FAIL: $RelativePath — expected exactly $Exact ${scope}$Include files, found $n"
         return $false
     }
     if ($Minimum -ge 0 -and $n -lt $Minimum) {
-        Write-Host "FAIL: $RelativePath — expected at least $Minimum $Include files, found $n"
+        Write-Host "FAIL: $RelativePath — expected at least $Minimum ${scope}$Include files, found $n"
         return $false
     }
-    Write-Host "OK:  $RelativePath ($n $Include)"
+    Write-Host "OK:  $RelativePath ($n ${scope}$Include)"
     return $true
 }
 
@@ -96,10 +105,11 @@ foreach ($prop in $manifest.repoIntegrity.PSObject.Properties) {
     $rel = $prop.Name
     $rule = $prop.Value
     $inc = [string]$rule.include
+    $recursive = ($rule.PSObject.Properties.Name -contains 'recursive') -and ([bool]$rule.recursive)
     if ($rule.PSObject.Properties.Name -contains 'exact') {
-        if (-not (Test-DirCount -RelativePath $rel -Include $inc -Exact ([int]$rule.exact))) { $failed = $true }
+        if (-not (Test-DirCount -RelativePath $rel -Include $inc -Exact ([int]$rule.exact) -Recursive $recursive)) { $failed = $true }
     } elseif ($rule.PSObject.Properties.Name -contains 'minimum') {
-        if (-not (Test-DirCount -RelativePath $rel -Include $inc -Minimum ([int]$rule.minimum))) { $failed = $true }
+        if (-not (Test-DirCount -RelativePath $rel -Include $inc -Minimum ([int]$rule.minimum) -Recursive $recursive)) { $failed = $true }
     } else {
         Fail "rule for $rel has neither exact nor minimum"
     }
