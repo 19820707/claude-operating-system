@@ -25,6 +25,10 @@ jobs:
         shell: pwsh
         run: ${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1
 
+      - name: Skills vs manifest
+        shell: pwsh
+        run: ${{ github.workspace }}/tools/verify-skills.ps1
+
       - name: Documentation vs manifest
         shell: pwsh
         run: ${{ github.workspace }}/tools/verify-doc-manifest.ps1
@@ -36,7 +40,8 @@ jobs:
             "${{ github.workspace }}/install.ps1",
             "${{ github.workspace }}/init-project.ps1",
             "${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1",
-            "${{ github.workspace }}/tools/verify-doc-manifest.ps1"
+            "${{ github.workspace }}/tools/verify-doc-manifest.ps1",
+            "${{ github.workspace }}/tools/verify-skills.ps1"
           )
           foreach ($f in $files) {
             $tok = $null
