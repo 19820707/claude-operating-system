@@ -185,6 +185,28 @@ foreach ($n in $scriptNames) {
     Copy-FileAlways -From $sf -To (Join-Path $ProjectRoot (Join-Path '.claude\scripts' $n))
 }
 
+if (-not $DryRun) {
+    $syncScript = Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh'
+    $osEvidence = Join-Path $heuristicsSrc 'cross-project-evidence.json'
+    if ((Test-Path -LiteralPath $syncScript) -and (Test-Path -LiteralPath $osEvidence)) {
+        Write-Host '  Inheriting cross-project knowledge...'
+        Push-Location $ProjectRoot
+        try {
+            $srcUnix = ($Source -replace '\\', '/').TrimEnd('/')
+            if (Get-Command bash -ErrorAction SilentlyContinue) {
+                & bash '.claude/scripts/cross-project-sync.sh' '--inherit' $srcUnix 2>&1 | ForEach-Object { Write-Host "    $_" }
+            } else {
+                Write-Host '  (skip) bash not on PATH — run manually after install:'
+                Write-Host ("    bash .claude/scripts/cross-project-sync.sh --inherit `"" + $Source + "`"")
+            }
+        } catch {
+            Write-Host "  (warn) cross-project inherit failed: $_"
+        } finally {
+            Pop-Location
+        }
+    }
+}
+
 if (Test-Path -LiteralPath (Join-Path $heuristicsSrc 'operational.md')) {
     Copy-FileAlways -From (Join-Path $heuristicsSrc 'operational.md') -To (Join-Path $ProjectRoot '.claude\heuristics\operational.md')
 }

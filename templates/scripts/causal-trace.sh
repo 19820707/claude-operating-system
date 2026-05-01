@@ -68,7 +68,7 @@ def mode_file(filepath: str):
         dt = parts[1] if len(parts) > 1 else ""
         msg = parts[2] if len(parts) > 2 else ""
         dday = dt[:10] if len(dt) >= 10 else "????-??-??"
-        print(f"  ── {dday} {h} {msg}")
+        print(f"  ── {dday} {h} {msg} →")
         rel = decisions_for_commit_hash(idx, h[:7])
         if rel:
             d = rel[-1]

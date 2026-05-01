@@ -2,7 +2,9 @@
 # Semantic session index — parses session-state.md → .claude/session-index.json. H10: LF-only; exit 0.
 set -euo pipefail
 
-echo "[OS-SESSION-INDEX]"
+if [[ "${1:-}" != "--query" ]]; then
+  echo "[OS-SESSION-INDEX]"
+fi
 
 if ! command -v python3 >/dev/null 2>&1; then
   echo "  skip: python3 not available"
@@ -150,7 +152,7 @@ def load_index(path: Path) -> dict:
 
 def query(idx: dict, module: str):
     dbm = idx.get("decisions_by_module") or {}
-    print(f"  decisions for {module}:")
+    print(f"[OS-SESSION-INDEX] decisions for {module}:")
     seen = False
     for rec in dbm.get(module, []):
         seen = True
@@ -163,12 +165,15 @@ def query(idx: dict, module: str):
         print("  (none recorded)")
     risks = idx.get("open_risks") or []
     if isinstance(risks, list) and risks:
-        print("  open risks:")
+        texts = []
         for r in risks:
             if isinstance(r, dict):
-                print(f"    - {r.get('text', r)}")
+                texts.append(str(r.get("text", r)))
             else:
-                print(f"    - {r}")
+                texts.append(str(r))
+        texts = [t for t in texts if t]
+        if texts:
+            print(f"  open risks: {', '.join(texts)}")
 
 
 def main():

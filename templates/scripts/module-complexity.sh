@@ -40,12 +40,11 @@ def analyze_file(path: str, days: int = 90) -> dict:
     churn = git_count(
         ["git", "log", "--since", since, "--oneline", "--follow", "--", path]
     )
+    # Bug density: all history on path (spec: no --since on this metric)
     bugs = git_count(
         [
             "git",
             "log",
-            "--since",
-            since,
             "--oneline",
             "--follow",
             "--grep=fix",
@@ -58,8 +57,9 @@ def analyze_file(path: str, days: int = 90) -> dict:
             path,
         ]
     )
+    # Author count: all unique authors ever on path (spec: no --since)
     authors_out = git_text(
-        ["git", "log", "--since", since, "--format=%ae", "--follow", "--", path]
+        ["git", "log", "--format=%ae", "--follow", "--", path]
     )
     authors = len({l for l in authors_out.splitlines() if l.strip()}) if authors_out else 0
     last = git_text(["git", "log", "-1", "--format=%cr", "--", path]) or "unknown"
@@ -68,6 +68,7 @@ def analyze_file(path: str, days: int = 90) -> dict:
             "git",
             "log",
             "--oneline",
+            "--follow",
             "--grep=incident",
             "--grep=hotfix",
             "--grep=emergency",

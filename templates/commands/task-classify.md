@@ -53,7 +53,7 @@ Rollback: ...
 Regression test: ...
 ```
 
-## Complexity Check (antes de qualquer edição)
+## Complexity check (antes de qualquer edição)
 
 Na raiz do repo, para o ficheiro principal que vais alterar:
 
