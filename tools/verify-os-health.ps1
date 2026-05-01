@@ -137,6 +137,7 @@ Invoke-HealthStep -Name 'docs-index-query' -Script { Test-DocsIndexQuery }
 Invoke-HealthStep -Name 'capabilities' -Script { & (Join-Path $RepoRoot 'tools/verify-capabilities.ps1') }
 Invoke-HealthStep -Name 'capability-router' -Script { Test-CapabilityRouter }
 Invoke-HealthStep -Name 'workflow' -Script { & (Join-Path $RepoRoot 'tools/verify-workflow-manifest.ps1') }
+Invoke-HealthStep -Name 'checklists' -Script { & (Join-Path $RepoRoot 'tools/verify-checklists.ps1') }
 Invoke-HealthStep -Name 'doctor' -Script { Test-Doctor }
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
     Test-PowerShellSyntax -Files @(
@@ -149,6 +150,7 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/verify-capabilities.ps1'),
         (Join-Path $RepoRoot 'tools/route-capability.ps1'),
         (Join-Path $RepoRoot 'tools/verify-workflow-manifest.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-checklists.ps1'),
         (Join-Path $RepoRoot 'tools/os-doctor.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
