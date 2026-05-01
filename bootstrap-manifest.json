@@ -1,6 +1,16 @@
 {
   "schemaVersion": 1,
   "description": "Canonical counts and project bootstrap lists for CI drift detection. Update when adding/removing template files.",
+  "skills": {
+    "exact": 6,
+    "categories": [
+      "governance",
+      "safety",
+      "economy",
+      "coordination",
+      "verification"
+    ]
+  },
   "initProjectValidation": {
     "slashCommands": 18,
     "agents": 5,
