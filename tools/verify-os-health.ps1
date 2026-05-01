@@ -13,6 +13,7 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot = Split-Path $PSScriptRoot -Parent
 $Failures = @()
 $Results = @()
+. (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
 
 function Add-Result {
     param(
@@ -42,8 +43,7 @@ function Invoke-HealthStep {
     } catch {
         $sw.Stop()
         # Invariant: health output is concise; no raw stack traces or dumped JSON.
-        $msg = $_.Exception.Message
-        if ($msg.Length -gt 240) { $msg = $msg.Substring(0, 240) + '...' }
+        $msg = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 240
         Add-Result -Name $Name -Status 'fail' -LatencyMs ([int]$sw.ElapsedMilliseconds) -Note $msg
         $script:Failures += $Name
     }
@@ -137,6 +137,7 @@ Write-Host "Repo: $RepoRoot"
 Write-Host ''
 
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
+Invoke-HealthStep -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
 Invoke-HealthStep -Name 'skills' -Script { & (Join-Path $RepoRoot 'tools/verify-skills.ps1') }
 Invoke-HealthStep -Name 'docs' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1') }
 Invoke-HealthStep -Name 'docs-index' -Script { & (Join-Path $RepoRoot 'tools/verify-docs-index.ps1') }
@@ -151,6 +152,7 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
     Test-PowerShellSyntax -Files @(
         (Join-Path $RepoRoot 'install.ps1'),
         (Join-Path $RepoRoot 'init-project.ps1'),
+        (Join-Path $RepoRoot 'tools/lib/safe-output.ps1'),
         (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-docs-index.ps1'),
@@ -160,7 +162,10 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/verify-workflow-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/workflow-status.ps1'),
         (Join-Path $RepoRoot 'tools/verify-checklists.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1'),
         (Join-Path $RepoRoot 'tools/os-doctor.ps1'),
+        (Join-Path $RepoRoot 'tools/os-update-project.ps1'),
+        (Join-Path $RepoRoot 'tools/os-validate-all.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
     )
@@ -182,7 +187,7 @@ Write-Host ''
 Write-Host 'Summary:'
 foreach ($r in $Results) {
     $line = "  $($r.status.ToUpper().PadRight(4)) $($r.name) ($($r.latency_ms) ms)"
-    if ($r.note) { $line += " — $($r.note)" }
+    if ($r.note) { $line += " — $(Redact-SensitiveText -Text $r.note -MaxLength 180)" }
     Write-Host $line
 }
 
