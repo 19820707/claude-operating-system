@@ -76,6 +76,7 @@
       ".claude/settings.json",
       ".claude/docs-index.json",
       ".claude/os-capabilities.json",
+      ".claude/workflow-manifest.json",
       ".claude/scripts/query-docs-index.ps1",
       ".claude/scripts/route-capability.ps1",
       ".claude/commands/session-start.md",
