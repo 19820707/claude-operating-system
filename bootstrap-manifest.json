@@ -82,6 +82,7 @@
       ".claude/checklists/RELEASE-CHECKLIST.md",
       ".claude/scripts/query-docs-index.ps1",
       ".claude/scripts/route-capability.ps1",
+      ".claude/scripts/workflow-status.ps1",
       ".claude/commands/session-start.md",
       ".claude/skills/bootstrap-governance/SKILL.md",
       ".claude/skills/production-safety/SKILL.md",
