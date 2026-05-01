@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "description": "Master manifest for Claude OS orchestration. References canonical subsystem manifests without duplicating their full contents.",
+  "manifests": {
+    "bootstrap": "bootstrap-manifest.json",
+    "docs": "docs-index.json",
+    "capabilities": "os-capabilities.json",
+    "workflow": "workflow-manifest.json"
+  },
+  "entrypoints": {
+    "health": "tools/verify-os-health.ps1",
+    "doctor": "tools/os-doctor.ps1",
+    "validateAll": "tools/os-validate-all.ps1",
+    "updateProject": "tools/os-update-project.ps1"
+  },
+  "managedProjectArtifacts": [
+    ".claude/docs-index.json",
+    ".claude/os-capabilities.json",
+    ".claude/workflow-manifest.json",
+    ".claude/scripts/query-docs-index.ps1",
+    ".claude/scripts/route-capability.ps1",
+    ".claude/scripts/workflow-status.ps1",
+    ".claude/checklists/SECURITY-CHECKLIST.md",
+    ".claude/checklists/RELEASE-CHECKLIST.md"
+  ],
+  "validationPolicy": {
+    "defaultMode": "normal",
+    "strictMode": "warnings become failures for doctor and generated scaffold verification",
+    "requiredBeforeMerge": "pwsh ./tools/os-validate-all.ps1 -Strict"
+  }
+}
