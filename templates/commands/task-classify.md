@@ -102,3 +102,16 @@ bash .claude/scripts/probabilistic-risk-model.sh --file caminho/relativo/ao/fich
 - Interpreta **`[OS-RISK-MODEL]`**: `composite` alto ou `P(incident)` elevado → **Opus** / modo **Review** como na matriz, mesmo que a tarefa pareça pequena.
 - Resultado em `.claude/risk-model.json`. Pré-flight opcional: `RISK_MODEL=1` e `RISK_MODEL_TARGET=path/to/file.ts` (ver `preflight.sh`).
 - **Nota:** P(incident) usa sinais de mensagem (`hotfix`, `incident`, `revert`, …) como *proxy* — não substitui post-mortems nem etiquetas humanas de incidente.
+
+## Semantic diff analyzer (contratos, não só linhas)
+
+Compara **`git <base>:ficheiro`** (por defeito `HEAD`) com o **worktree** usando a **TypeScript Compiler API**: superfície exportada (interfaces, tipos, funções/classes exportadas), heurística de **refactor** quando o contrato não muda, e padrões de **semântica de segurança** (ex.: `role === 'admin'` → `roles.includes('admin')`).
+
+```bash
+bash .claude/scripts/semantic-diff-analyze.sh --file server/auth/index.ts
+bash .claude/scripts/semantic-diff-analyze.sh --base HEAD~1 --file shared/types/session.ts
+```
+
+- Saída: blocos `CONTRACT CHANGE DETECTED`, `REFACTOR ANALYSIS`, `SECURITY SEMANTIC CHANGE`; JSON em `.claude/semantic-diff-report.json`.
+- Pré-flight opcional: `SEMANTIC_DIFF=1` e `SEMANTIC_DIFF_TARGET=path/to/file.ts` (ver `preflight.sh`).
+- **Limitação:** não prova equivalência comportamental formal — combina AST + heurísticas; falhas silenciosas ainda exigem testes.

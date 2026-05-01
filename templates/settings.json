@@ -77,6 +77,8 @@
       "Bash(bash .claude/scripts/living-arch-graph.sh *)",
       "Bash(bash .claude/scripts/invariant-verify.sh *)",
       "Bash(bash .claude/scripts/probabilistic-risk-model.sh *)",
+      "Bash(bash .claude/scripts/semantic-diff-analyze.sh *)",
+      "Bash(node .claude/invariant-engine/semantic-diff.cjs *)",
       "Bash(node .claude/invariant-engine/invariant-engine.cjs *)",
       "Bash(bash .claude/scripts/preflight.sh)",
       "Bash(bash .claude/scripts/session-end.sh)"

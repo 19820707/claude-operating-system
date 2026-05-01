@@ -8,6 +8,7 @@ settings.local.json
 .claude/*.tmp
 .claude/invariant-report.json
 .claude/risk-model.json
+.claude/semantic-diff-report.json
 
 # OS invariant-engine dev deps (bundled dist is committed)
 templates/invariant-engine/node_modules/

@@ -107,7 +107,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 | File | Purpose | Hook |
 |------|---------|------|
-| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** se `INVARIANT_VERIFY=1`, **probabilistic-risk-model** se `RISK_MODEL=1` + `RISK_MODEL_TARGET=<ficheiro>`, telemetria + secrets/WT | `SessionStart` |
+| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** se `INVARIANT_VERIFY=1`, **probabilistic-risk-model** se `RISK_MODEL=1` + `RISK_MODEL_TARGET`, **semantic-diff-analyze** se `SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET`, telemetria + secrets/WT | `SessionStart` |
 | `session-end.sh` | WT snapshot (`wt-snapshot.tmp`) | `SessionEnd` (antes de `os-telemetry.sh` na cadeia) |
 | `pre-compact.sh` | Extract session-state.md summary before compaction | `PreCompact` |
 | `post-compact.sh` | Re-inject context summary after compaction | `PostCompact` |
@@ -124,14 +124,17 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `living-arch-graph.sh` | Grafo de imports real (`server/`, `client/`, `shared/`, `src/`) → `.claude/architecture-graph.json`; `--blast-radius <ficheiro>`; violações vs `.claude/architecture-boundaries.json` | `preflight` + `/task-classify` |
 | `invariant-verify.sh` | Arranca motor empacotado **TypeScript Compiler API** → `.claude/invariant-report.json`; specs `.claude/invariants/*.json` | manual ou `INVARIANT_VERIFY=1` no preflight |
 | `probabilistic-risk-model.sh` | P(incident), P(regression condicionado a coverage, blast esperado (git 180d + grafo opcional) → `.claude/risk-model.json` | `/task-classify` ou `RISK_MODEL=1` + `RISK_MODEL_TARGET` |
+| `semantic-diff-analyze.sh` | Diff semântico TS: contratos exportados, heurística de refactor, padrões de risco (ex. role → roles) → `.claude/semantic-diff-report.json` | `/task-classify` ou `SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET` |
 
 ### templates/invariant-engine/
 
 | Artefacto | Propósito |
 |-----------|-----------|
-| `src/invariant-engine.ts` | Motor — `pattern_count`, `fail_closed_switch`, `sensitive_logger`, `missing_pattern` |
-| `dist/invariant-engine.cjs` | Bundle esbuild (~typescript incluído) — copiado para `.claude/invariant-engine/` no init |
-| `package.json` | `npm run build` para regenerar o `.cjs` após alterar o motor |
+| `src/invariant-engine.ts` | Motor invariantes — `pattern_count`, `fail_closed_switch`, `sensitive_logger`, `missing_pattern` |
+| `src/semantic-diff.ts` | Analisador de diff semântico (contratos AST + heurísticas) |
+| `dist/invariant-engine.cjs` | Bundle esbuild — copiado no init |
+| `dist/semantic-diff.cjs` | Bundle esbuild — copiado no init |
+| `package.json` | `npm run build` — gera **ambos** os `.cjs` |
 
 ### templates/local/
 

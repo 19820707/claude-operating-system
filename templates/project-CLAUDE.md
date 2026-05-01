@@ -54,6 +54,8 @@ Structural import graph (computed): run `bash .claude/scripts/living-arch-graph.
 
 **Probabilistic risk:** `bash .claude/scripts/probabilistic-risk-model.sh --file <path>` → `.claude/risk-model.json`.
 
+**Semantic diff:** `bash .claude/scripts/semantic-diff-analyze.sh --file <path.ts>` → `.claude/semantic-diff-report.json`.
+
 ---
 
 ## Active Roadmap

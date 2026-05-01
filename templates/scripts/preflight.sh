@@ -54,6 +54,10 @@ if [ "${RISK_MODEL:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/probabilistic-risk-model
   bash "${SCRIPTS_DIR}/probabilistic-risk-model.sh" --file "${RISK_MODEL_TARGET}" || true
   echo ""
 fi
+if [ "${SEMANTIC_DIFF:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/semantic-diff-analyze.sh" ] && [ -n "${SEMANTIC_DIFF_TARGET:-}" ]; then
+  bash "${SCRIPTS_DIR}/semantic-diff-analyze.sh" "${SEMANTIC_DIFF_TARGET}" || true
+  echo ""
+fi
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi

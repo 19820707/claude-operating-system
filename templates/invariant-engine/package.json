@@ -2,9 +2,9 @@
   "name": "os-invariant-engine",
   "private": true,
   "version": "1.0.0",
-  "description": "AST-backed invariant verification (TypeScript Compiler API). Build bundles dist/invariant-engine.cjs for bootstrap.",
+  "description": "AST-backed OS tools: invariant engine + semantic diff (TypeScript Compiler API). Build produces dist/*.cjs for bootstrap.",
   "scripts": {
-    "build": "node ./node_modules/esbuild/bin/esbuild src/invariant-engine.ts --bundle --platform=node --format=cjs --target=node18 --outfile=dist/invariant-engine.cjs --legal-comments=none"
+    "build": "node ./node_modules/esbuild/bin/esbuild src/invariant-engine.ts --bundle --platform=node --format=cjs --target=node18 --outfile=dist/invariant-engine.cjs --legal-comments=none && node ./node_modules/esbuild/bin/esbuild src/semantic-diff.ts --bundle --platform=node --format=cjs --target=node18 --outfile=dist/semantic-diff.cjs --legal-comments=none"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
