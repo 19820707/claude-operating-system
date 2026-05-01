@@ -1,6 +1,14 @@
 # Validates template cardinality vs bootstrap-manifest.json and PowerShell script syntax.
 name: bootstrap-validate
 
+permissions:
+  contents: read
+
+# Cancel redundant runs (saves CI minutes + queue latency on rapid pushes).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, master]
