@@ -106,6 +106,7 @@ Após o **Passo 3** (resumo em camadas) e o **Passo 4** (`/task-classify`), usa 
 - Se `session-state.md` não existir → avisar e criar template vazio.
 - Se `learning-log.md` não existir → avisar e criar template vazio.
 - Não começar diagnóstico, plano ou edição **antes** de apresentar o output do **Passo 3**.
-- Se `context-builder.sh` não existir no projecto → *fallback*: ler sequencialmente `~/.claude/CLAUDE.md`, `CLAUDE.md`, `.claude/session-state.md`, `.claude/learning-log.md`.
+- Se `.claude/scripts/context-builder.sh` não existir no projecto → *fallback*: ler sequencialmente `CLAUDE.md`, `.claude/session-state.md`, `.claude/learning-log.md` (e `~/.claude/CLAUDE.md` quando existir, alinhado ao Passo 1).
+- **Dispatch recomendado** sempre **explícito** com **justificação** (modelo + uma linha: superfície, Camada 0, blast, política).
 - Modo operacional por defeito: Fast (escalar se necessário).
 - **Nunca executar trabalho Opus-mandatory no modelo da sessão se este for Sonnet/Haiku.**

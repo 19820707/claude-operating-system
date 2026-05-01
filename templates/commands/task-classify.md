@@ -29,20 +29,6 @@ Classify a task before implementing it. Determines Mode, Model, blast radius, an
 5. **Never run Sonnet on Opus-mandatory surfaces** — insufficient reasoning depth for invariant detection.
 6. **Main session model** handles only coordination, classification, and orchestration between subagents.
 
-## Forward simulation (obrigatório para Build+ quando o módulo tem saliência > 60)
-
-Quando o digest de `salience-score.sh` ou a classificação indicar **módulo / superfície com score > 60** (ou modo **Build** ou superior), **antes da primeira edição** executa:
-
-```bash
-bash .claude/scripts/knowledge-graph.sh --build   # se o grafo estiver ausente ou desactualizado
-bash .claude/scripts/contract-delta.sh --snapshot <ficheiro-alvo.ts>   # só na primeira vez (baseline ausente)
-bash .claude/scripts/simulate-change.sh --target <ficheiro-alvo.ts> --change "<uma linha>" [--type unknown]
-```
-
-- Usa `/simulate` para o protocolo completo e decisão `PROCEED | SPLIT | RESOLVE_FIRST | REDESIGN`.
-- Resultado **SPLIT** ou **RESOLVE_FIRST** → **não** avançar para implementação até resolver.
-- Resolve conflitos de **CONTRACT DELTA** e **INVARIANTS AT RISK** antes de editar caminhos de produção.
-
 ## Classification tags (OPERATING_CONTRACT.md)
 
 | Tag | Scope |
@@ -66,6 +52,15 @@ Human approval required: yes | no
 Rollback: ...
 Regression test: ...
 ```
+
+## Forward simulation (obrigatório para Build+ em módulos com score > 60)
+
+```bash
+bash .claude/scripts/simulate-change.sh --target <target-file> --change "<descrição>"
+```
+
+- Usa `/simulate` para baseline de contrato (`contract-delta.sh --snapshot` quando aplicável), blast radius, invariantes e lacunas epistémicas.
+- Resultado **SPLIT** ou **RESOLVE_FIRST** → não avançar para implementação até resolver.
 
 ## Complexity check (antes de qualquer edição)
 

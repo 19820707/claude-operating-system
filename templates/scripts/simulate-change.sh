@@ -148,8 +148,33 @@ if kg_path.is_file():
     blast["transitive_count"] = len(blast["transitive_files"])
     tre = re.compile(r"\.(test|spec)\.(tsx?|mts|cts)$|__tests__/")
     tests = [f for f in blast["transitive_files"] if tre.search(f)]
-    blast["test_files"] = tests
-    blast["test_count"] = len(tests)
+    stem = Path(target).stem
+    name = Path(target).name
+    grep_tests = set(tests)
+    for gl in (
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/*.test.mts",
+        "**/*.spec.mts",
+    ):
+        for p in ROOT.glob(gl):
+            rs = str(p.relative_to(ROOT)).replace("\\", "/")
+            if any(
+                x in rs
+                for x in ("node_modules", "dist", ".claude", "build", ".git", "coverage")
+            ):
+                continue
+            try:
+                tx = p.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            if stem in tx or name in tx:
+                grep_tests.add(rs)
+    blast["test_files"] = sorted(grep_tests)
+    blast["test_count"] = len(grep_tests)
+    blast["test_match"] = "closure+grep-basename"
 else:
     blast["method"] = "grep"
     try:
@@ -230,6 +255,15 @@ if inv_path.is_file():
                     "reason": "client/server surface",
                 }
             )
+    seen_iid = set()
+    ded_inv = []
+    for x in at_risk:
+        iid = x.get("id")
+        if not iid or iid in seen_iid:
+            continue
+        seen_iid.add(iid)
+        ded_inv.append(x)
+    at_risk = ded_inv
 
 epi_gaps = []
 epi_path = ROOT / ".claude" / "epistemic-state.json"
@@ -310,8 +344,15 @@ print("")
 if epi_gaps:
     print("EPISTEMIC GAPS:")
     for g in epi_gaps:
+        st = g.get("status")
+        if st == "ASSUMED":
+            tail = " — verify before proceeding"
+        elif st == "UNKNOWN":
+            tail = " — blocking this change"
+        else:
+            tail = ""
         print(
-            f"  {g.get('status')}: {g.get('slug')} (confidence: {g.get('confidence')}, risk: {g.get('risk')}) — {g.get('statement','')[:120]}"
+            f"  {st}: {g.get('slug')} (confidence: {g.get('confidence')}, risk: {g.get('risk')}) — {g.get('statement','')[:120]}{tail}"
         )
     print("")
 print("RECOMMENDATION:")

@@ -2,14 +2,16 @@
 
 Simula o impacto de uma mudança proposta **sem alterar** ficheiros de código (contratos públicos, blast radius, invariantes, lacunas epistémicas).
 
+**Uso:** `/simulate <filepath> [descrição da mudança]`
+
 ## Sequência
 
-1. Se ainda não existe *baseline* de contrato: `bash .claude/scripts/contract-delta.sh --snapshot <filepath>`
-2. `bash .claude/scripts/simulate-change.sh --target <filepath> --change "<descrição>" [--type additive|breaking|refactor|unknown]`
+1. `bash .claude/scripts/contract-delta.sh --snapshot <filepath>` — apenas se ainda **não** existir `.claude/contracts/<slug>.json` para esse alvo (o `simulate-change.sh` faz compare vs baseline quando o snapshot já existe).
+2. `bash .claude/scripts/simulate-change.sh --target <filepath> --change "<descrição>"`
 3. Lê `.claude/simulation-report.json`
-4. Se delta de contrato **BREAKING** → apresentar opções de *splitting* (additive → migrar callers → breaking isolado)
-5. Se `transitive_count` > 10 → propor abstracção de interface para reduzir acoplamento
-6. Se **EPISTEMIC GAPS** (ASSUMED/UNKNOWN relevantes) → listar o que bloqueia a mudança
+4. Se **BREAKING** no contract delta → apresentar opções de *splitting* da mudança
+5. Se **blast_radius** `transitive_count` > 10 → propor abstracção de interface para reduzir coupling
+6. Se **ASSUMPTION / EPISTEMIC GAPS** → listar assumptions e **UNKNOWN** que bloqueiam esta mudança
 7. **Decisão explícita:** `PROCEED` | `SPLIT` | `RESOLVE_FIRST` | `REDESIGN`
 
 ## Regras

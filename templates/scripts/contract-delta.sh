@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Public contract extraction & delta (grep-style, no compiler). Exit 0; LF-only.
+# Public contract extraction & delta — patterns align with grep -E on ^export lines
+# (no TS compiler). JSON assembly uses python3. Exit 0; LF-only.
 set -uo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"

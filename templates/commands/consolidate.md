@@ -12,7 +12,7 @@ bash .claude/scripts/consolidate-runbook.sh --module server/auth/index.ts
 
 | Ficheiro | Conteúdo |
 |----------|-----------|
-| `.claude/runbooks/<slug>.md` | Pre-conditions, sequência, learning phases, heurísticas ligadas, failure modes |
+| `.claude/runbooks/<slug>.md` | Pre-conditions; **Passo 3** no corpo: model_selection, scope_boundary, hints de invariantes, “Passou a regra” / “Falhou|Evitar”, incidentes + `git log --grep=revert`; sequência; learning phases; heurísticas; failure modes |
 | `.claude/runbooks/<slug>.meta.json` | `confidence` (regra: <3 amostras → 0.4 draft; ≥10 commits → cap 0.95), contagens git/decisões |
 
 **Slug:** igual ao usado em `/session-start` (path sem extensão, minúsculas, `/` → `-`).

@@ -173,7 +173,10 @@ def main():
     n_git_total, n_git_ok = git_commit_stats(needle)
     N_TOTAL = n_git_total if n_git_total > 0 else total
     N_SUCCESS = n_git_ok if n_git_total > 0 else successes
-    if N_TOTAL < 3:
+    # Passo 2 confidence: base = N_SUCCESS/N_TOTAL (0.5 if no data); draft if N_TOTAL<3; cap 0.95 if N_TOTAL>=10
+    if N_TOTAL == 0:
+        conf = 0.5
+    elif N_TOTAL < 3:
         conf = 0.4
     else:
         conf = round(N_SUCCESS / max(N_TOTAL, 1), 3)
@@ -298,6 +301,101 @@ def main():
     for fk, meta in epi_facts[:5]:
         st = str(meta.get("statement", ""))[:160]
         lines.append(f"   - `{fk}`: {st}")
+    lines.append("")
+
+    def row_mentions_needle(row: dict) -> bool:
+        return needle.lower() in json.dumps(row, ensure_ascii=False).lower()
+
+    model_rows = [
+        r
+        for r in decisions
+        if str(r.get("type", "")).lower() == "model_selection" and row_mentions_needle(r)
+    ]
+    scope_rows = [
+        r
+        for r in decisions
+        if str(r.get("type", "")).lower() == "scope_boundary" and row_mentions_needle(r)
+    ]
+    inv_hint_rows = [
+        r
+        for r in decisions
+        if "invariant" in str(r.get("decision", "")).lower() and row_mentions_needle(r)
+    ]
+    try:
+        rp = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(ROOT),
+                "log",
+                "--oneline",
+                "-i",
+                "--grep=revert",
+                "--since=180 days ago",
+                "--",
+                needle,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        revert_hits = [x.strip() for x in (rp.stdout or "").splitlines() if x.strip()][:6]
+    except Exception:
+        revert_hits = []
+
+    passou_blocks = [p for p in phase_hits if re.search(r"Passou a regra", p, re.I)]
+    falhou_blocks = [p for p in phase_hits if re.search(r"Falhou|Evitar", p, re.I)]
+
+    lines.append("## Model discipline (from decision-log, model_selection)")
+    if model_rows:
+        for r in model_rows[-6:]:
+            lines.append(f"- [{r.get('id')}] {str(r.get('decision', ''))[:220]}")
+    else:
+        lines.append("- (no model_selection rows tied to this module in window)")
+    lines.append("")
+
+    lines.append("## Scope constraints (scope_boundary)")
+    if scope_rows:
+        for r in scope_rows[-6:]:
+            lines.append(f"- [{r.get('id')}] {str(r.get('decision', ''))[:220]}")
+    else:
+        lines.append("- (no scope_boundary rows tied to this module in window)")
+    lines.append("")
+
+    lines.append("## Invariant verify hints (from decision text)")
+    if inv_hint_rows:
+        for r in inv_hint_rows[-5:]:
+            lines.append(f"- [{r.get('id')}] {str(r.get('decision', ''))[:200]}")
+    else:
+        lines.append("- (none)")
+    lines.append("")
+
+    lines.append("## Procedural signals — Passou a regra (learning-log)")
+    if passou_blocks:
+        for p in passou_blocks[:3]:
+            lines.append(p[:600])
+            lines.append("")
+    else:
+        lines.append("- (none)")
+    lines.append("")
+
+    lines.append("## Known spikes — Falhou / Evitar (learning-log)")
+    if falhou_blocks:
+        for p in falhou_blocks[:3]:
+            lines.append(p[:600])
+            lines.append("")
+    else:
+        lines.append("- (none)")
+    lines.append("")
+
+    lines.append("## Incident / risk_acceptance + revert (git)")
+    lines.append(f"- risk_acceptance rows touching module: {len(risk_touch)}")
+    if revert_hits:
+        lines.append("- `git log --grep=revert` (180d) on module path:")
+        for h in revert_hits:
+            lines.append(f"  - {h}")
+    else:
+        lines.append("- (no revert commits matched in 180d window)")
     lines.append("")
 
     lines.append("## Sequence (evidence-derived — validate before treating as law)")
