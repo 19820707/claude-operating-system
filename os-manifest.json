@@ -1,6 +1,13 @@
 {
   "schemaVersion": 1,
-  "description": "Master manifest for Claude OS orchestration. References canonical subsystem manifests without duplicating their full contents.",
+  "runtime": {
+    "name": "Claude OS Runtime",
+    "version": "1.0.0",
+    "level": "advanced-engineering-runtime",
+    "stability": "pre-production",
+    "contract": "local-first, deterministic, manifest-governed, human-gated for critical surfaces"
+  },
+  "description": "Master manifest for Claude OS Runtime orchestration. References canonical subsystem manifests without duplicating their full contents.",
   "manifests": {
     "bootstrap": "bootstrap-manifest.json",
     "docs": "docs-index.json",
@@ -8,10 +15,14 @@
     "workflow": "workflow-manifest.json"
   },
   "entrypoints": {
+    "runtime": "tools/os-runtime.ps1",
     "health": "tools/verify-os-health.ps1",
     "doctor": "tools/os-doctor.ps1",
     "validateAll": "tools/os-validate-all.ps1",
-    "updateProject": "tools/os-update-project.ps1"
+    "updateProject": "tools/os-update-project.ps1",
+    "route": "tools/route-capability.ps1",
+    "docs": "tools/query-docs-index.ps1",
+    "workflow": "tools/workflow-status.ps1"
   },
   "managedProjectArtifacts": [
     ".claude/docs-index.json",
@@ -26,6 +37,7 @@
   "validationPolicy": {
     "defaultMode": "normal",
     "strictMode": "warnings become failures for doctor and generated scaffold verification",
-    "requiredBeforeMerge": "pwsh ./tools/os-validate-all.ps1 -Strict"
+    "requiredBeforeMerge": "pwsh ./tools/os-validate-all.ps1 -Strict",
+    "releaseGate": "human approval required for runtime, bootstrap, CI, security, permissions, filesystem, and production-safety changes"
   }
 }
