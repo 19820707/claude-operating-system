@@ -1,4 +1,4 @@
-# Validates template cardinality vs bootstrap-manifest.json and PowerShell script syntax.
+# Validates template cardinality vs bootstrap-manifest.json and bootstrap script syntax/smoke behavior.
 name: bootstrap-validate
 
 permissions:
@@ -44,3 +44,20 @@ jobs:
             }
             Write-Host "OK: $f"
           }
+
+      - name: Bootstrap dry-run smoke test
+        shell: pwsh
+        run: |
+          # Invariant: -DryRun must parse manifest-driven bootstrap lists without writing project files.
+          $target = Join-Path $env:RUNNER_TEMP 'claude-os-bootstrap-smoke'
+          ${{ github.workspace }}/init-project.ps1 -ProjectPath $target -DryRun -SkipGitInit
+
+      - name: Bash syntax (install + template scripts)
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n install.sh
+          while IFS= read -r -d '' script; do
+            bash -n "$script"
+            echo "OK: $script"
+          done < <(find templates/scripts -type f -name '*.sh' -print0 | sort -z)
