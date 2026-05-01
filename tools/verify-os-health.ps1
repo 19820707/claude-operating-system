@@ -118,6 +118,13 @@ function Test-CapabilityRouter {
     if ([int]$result.count -lt 1) { throw 'route-capability.ps1 returned no bootstrap route' }
 }
 
+function Test-Doctor {
+    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') -Json
+    if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
+    $result = ($raw | Out-String) | ConvertFrom-Json
+    if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
+}
+
 Write-Host 'claude-operating-system health'
 Write-Host "Repo: $RepoRoot"
 Write-Host ''
@@ -129,6 +136,7 @@ Invoke-HealthStep -Name 'docs-index' -Script { & (Join-Path $RepoRoot 'tools/ver
 Invoke-HealthStep -Name 'docs-index-query' -Script { Test-DocsIndexQuery }
 Invoke-HealthStep -Name 'capabilities' -Script { & (Join-Path $RepoRoot 'tools/verify-capabilities.ps1') }
 Invoke-HealthStep -Name 'capability-router' -Script { Test-CapabilityRouter }
+Invoke-HealthStep -Name 'doctor' -Script { Test-Doctor }
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
     Test-PowerShellSyntax -Files @(
         (Join-Path $RepoRoot 'install.ps1'),
@@ -139,6 +147,7 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/query-docs-index.ps1'),
         (Join-Path $RepoRoot 'tools/verify-capabilities.ps1'),
         (Join-Path $RepoRoot 'tools/route-capability.ps1'),
+        (Join-Path $RepoRoot 'tools/os-doctor.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
     )
