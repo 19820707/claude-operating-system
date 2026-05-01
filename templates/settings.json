@@ -75,6 +75,8 @@
       "Bash(bash .claude/scripts/cross-project-sync.sh *)",
       "Bash(bash .claude/scripts/module-complexity.sh *)",
       "Bash(bash .claude/scripts/living-arch-graph.sh *)",
+      "Bash(bash .claude/scripts/invariant-verify.sh *)",
+      "Bash(node .claude/invariant-engine/invariant-engine.cjs *)",
       "Bash(bash .claude/scripts/preflight.sh)",
       "Bash(bash .claude/scripts/session-end.sh)"
     ],

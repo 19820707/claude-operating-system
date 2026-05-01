@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/invariant-report.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -178,12 +178,30 @@ $scriptNames = @(
     'preflight.sh', 'session-end.sh', 'pre-compact.sh', 'post-compact.sh',
     'drift-detect.sh', 'ts-error-budget.sh', 'heuristic-ratchet.sh', 'promote-heuristics.sh', 'os-telemetry.sh',
     'risk-surface-scan.sh', 'module-complexity.sh', 'causal-trace.sh', 'session-index.sh', 'cross-project-sync.sh',
-    'living-arch-graph.sh'
+    'living-arch-graph.sh',
+    'invariant-verify.sh'
 )
 foreach ($n in $scriptNames) {
     $sf = Join-Path $scriptsSrc $n
     if (-not (Test-Path -LiteralPath $sf)) { throw "Missing OS script: $sf" }
     Copy-FileAlways -From $sf -To (Join-Path $ProjectRoot (Join-Path '.claude\scripts' $n))
+}
+
+$invBundle = Join-Path $Source 'templates\invariant-engine\dist\invariant-engine.cjs'
+$invDstDir = Join-Path $ProjectRoot '.claude\invariant-engine'
+if (Test-Path -LiteralPath $invBundle) {
+    Ensure-Dir $invDstDir
+    Copy-FileAlways -From $invBundle -To (Join-Path $invDstDir 'invariant-engine.cjs')
+} else {
+    Write-Host '  (warn) templates\invariant-engine\dist\invariant-engine.cjs missing — run: cd templates\invariant-engine ; npm install ; npm run build'
+}
+
+$invJsonSrc = Join-Path $Source 'templates\local\invariants'
+if (Test-Path -LiteralPath $invJsonSrc) {
+    Ensure-Dir (Join-Path $ProjectRoot '.claude\invariants')
+    Get-ChildItem -LiteralPath $invJsonSrc -Filter '*.json' -File | ForEach-Object {
+        Copy-IfMissing -From $_.FullName -To (Join-Path $ProjectRoot (Join-Path '.claude\invariants' $_.Name)) -Label $_.Name
+    }
 }
 
 if (-not $DryRun) {
@@ -242,7 +260,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (19 critical paths):'
+Write-Host 'Validation (20 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -262,7 +280,8 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\causal-trace.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\module-complexity.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\living-arch-graph.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\living-arch-graph.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\invariant-verify.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {
@@ -296,4 +315,5 @@ Write-Host '  3. Review .claude/settings.json permissions'
 Write-Host ("  4. cd `"" + $ProjectRoot + "`" ; claude")
 Write-Host '  5. /session-start'
 Write-Host '  6. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
+Write-Host '  7. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
 Write-Host ''

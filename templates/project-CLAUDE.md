@@ -50,6 +50,8 @@ At the end of every phase: append to `.claude/learning-log.md` via `/phase-close
 
 Structural import graph (computed): run `bash .claude/scripts/living-arch-graph.sh` — output `.claude/architecture-graph.json`. Blast radius before edits: `bash .claude/scripts/living-arch-graph.sh --blast-radius <path>`. Layer rules: `.claude/architecture-boundaries.json`.
 
+**Invariant engine (AST):** `bash .claude/scripts/invariant-verify.sh` — specs `.claude/invariants/*.json`, report `.claude/invariant-report.json`.
+
 ---
 
 ## Active Roadmap

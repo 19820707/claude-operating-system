@@ -107,7 +107,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 | File | Purpose | Hook |
 |------|---------|------|
-| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (opcional `LIVING_ARCH_SKIP=1`), telemetria + secrets/WT | `SessionStart` |
+| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** se `INVARIANT_VERIFY=1`, telemetria + secrets/WT | `SessionStart` |
 | `session-end.sh` | WT snapshot (`wt-snapshot.tmp`) | `SessionEnd` (antes de `os-telemetry.sh` na cadeia) |
 | `pre-compact.sh` | Extract session-state.md summary before compaction | `PreCompact` |
 | `post-compact.sh` | Re-inject context summary after compaction | `PostCompact` |
@@ -122,6 +122,15 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `session-index.sh` | Parse `session-state.md` → `session-index.json`; `--query <módulo>` | `/phase-close` |
 | `cross-project-sync.sh` | `--contribute` / `--inherit` / `--report` vs OS `heuristics/cross-project-evidence.json` | `/phase-close` + init (doc) |
 | `living-arch-graph.sh` | Grafo de imports real (`server/`, `client/`, `shared/`, `src/`) → `.claude/architecture-graph.json`; `--blast-radius <ficheiro>`; violações vs `.claude/architecture-boundaries.json` | `preflight` + `/task-classify` |
+| `invariant-verify.sh` | Arranca motor empacotado **TypeScript Compiler API** → `.claude/invariant-report.json`; specs `.claude/invariants/*.json` | manual ou `INVARIANT_VERIFY=1` no preflight |
+
+### templates/invariant-engine/
+
+| Artefacto | Propósito |
+|-----------|-----------|
+| `src/invariant-engine.ts` | Motor — `pattern_count`, `fail_closed_switch`, `sensitive_logger`, `missing_pattern` |
+| `dist/invariant-engine.cjs` | Bundle esbuild (~typescript incluído) — copiado para `.claude/invariant-engine/` no init |
+| `package.json` | `npm run build` para regenerar o `.cjs` após alterar o motor |
 
 ### templates/local/
 
@@ -130,6 +139,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `ts-error-budget.json` | Schema `baseline` / `ts` / `reset_by` — copiado para `.local/` |
 | `heuristic-violations.json` | Baseline H1/H5/H10 — copiado para `.local/` |
 | `architecture-boundaries.json` | Regras `from_prefix` → `to_prefix` para deteção de violações de camada — copiado para `.claude/` (se ausente) |
+| `invariants/default.json` | Pack exemplo INV-001…004 — copiado para `.claude/invariants/` (se ausente) |
 
 ### templates/profiles/
 

@@ -46,6 +46,10 @@ if [ -z "${LIVING_ARCH_SKIP:-}" ] && [ -f "${SCRIPTS_DIR}/living-arch-graph.sh" 
   bash "${SCRIPTS_DIR}/living-arch-graph.sh" || true
   echo ""
 fi
+if [ "${INVARIANT_VERIFY:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/invariant-verify.sh" ]; then
+  bash "${SCRIPTS_DIR}/invariant-verify.sh" || true
+  echo ""
+fi
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi

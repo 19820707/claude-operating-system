@@ -76,3 +76,15 @@ bash .claude/scripts/living-arch-graph.sh --blast-radius caminho/relativo/ao/fic
 - **Dependentes directos / transitivos** = módulos que importam a cadeia à volta do ficheiro (propagação reversa do grafo).
 - Se a recomendação indicar **Review / Opus** → tratar como classificação conservadora mesmo que a tarefa pareça pequena.
 - Ajustar fronteiras em `.claude/architecture-boundaries.json` (copiado do template em init) quando a stack tiver camadas diferentes.
+
+## Invariant verification (AST, não grep)
+
+Especificações JSON em `.claude/invariants/*.json` — verificação com **TypeScript Compiler API** (motor empacotado em `.claude/invariant-engine/invariant-engine.cjs`).
+
+```bash
+bash .claude/scripts/invariant-verify.sh
+```
+
+- Saída humana com prefixo **`[OS-INVARIANT]`**; relatório máquina em `.claude/invariant-report.json`.
+- Tipos de `check` suportados: `pattern_count` (contagens com posições via `SourceFile`), `fail_closed_switch` (AST `SwitchStatement` + `default`), `ast_pattern` com `ast_query` referindo `SwitchStatement` (mapeado para o mesmo verificador), `sensitive_logger` (chamadas a sinks + argumentos), `missing_pattern` (ficheiros sem token obrigatório — WARN).
+- Para correr no arranque da sessão: `INVARIANT_VERIFY=1` (ver `preflight.sh`). **CRITICAL** `FAIL` deve bloquear merge / exigir Opus + revisão humana.
