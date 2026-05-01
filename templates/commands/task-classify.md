@@ -115,3 +115,14 @@ bash .claude/scripts/semantic-diff-analyze.sh --base HEAD~1 --file shared/types/
 - Saída: blocos `CONTRACT CHANGE DETECTED`, `REFACTOR ANALYSIS`, `SECURITY SEMANTIC CHANGE`; JSON em `.claude/semantic-diff-report.json`.
 - Pré-flight opcional: `SEMANTIC_DIFF=1` e `SEMANTIC_DIFF_TARGET=path/to/file.ts` (ver `preflight.sh`).
 - **Limitação:** não prova equivalência comportamental formal — combina AST + heurísticas; falhas silenciosas ainda exigem testes.
+
+## Autonomous learning loop (observação → hipótese → política)
+
+Contrasta com **`promote-heuristics.sh`** (promove YAML **já escrito** no `learning-log`): o **`autonomous-learning-loop.sh`** procura **padrões anómalos** em `.claude/session-index.json` + **git** (reverts no módulo), gera **hipóteses testáveis** (`H-AUTO-NNN`) e **rascunhos de política** com confiança — **sem** escrever em `heuristics/operational.md` até revisão humana.
+
+```bash
+bash .claude/scripts/autonomous-learning-loop.sh
+```
+
+- Saída: blocos `ANOMALY DETECTED`, `HYPOTHESIS H-AUTO-…`, `POLICY SUGGESTION`; JSON em `.claude/learning-loop-report.json`; estado numérico em `.claude/learning-loop-state.json` (template `templates/local/learning-loop-state.json`).
+- Pré-flight opcional: `LEARNING_LOOP=1` (ver `preflight.sh`). Depois de validar evidência: copiar regra para `learning-log.md` (YAML) e usar `promote-heuristics.sh --promote` se aplicável.

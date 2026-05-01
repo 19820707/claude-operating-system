@@ -107,7 +107,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 | File | Purpose | Hook |
 |------|---------|------|
-| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** se `INVARIANT_VERIFY=1`, **probabilistic-risk-model** se `RISK_MODEL=1` + `RISK_MODEL_TARGET`, **semantic-diff-analyze** se `SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET`, telemetria + secrets/WT | `SessionStart` |
+| `preflight.sh` | Orquestra drift, ratchet, TS budget, **risk-surface-scan**, **living-arch-graph** (`LIVING_ARCH_SKIP=1`), **invariant-verify** (`INVARIANT_VERIFY=1`), **probabilistic-risk-model** (`RISK_MODEL=1` + `RISK_MODEL_TARGET`), **semantic-diff-analyze** (`SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET`), **autonomous-learning-loop** (`LEARNING_LOOP=1`, lê `session-index.json`), telemetria + secrets/WT | `SessionStart` |
 | `session-end.sh` | WT snapshot (`wt-snapshot.tmp`) | `SessionEnd` (antes de `os-telemetry.sh` na cadeia) |
 | `pre-compact.sh` | Extract session-state.md summary before compaction | `PreCompact` |
 | `post-compact.sh` | Re-inject context summary after compaction | `PostCompact` |
@@ -125,6 +125,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `invariant-verify.sh` | Arranca motor empacotado **TypeScript Compiler API** → `.claude/invariant-report.json`; specs `.claude/invariants/*.json` | manual ou `INVARIANT_VERIFY=1` no preflight |
 | `probabilistic-risk-model.sh` | P(incident), P(regression condicionado a coverage, blast esperado (git 180d + grafo opcional) → `.claude/risk-model.json` | `/task-classify` ou `RISK_MODEL=1` + `RISK_MODEL_TARGET` |
 | `semantic-diff-analyze.sh` | Diff semântico TS: contratos exportados, heurística de refactor, padrões de risco (ex. role → roles) → `.claude/semantic-diff-report.json` | `/task-classify` ou `SEMANTIC_DIFF=1` + `SEMANTIC_DIFF_TARGET` |
+| `autonomous-learning-loop.sh` | Anomalias (sessões + git revert) → hipóteses `H-AUTO-*` → rascunho de política; relatório `.claude/learning-loop-report.json` — **gate humano** antes de `operational.md` | `/phase-close` / manual / `LEARNING_LOOP=1` |
 
 ### templates/invariant-engine/
 
@@ -144,6 +145,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `heuristic-violations.json` | Baseline H1/H5/H10 — copiado para `.local/` |
 | `architecture-boundaries.json` | Regras `from_prefix` → `to_prefix` para deteção de violações de camada — copiado para `.claude/` (se ausente) |
 | `invariants/default.json` | Pack exemplo INV-001…004 — copiado para `.claude/invariants/` (se ausente) |
+| `learning-loop-state.json` | Contador `H-AUTO-NNN` para o loop autónomo — copiado para `.claude/` (se ausente) |
 
 ### templates/profiles/
 

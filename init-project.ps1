@@ -83,7 +83,7 @@ function Copy-ClaudeMd {
 function Update-GitIgnore {
     param([string]$Root)
     $path = Join-Path $Root '.gitignore'
-    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/invariant-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json')
+    $lines = @('.local/', '.claude/*.tmp', '.claude/os-metrics.json', '.claude/risk-surfaces.json', '.claude/complexity-map.json', '.claude/session-index.json', '.claude/architecture-graph.json', '.claude/invariant-report.json', '.claude/risk-model.json', '.claude/semantic-diff-report.json', '.claude/learning-loop-report.json')
     if ($DryRun) {
         Write-Host "  [dry]  ensure .gitignore rules"
         return
@@ -181,7 +181,8 @@ $scriptNames = @(
     'living-arch-graph.sh',
     'invariant-verify.sh',
     'probabilistic-risk-model.sh',
-    'semantic-diff-analyze.sh'
+    'semantic-diff-analyze.sh',
+    'autonomous-learning-loop.sh'
 )
 foreach ($n in $scriptNames) {
     $sf = Join-Path $scriptsSrc $n
@@ -258,6 +259,9 @@ if (Test-Path -LiteralPath (Join-Path $localTpl 'heuristic-violations.json')) {
 if (Test-Path -LiteralPath (Join-Path $localTpl 'architecture-boundaries.json')) {
     Copy-IfMissing -From (Join-Path $localTpl 'architecture-boundaries.json') -To (Join-Path $ProjectRoot '.claude\architecture-boundaries.json') -Label 'architecture-boundaries.json'
 }
+if (Test-Path -LiteralPath (Join-Path $localTpl 'learning-loop-state.json')) {
+    Copy-IfMissing -From (Join-Path $localTpl 'learning-loop-state.json') -To (Join-Path $ProjectRoot '.claude\learning-loop-state.json') -Label 'learning-loop-state.json'
+}
 
 Copy-ClaudeMd -From (Join-Path $templates 'project-CLAUDE.md') -To (Join-Path $ProjectRoot 'CLAUDE.md')
 
@@ -270,7 +274,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (22 critical paths):'
+Write-Host 'Validation (23 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -293,7 +297,8 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\living-arch-graph.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\invariant-verify.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\probabilistic-risk-model.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\semantic-diff-analyze.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\semantic-diff-analyze.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\autonomous-learning-loop.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {

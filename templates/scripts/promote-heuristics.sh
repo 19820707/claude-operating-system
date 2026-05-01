@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Promote learning-log YAML blocks to operational heuristics. H10: LF-only.
+# Promote learning-log YAML blocks to operational heuristics (human-curated YAML).
+# For auto-detected patterns see autonomous-learning-loop.sh → learning-loop-report.json → learning-log front-matter.
+# H10: LF-only.
 set -euo pipefail
 
 echo "[OS-HEURISTIC-PROMOTE]"

@@ -64,6 +64,15 @@ Se o clone `claude-operating-system` estiver acessível nesta máquina, sincroni
 bash .claude/scripts/cross-project-sync.sh --contribute "/caminho/absoluto/para/claude-operating-system"
 ```
 
+### 7. Loop de aprendizagem autónoma (opcional)
+Se existir `.claude/session-index.json` com histórico de sessões:
+
+```bash
+bash .claude/scripts/autonomous-learning-loop.sh
+```
+
+- Rever `ANOMALY` / `HYPOTHESIS` / `POLICY SUGGESTION` em consola ou `.claude/learning-loop-report.json`. Só promover regras a `operational.md` após evidência humana (p.ex. YAML no `learning-log.md` + `promote-heuristics.sh`).
+
 ## Regras
 
 - Distinguir sempre: evidência / inferência / decisão

@@ -56,6 +56,8 @@ Structural import graph (computed): run `bash .claude/scripts/living-arch-graph.
 
 **Semantic diff:** `bash .claude/scripts/semantic-diff-analyze.sh --file <path.ts>` → `.claude/semantic-diff-report.json`.
 
+**Learning loop:** `bash .claude/scripts/autonomous-learning-loop.sh` → `.claude/learning-loop-report.json` (anomalias / hipóteses; promoção manual).
+
 ---
 
 ## Active Roadmap

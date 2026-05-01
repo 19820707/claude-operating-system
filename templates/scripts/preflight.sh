@@ -58,6 +58,10 @@ if [ "${SEMANTIC_DIFF:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/semantic-diff-analyze
   bash "${SCRIPTS_DIR}/semantic-diff-analyze.sh" "${SEMANTIC_DIFF_TARGET}" || true
   echo ""
 fi
+if [ "${LEARNING_LOOP:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/autonomous-learning-loop.sh" ]; then
+  bash "${SCRIPTS_DIR}/autonomous-learning-loop.sh" || true
+  echo ""
+fi
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi
