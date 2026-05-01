@@ -26,6 +26,7 @@ bash .claude/scripts/salience-score.sh --digest
 - Decisões **approval_gate** ou gates humanos pendentes; leases **WRITE** activos; violações de **policy-compliance** se houver.
 
 <!-- CAMADA 1 — CONTEXTO DA SESSÃO ACTUAL -->
+- **Runbook procedural (memória de execução):** se o trabalho planeável tiver um **módulo alvo** (ex.: path em `session-state` ou explícito), calcular o **slug** do runbook: normalizar path relativo ao repo, remover extensão `.ts`/`.tsx`/`.mts`/`.cts`, minúsculas, substituir `/` e caracteres não alfanuméricos por `-`, colapsar `-` repetidos (ex.: `server/auth/index.ts` → ficheiro `.claude/runbooks/server-auth-index.md`). Se existir, **ler e incorporar** esse ficheiro **aqui**, antes do bullet operacional genérico seguinte.
 - Branch, HEAD, WT, fase, objectivo, próximo passo mínimo (evidência: `session-state` + `git`).
 
 <!-- CAMADA 2 — CONHECIMENTO RELEVANTE PARA O PRÓXIMO PASSO -->
@@ -49,6 +50,7 @@ bash .claude/scripts/salience-score.sh --digest
 6. Lê `.claude/learning-log.md` — heurísticas activas e anti-padrões desta fase
 7. Índice de sessões: `.claude/session-index.json` é actualizado com `bash .claude/scripts/session-index.sh` (típico no `/phase-close`). Consulta por módulo: `bash .claude/scripts/session-index.sh --query server/auth`. Complexidade git: `bash .claude/scripts/module-complexity.sh <ficheiro.ts>`.
 8. **Legado / opcional:** `policy-compliance-audit.sh`, `context-topology.sh`, `invariant-lifecycle.sh`, `coordination-check.sh`, `epistemic-check.sh` — ainda disponíveis para fluxos antigos ou gates manuais.
+9. **Consolidação de runbooks (opcional, entre fases):** `bash .claude/scripts/consolidate-runbook.sh --module <path>` — actualiza `.claude/runbooks/<slug>.md` a partir de `decision-log` + `learning-log` + invariantes; o próximo `/session-start` com esse módulo alvo injeta o runbook na **CAMADA 1**.
 
 ## Output esperado (formato compacto)
 

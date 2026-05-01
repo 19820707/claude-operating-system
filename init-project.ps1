@@ -140,6 +140,7 @@ Ensure-Dir (Join-Path $ProjectRoot '.claude\agents')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\policies')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\scripts')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\heuristics')
+Ensure-Dir (Join-Path $ProjectRoot '.claude\runbooks')
 Ensure-Dir (Join-Path $ProjectRoot '.local')
 
 if (-not $SkipGitInit) {
@@ -179,6 +180,7 @@ $scriptNames = @(
     'autonomous-learning-loop.sh',
     'causal-trace.sh',
     'change-simulation.sh',
+    'consolidate-runbook.sh',
     'context-allocator.sh',
     'context-topology.sh',
     'coordination-check.sh',
@@ -330,7 +332,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (39 critical paths):'
+Write-Host 'Validation (40 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -370,7 +372,8 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\salience-score.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\change-simulation.sh'),
-    (Join-Path $ProjectRoot '.claude\invariant-engine\simulate-contract-delta.cjs')
+    (Join-Path $ProjectRoot '.claude\invariant-engine\simulate-contract-delta.cjs'),
+    (Join-Path $ProjectRoot '.claude\scripts\consolidate-runbook.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {
