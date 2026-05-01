@@ -52,9 +52,11 @@
 
 ## Decisões tomadas
 
-| Decisão | Justificação |
-|---------|-------------|
-| | |
+| ID | Decisão | Ficheiros | Commit | Risco associado |
+|----|---------|-----------|--------|-----------------|
+| | | | | |
+
+<!-- IDs D-NNN: propagar o mesmo ID nas mensagens de commit para causal-trace.sh e post-mortems. -->
 
 ---
 

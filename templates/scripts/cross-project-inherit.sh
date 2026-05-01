@@ -25,6 +25,7 @@ fi
 
 python3 - "$JSON" "$THRESH" <<'PY'
 import json, sys
+
 path, th = sys.argv[1], int(sys.argv[2])
 try:
     data = json.load(open(path, "r", encoding="utf-8"))
@@ -32,24 +33,42 @@ except Exception as e:
     print(f"  skip: invalid json ({e})")
     raise SystemExit(0)
 patterns = data.get("patterns") or {}
-out = []
+inherited = []
+pending = []
 for name, meta in patterns.items():
     try:
         n = int(meta.get("total_confirmations", 0))
     except Exception:
         n = 0
+    promoted = meta.get("promoted_to")
+    prom_s = promoted if promoted else "pending"
+    ci = meta.get("confirmed_in") or []
+    n_proj = len(ci) if isinstance(ci, list) else 0
+    row = (name, n, prom_s, meta.get("impact", ""), n_proj)
     if n >= th:
-        promoted = meta.get("promoted_to") or "pending"
-        out.append((name, n, promoted, meta.get("impact", "")))
-if not out:
-    print(f"  ok: no patterns >= {th} confirmations")
+        inherited.append(row)
+    elif n >= 1:
+        pending.append(row)
+
+if inherited:
+    print(f"  inherited knowledge (>={th} confirmations):")
+    for name, n, prom_s, imp, n_proj in sorted(inherited, key=lambda x: -x[1]):
+        hp = prom_s if str(prom_s).startswith("H") else f"promoted={prom_s}"
+        print(f"    {hp} — {name} (confirmed in {n_proj} project(s), total_confirmations={n})")
+        if imp:
+            print(f"      impact: {imp}")
+if pending:
+    print("  pending (below inheritance threshold — still useful signal):")
+    for name, n, prom_s, imp, n_proj in sorted(pending, key=lambda x: -x[1]):
+        hp = prom_s if str(prom_s).startswith("H") else "pending"
+        print(f"    {hp} — {name} (confirmed in {n_proj} project(s), total_confirmations={n})")
+        if imp:
+            print(f"      impact: {imp}")
+if not inherited and not pending:
+    print("  ok: no patterns in cross-project-evidence.json")
     raise SystemExit(0)
-print(f"  inherited knowledge candidates (>={th} confirmations):")
-for name, n, prom, imp in sorted(out, key=lambda x: -x[1]):
-    print(f"    - {name}: confirmations={n} promoted={prom}")
-    if imp:
-        print(f"      impact: {imp}")
-print("  ACTION: ensure these appear in learning-log / operational heuristics when relevant to this repo")
+if inherited or pending:
+    print("  ACTION: reflect promoted items in CLAUDE.md / learning-log when they apply to this repo")
 PY
 
 exit 0

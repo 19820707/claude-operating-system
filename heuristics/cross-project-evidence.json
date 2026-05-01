@@ -8,6 +8,13 @@
       "last_seen": "2026-05-01",
       "promoted_to": "H1",
       "impact": "CI noise; accidental CRLF in tracked files"
+    },
+    "rate-limit-zero-boundary": {
+      "confirmed_in": ["example-repo-a"],
+      "total_confirmations": 1,
+      "last_seen": "2026-05-01",
+      "promoted_to": null,
+      "impact": "fail-open on rate limiting"
     }
   }
 }

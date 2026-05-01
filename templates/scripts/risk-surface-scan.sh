@@ -51,15 +51,16 @@ for line in text.splitlines():
 # Categories: (label, combined ripgrep-style pattern)
 # Note: heuristic only — expect false positives; tune CLAUDE.md Critical Surfaces.
 # git grep -E (ERE): avoid PCRE-only tokens like \b
+# (internal_key, git grep -E pattern, short label for console — matches proposal wording)
 CATEGORIES = [
-    ("auth/jwt/session", r"jwt|jsonwebtoken|passport\.authenticate|express\.session"),
-    ("billing/payments", r"stripe|@stripe|payment_intent|billing|subscription\.(create|update)"),
-    ("crypto/passwords", r"bcrypt|scrypt|argon2|pbkdf2|createHash\(|\.createCipher"),
-    ("migrations/schema", r"migrate|migration|drizzle.*push|prisma[[:space:]]+db[[:space:]]+push|ALTER[[:space:]]+TABLE"),
-    ("publish/deploy", r"npm[[:space:]]+publish|semantic-release|release-it|production[[:space:]]+deploy"),
-    ("secrets/config", r"apiKey|api_key|credential|client_secret|process\.env\.[A-Z0-9_]{4,}"),
-    ("destructive-sql", r"DELETE[[:space:]]+FROM|DROP[[:space:]]+TABLE|TRUNCATE[[:space:]]+TABLE"),
-    ("outbound-comms", r"sendEmail|sendMail|sendSMS|sendNotification|twilio\.messages"),
+    ("auth", r"jwt|jsonwebtoken|passport\.authenticate|express\.session", "jwt / session / passport"),
+    ("billing", r"stripe|@stripe|payment_intent|billing|subscription\.(create|update)", "stripe / payment / billing"),
+    ("crypto", r"bcrypt|scrypt|argon2|pbkdf2|createHash\(|\.createCipher", "bcrypt / crypto / hash"),
+    ("migrations", r"migrate|migration|drizzle.*push|prisma[[:space:]]+db[[:space:]]+push|ALTER[[:space:]]+TABLE", "migrate / drizzle / prisma / ALTER TABLE"),
+    ("publish", r"npm[[:space:]]+publish|semantic-release|release-it|production[[:space:]]+deploy", "publish / deploy / release"),
+    ("secrets", r"apiKey|api_key|credential|client_secret|process\.env\.[A-Z0-9_]{4,}", "secret / token / apiKey"),
+    ("destructive_sql", r"DELETE[[:space:]]+FROM|DROP[[:space:]]+TABLE|TRUNCATE[[:space:]]+TABLE", "DELETE / DROP / TRUNCATE"),
+    ("comms_pii", r"sendEmail|sendMail|sendSMS|sendNotification|twilio\.messages", "sendEmail / SMS / notifications (PII)"),
 ]
 
 PATHSPECS = [
@@ -108,10 +109,10 @@ def git_grep_files(pattern: str) -> set[str]:
         return set()
     return {norm(x) for x in out.splitlines() if x.strip()}
 
-hits: dict[str, list[str]] = {}
-for label, pat in CATEGORIES:
+hits: dict[str, list[tuple[str, str]]] = {}
+for key, pat, human in CATEGORIES:
     for f in git_grep_files(pat):
-        hits.setdefault(f, []).append(label)
+        hits.setdefault(f, []).append((key, human))
 
 if not hits:
     print("  ok: no heuristic risk hits in tracked code (or no matching extensions)")
@@ -124,10 +125,15 @@ if not new_surfaces:
 
 print(f"  review: {len(new_surfaces)} path(s) match risk heuristics but are not clearly declared in Critical Surfaces:")
 for f, labs in new_surfaces[:25]:
-    uniq = ", ".join(sorted(set(labs)))
+    seen_h = set()
     print(f"  NEW SURFACE DETECTED: {f}")
-    print(f"    patterns: {uniq}")
-    print("    ACTION: add to CLAUDE.md → Critical Surfaces (Opus mandatory) if this path is production-critical")
+    for _k, human in labs:
+        if human in seen_h:
+            continue
+        seen_h.add(human)
+        print(f"    pattern: {human}")
+    print("    not declared in CLAUDE.md Critical Surfaces")
+    print("    ACTION: review and add to Opus-mandatory list (CLAUDE.md → Critical Surfaces)")
 if len(new_surfaces) > 25:
     print(f"  ... and {len(new_surfaces) - 25} more (cap 25)")
 if not declared:

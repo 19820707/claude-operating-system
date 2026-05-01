@@ -39,6 +39,14 @@ Classify a task before implementing it. Determines Mode, Model, blast radius, an
 | D | Backend/API -- routes, middleware, storage, payments, headers |
 | E | Infra/CI/gates |
 
+## Evidência objectiva (git) — recomendado
+
+Quando a tarefa tocar um ficheiro concreto, corre na raiz do repo:
+
+`bash .claude/scripts/module-complexity.sh --days=90 caminho/relativo/ao/ficheiro.ts`
+
+Incorpora o bloco **`[OS-COMPLEXITY]`** (churn, bug density, autores, risco histórico) na classificação: ficheiros com churn/fix density elevados justificam **subir** modelo/modo mesmo que a tarefa pareça “só refactor”.
+
 ## Output before any edit
 
 ```

@@ -53,13 +53,29 @@ else
   MSGS=$(git log -n 60 --format=%B "$COMMIT" 2>/dev/null | grep -oE 'D-[0-9]+' | sort -u | head -20 || true)
 fi
 
+if [ -f ".claude/session-state.md" ]; then
+  SS=$(grep -oE 'D-[0-9]+' .claude/session-state.md 2>/dev/null | sort -u | head -20 || true)
+  if [ -n "${SS}" ]; then
+    echo "  session-state.md references:"
+    echo "${SS}" | sed 's/^/    /'
+  fi
+fi
+
+if [ -n "$PATHSPEC" ]; then
+  echo "  commits (subject) mentioning D-NNN for path:"
+  git log -n 25 --grep='D-[0-9][0-9]*' --extended-regexp --format='%h %s (%ci)' "$COMMIT" -- "$PATHSPEC" 2>/dev/null | sed 's/^/    /' || true
+else
+  echo "  commits (subject) mentioning D-NNN:"
+  git log -n 25 --grep='D-[0-9][0-9]*' --extended-regexp --format='%h %s (%ci)' "$COMMIT" 2>/dev/null | sed 's/^/    /' || true
+fi
+
 if [ -z "${MSGS}" ]; then
-  echo "  (no D-NNN decision ids found in recent commit messages for this scope)"
+  echo "  (no D-NNN in recent commit bodies for this scope — subjects may still list IDs above)"
   echo "  hint: reference decisions in commits, e.g. chore(auth): rate limit D-043"
   exit 0
 fi
 
-echo "  decision ids in history:"
+echo "  decision ids in recent commit bodies:"
 echo "${MSGS}" | sed 's/^/    /'
 
 SUBJ=$(git log -1 --format='%h %s' "$COMMIT" 2>/dev/null || true)

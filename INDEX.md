@@ -120,7 +120,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `module-complexity.sh` | Churn / fixes / autores (git `--since`) para um ficheiro | manual / `/task-classify` |
 | `causal-trace.sh` | IDs `D-NNN` nas mensagens de commit vs path | post-mortem |
 | `session-index-build.sh` | Front-matter YAML → `.claude/session-index.json` | `session-end` |
-| `cross-project-inherit.sh` | Lista padrões com confirmações ≥ threshold (`cross-project-evidence.json`) | `preflight` |
+| `cross-project-inherit.sh` | Padrões herdados (≥ threshold) + **pendentes** (1 conf.) desde `cross-project-evidence.json` | `preflight` |
 
 ### templates/local/
 

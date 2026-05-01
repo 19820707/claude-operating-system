@@ -41,10 +41,26 @@ FIXES=${FIXES:-0}
 AUTHORS=$(git log --since="$SINCE" --format='%ae' --follow -- "$FILE" 2>/dev/null | sort -u | wc -l | tr -d ' ')
 AUTHORS=${AUTHORS:-0}
 
+CHURN_TAG=LOW
+if [ "$CHURN" -ge 15 ]; then
+  CHURN_TAG=ELEVATED
+fi
+if [ "$CHURN" -ge 25 ]; then
+  CHURN_TAG=HIGH
+fi
+
+FIX_TAG=LOW
+if [ "$FIXES" -ge 3 ]; then
+  FIX_TAG=ELEVATED
+fi
+if [ "$FIXES" -ge 5 ]; then
+  FIX_TAG=HIGH
+fi
+
 echo "  file    : $FILE"
-echo "  window  : last ${DAYS}d (git --since)"
-echo "  churn   : ${CHURN} commits"
-echo "  fix-like: ${FIXES} commits (grep fix|bug|hotfix in subject)"
+echo "  window  : last ${DAYS}d (git --since, --follow)"
+echo "  churn (${DAYS}d): ${CHURN} commits — ${CHURN_TAG}"
+echo "  bug density (fix|bug|hotfix in subject): ${FIXES} commits — ${FIX_TAG}"
 echo "  authors : ${AUTHORS} unique emails"
 
 RISK=LOW
@@ -57,7 +73,8 @@ fi
 
 echo "  historical risk (heuristic): ${RISK}"
 if [ "$RISK" != "LOW" ]; then
-  echo "  recommendation: treat edits as higher-risk; consider Opus / deeper review regardless of task label"
+  echo "  recommendation: escalate to Opus regardless of task type if touching invariants here"
+  echo "  note: elevated git churn / fix density — not a substitute for code review"
 fi
 
 exit 0
