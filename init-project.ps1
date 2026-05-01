@@ -32,6 +32,7 @@ function Test-OsRepo {
         (Join-Path $Root 'tools\route-capability.ps1'),
         (Join-Path $Root 'source\skills'),
         (Join-Path $Root 'templates'),
+        (Join-Path $Root 'templates\checklists'),
         (Join-Path $Root 'templates\commands'),
         (Join-Path $Root 'templates\scripts\preflight.sh')
     )
@@ -190,6 +191,7 @@ if ($Profile -and $Profile -notin @('node-ts-service', 'react-vite-app')) {
 $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectPath)
 $templates = Join-Path $Source 'templates'
 $skillsSrc = Join-Path $Source 'source\skills'
+$checklistsSrc = Join-Path $Source 'templates\checklists'
 $policiesSrc = Join-Path $Source 'policies'
 $heuristicsSrc = Join-Path $Source 'heuristics'
 $scriptsSrc = Join-Path $Source 'templates\scripts'
@@ -214,6 +216,7 @@ Ensure-Dir (Join-Path $ProjectRoot '.claude')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\commands')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\agents')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\skills')
+Ensure-Dir (Join-Path $ProjectRoot '.claude\checklists')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\policies')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\scripts')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\contracts')
@@ -245,6 +248,8 @@ Copy-FileAlways -From (Join-Path $Source 'os-capabilities.json') -To (Join-Path 
 Copy-FileAlways -From (Join-Path $Source 'tools\route-capability.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\route-capability.ps1')
 # Invariant: workflow-manifest.json defines the progressive delivery gates for artifact-first work.
 Copy-FileAlways -From (Join-Path $Source 'workflow-manifest.json') -To (Join-Path $ProjectRoot '.claude\workflow-manifest.json')
+# Invariant: checklists are safety/release gates, not optional prose.
+Copy-DirectoryContentsAlways -From $checklistsSrc -To (Join-Path $ProjectRoot '.claude\checklists')
 
 Get-ChildItem -LiteralPath $commandsSrc -Filter '*.md' -File | ForEach-Object {
     Copy-FileAlways -From $_.FullName -To (Join-Path $ProjectRoot (Join-Path '.claude\commands' $_.Name))
@@ -419,14 +424,15 @@ Write-Host 'Next steps:'
 Write-Host '  1. bash .claude/scripts/ts-error-budget.sh   # set TS baseline (TypeScript repos)'
 Write-Host '  2. Route task: pwsh .claude/scripts/route-capability.ps1 -Query "bootstrap"'
 Write-Host '  3. Check workflow gates: open .claude/workflow-manifest.json'
-Write-Host '  4. Query OS docs: pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap'
-Write-Host '  5. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD)'
-Write-Host '  6. Review .claude/settings.json permissions'
-Write-Host ("  7. cd `"" + $ProjectRoot + "`" ; claude")
-Write-Host '  8. /session-start'
-Write-Host '  9. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
-Write-Host ' 10. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
-Write-Host ' 11. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
-Write-Host ' 12. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
-Write-Host ' 13. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
+Write-Host '  4. Review safety gates: open .claude/checklists/SECURITY-CHECKLIST.md'
+Write-Host '  5. Query OS docs: pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap'
+Write-Host '  6. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD)'
+Write-Host '  7. Review .claude/settings.json permissions'
+Write-Host ("  8. cd `"" + $ProjectRoot + "`" ; claude")
+Write-Host '  9. /session-start'
+Write-Host ' 10. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
+Write-Host ' 11. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
+Write-Host ' 12. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
+Write-Host ' 13. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
+Write-Host ' 14. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
 Write-Host ''
