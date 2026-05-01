@@ -25,13 +25,18 @@ jobs:
         shell: pwsh
         run: ${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1
 
-      - name: PowerShell syntax (install + init)
+      - name: Documentation vs manifest
+        shell: pwsh
+        run: ${{ github.workspace }}/tools/verify-doc-manifest.ps1
+
+      - name: PowerShell syntax (install + init + validators)
         shell: pwsh
         run: |
           $files = @(
             "${{ github.workspace }}/install.ps1",
             "${{ github.workspace }}/init-project.ps1",
-            "${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1"
+            "${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1",
+            "${{ github.workspace }}/tools/verify-doc-manifest.ps1"
           )
           foreach ($f in $files) {
             $tok = $null
