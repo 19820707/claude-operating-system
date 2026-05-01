@@ -14,7 +14,7 @@
     "policies": { "include": "*.md", "minimum": 7 },
     "prompts": { "include": "*.md", "minimum": 7 },
     "heuristics": { "include": "*.md", "minimum": 1 },
-    "templates/scripts": { "include": "*.sh", "exact": 16 },
+    "templates/scripts": { "include": "*.sh", "exact": 17 },
     "templates/invariant-engine/dist": { "include": "*.cjs", "exact": 1 }
   }
 }

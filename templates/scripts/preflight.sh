@@ -50,6 +50,10 @@ if [ "${INVARIANT_VERIFY:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/invariant-verify.s
   bash "${SCRIPTS_DIR}/invariant-verify.sh" || true
   echo ""
 fi
+if [ "${RISK_MODEL:-0}" = "1" ] && [ -f "${SCRIPTS_DIR}/probabilistic-risk-model.sh" ] && [ -n "${RISK_MODEL_TARGET:-}" ]; then
+  bash "${SCRIPTS_DIR}/probabilistic-risk-model.sh" --file "${RISK_MODEL_TARGET}" || true
+  echo ""
+fi
 if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi

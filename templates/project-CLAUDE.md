@@ -52,6 +52,8 @@ Structural import graph (computed): run `bash .claude/scripts/living-arch-graph.
 
 **Invariant engine (AST):** `bash .claude/scripts/invariant-verify.sh` — specs `.claude/invariants/*.json`, report `.claude/invariant-report.json`.
 
+**Probabilistic risk:** `bash .claude/scripts/probabilistic-risk-model.sh --file <path>` → `.claude/risk-model.json`.
+
 ---
 
 ## Active Roadmap

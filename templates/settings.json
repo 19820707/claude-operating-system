@@ -76,6 +76,7 @@
       "Bash(bash .claude/scripts/module-complexity.sh *)",
       "Bash(bash .claude/scripts/living-arch-graph.sh *)",
       "Bash(bash .claude/scripts/invariant-verify.sh *)",
+      "Bash(bash .claude/scripts/probabilistic-risk-model.sh *)",
       "Bash(node .claude/invariant-engine/invariant-engine.cjs *)",
       "Bash(bash .claude/scripts/preflight.sh)",
       "Bash(bash .claude/scripts/session-end.sh)"
