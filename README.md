@@ -41,8 +41,10 @@ claude-operating-system/          ← this repo (global source of truth)
 
 Templates ship **proactive** checks, not only policy text:
 
-- **Context drift** — `templates/scripts/context-drift-detect.sh` compares the **Identificação** table in `.claude/session-state.md` to live `git` (branch, HEAD, commits after the documented SHA). Invoked from `preflight.sh` (warn-only). Set **`OS_STRICT_GATES=1`** so `session-end.sh` runs the same scripts with **`--enforce`** and blocks the hook on drift or TS regression.
-- **TypeScript error budget** — `.local/ts-error-budget.json` (template under `templates/local/`) holds `baselineErrors` and the `tsc` command. Run **`bash .claude/scripts/ts-error-budget-init.sh`** once to capture the baseline; each session **`ts-error-budget-check.sh`** warns if errors increased above baseline.
+- **Context drift** — `templates/scripts/drift-detect.sh` compares the **Identificação** table in `.claude/session-state.md` to live `git`, logs `.claude/drift.log`, and warns on stale state / WT growth. Invoked from `preflight.sh` (always `exit 0`).
+- **TypeScript error budget** — `templates/scripts/ts-error-budget.sh` + `.local/ts-error-budget.json` (`baseline`, `ts`, `reset_by`). Auto-inits baseline; **`--enforce`** exits non-zero on regression; **`--reset`** sets a new baseline.
+- **Heuristic ratchet** — `heuristic-ratchet.sh` tracks H1/H5/H10 counts in `.local/heuristic-violations.json` with **`--enforce`** / **`--reset`**.
+- **Telemetry** — `os-telemetry.sh` maintains `.claude/os-metrics.json`; SessionEnd runs it after `session-end.sh`. Use **`--report`** to print metrics without incrementing `sessions`.
 
 ---
 
@@ -103,19 +105,13 @@ git push
 
 ```powershell
 cd <path-to>\claude-operating-system
-powershell -ExecutionPolicy Bypass -File .\init-project.ps1 -ProjectPath "$env:USERPROFILE\claude\my-new-project"
+powershell -ExecutionPolicy Bypass -File .\init-project.ps1 -ProjectPath "$env:USERPROFILE\claude\my-new-project" -Profile node-ts-service
 cd $env:USERPROFILE\claude\my-new-project
 claude
 # Type: /session-start
 ```
 
-Or a short name under `%USERPROFILE%\claude\`:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\init-project.ps1 -Name my-new-project
-```
-
-Creates `CLAUDE.md`, `.claude/` (session-state, learning-log, settings, policies, commands, agents, critical-surfaces, heuristics, scripts), runs `git init`, validates counts (10 commands, 5 agents, 5 critical surfaces), and appends minimal `.gitignore` rules. **Protected:** `session-state.md` and `learning-log.md` are never overwritten if they already exist. **CLAUDE.md** is skipped when present unless `-Force`. Use `-DryRun` to preview. See `templates/new-project-bootstrap.md` for the full manual checklist.
+Creates `CLAUDE.md`, `.claude/` (commands, agents, OS `policies/*.md` + critical-surface checklists into `.claude/policies/`, scripts including drift/TS budget/heuristic ratchet/telemetry/promotion, heuristics), `.local/` (TS + ratchet JSON), runs `git init`, validates **12** critical paths, and appends `.gitignore` rules (`.local/`, `.claude/*.tmp`, `.claude/os-metrics.json`). **Protected:** `session-state.md`, `learning-log.md`, `settings.json`, local JSONs — never overwritten if present. **CLAUDE.md** unless `-Force`. Optional `-Profile node-ts-service` or `react-vite-app` → `.claude/stack-profile.md`. See `templates/new-project-bootstrap.md` for the full manual checklist.
 
 **Manual path (any OS):**
 

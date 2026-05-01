@@ -52,11 +52,14 @@ cp "$cos\templates\scripts\preflight.sh"    .claude\scripts\preflight.sh
 cp "$cos\templates\scripts\session-end.sh"  .claude\scripts\session-end.sh
 cp "$cos\templates\scripts\pre-compact.sh"  .claude\scripts\pre-compact.sh
 cp "$cos\templates\scripts\post-compact.sh" .claude\scripts\post-compact.sh
-cp "$cos\templates\scripts\context-drift-detect.sh" .claude\scripts\context-drift-detect.sh
-cp "$cos\templates\scripts\ts-error-budget-check.sh" .claude\scripts\ts-error-budget-check.sh
-cp "$cos\templates\scripts\ts-error-budget-init.sh" .claude\scripts\ts-error-budget-init.sh
+cp "$cos\templates\scripts\drift-detect.sh" .claude\scripts\drift-detect.sh
+cp "$cos\templates\scripts\ts-error-budget.sh" .claude\scripts\ts-error-budget.sh
+cp "$cos\templates\scripts\heuristic-ratchet.sh" .claude\scripts\heuristic-ratchet.sh
+cp "$cos\templates\scripts\promote-heuristics.sh" .claude\scripts\promote-heuristics.sh
+cp "$cos\templates\scripts\os-telemetry.sh" .claude\scripts\os-telemetry.sh
 mkdir .local 2>nul
 cp "$cos\templates\local\ts-error-budget.json" .local\ts-error-budget.json
+cp "$cos\templates\local\heuristic-violations.json" .local\heuristic-violations.json
 ```
 
 - [ ] Templates copied without errors
@@ -76,9 +79,11 @@ $cos = "C:\Users\<you>\claude-operating-system"
 cp "$cos\templates\commands\*" .claude\commands\
 ```
 
-Commands included: `session-start`, `phase-close`, `hardening-pass`, `system-review`,
+Commands included: `session-start`, `session-end`, `phase-close`, `hardening-pass`, `system-review`,
 `production-guard`, `release-readiness`, `task-classify`, `incident-triage`,
 `architecture-review`, `bootstrap-project`.
+
+Prefer Windows automation: `powershell -ExecutionPolicy Bypass -File <cos>\init-project.ps1 -ProjectPath "%CD%" -Profile node-ts-service`.
 
 - [ ] Commands copied
 

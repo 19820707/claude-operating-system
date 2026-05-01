@@ -95,7 +95,7 @@ echo "Done. ~/.claude/ is ready."
 echo ""
 echo "Next steps:"
 echo "  1. Install Claude Code: https://claude.ai/download"
-echo '  2. New project (Windows): powershell -ExecutionPolicy Bypass -File ./init-project.ps1 -ProjectPath "$env:USERPROFILE\claude\<project>"  (or -Name <project>)'
+echo '  2. New project (Windows): powershell -ExecutionPolicy Bypass -File ./init-project.ps1 -ProjectPath "$env:USERPROFILE\claude\<project>" [-Profile node-ts-service|react-vite-app]'
 echo "  3. Clone each project repo (contains .claude/ with session-state, learning-log, commands, agents)"
 echo "  4. Open Claude Code in the project directory"
 echo "  5. Type /session-start to recover operational context"

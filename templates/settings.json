@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/scripts/session-end.sh"
+            "command": "bash .claude/scripts/session-end.sh && bash .claude/scripts/os-telemetry.sh"
           }
         ]
       }
@@ -60,8 +60,17 @@
       "Bash(npm run build *)",
       "Bash(npm run check *)",
       "Bash(npx tsc *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx eslint *)",
       "Bash(npx vitest run *)",
-      "Bash(npx playwright test *)"
+      "Bash(npx playwright test *)",
+      "Bash(bash .claude/scripts/drift-detect.sh)",
+      "Bash(bash .claude/scripts/heuristic-ratchet.sh *)",
+      "Bash(bash .claude/scripts/ts-error-budget.sh *)",
+      "Bash(bash .claude/scripts/os-telemetry.sh *)",
+      "Bash(bash .claude/scripts/promote-heuristics.sh *)",
+      "Bash(bash .claude/scripts/preflight.sh)",
+      "Bash(bash .claude/scripts/session-end.sh)"
     ],
     "deny": [
       "Read(.env)",
