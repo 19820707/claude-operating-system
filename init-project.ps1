@@ -36,6 +36,58 @@ function Test-OsRepo {
     }
 }
 
+
+function Test-RelativeManifestPath {
+    param(
+        [string]$Path,
+        [string]$Field
+    )
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        throw "Invalid bootstrap manifest: empty path in $Field."
+    }
+    if ([System.IO.Path]::IsPathRooted($Path) -or $Path -match '(^|[\\/])\.\.([\\/]|$)') {
+        throw "Invalid bootstrap manifest: unsafe relative path '$Path' in $Field."
+    }
+    return ($Path -replace '/', '\')
+}
+
+function Get-BootstrapManifest {
+    param([string]$Root)
+    $manifestFile = Join-Path $Root 'bootstrap-manifest.json'
+    if (-not (Test-Path -LiteralPath $manifestFile)) {
+        throw "OS repo invalid (missing $manifestFile)."
+    }
+    $manifest = Get-Content -LiteralPath $manifestFile -Raw | ConvertFrom-Json
+    if (-not $manifest.projectBootstrap) {
+        throw 'Invalid bootstrap-manifest.json: missing projectBootstrap section.'
+    }
+    if (-not $manifest.projectBootstrap.scripts -or -not $manifest.projectBootstrap.criticalPaths) {
+        throw 'Invalid bootstrap-manifest.json: projectBootstrap requires scripts and criticalPaths.'
+    }
+    return $manifest
+}
+
+function Get-ManifestList {
+    param(
+        [object]$Manifest,
+        [string]$Name
+    )
+    $values = @($Manifest.projectBootstrap.$Name)
+    if ($values.Count -eq 0) {
+        throw "Invalid bootstrap-manifest.json: projectBootstrap.$Name is empty."
+    }
+    $seen = @{}
+    $safe = foreach ($value in $values) {
+        $rel = Test-RelativeManifestPath -Path ([string]$value) -Field "projectBootstrap.$Name"
+        if ($seen.ContainsKey($rel)) {
+            throw "Invalid bootstrap-manifest.json: duplicate '$rel' in projectBootstrap.$Name."
+        }
+        $seen[$rel] = $true
+        $rel
+    }
+    return @($safe)
+}
+
 function Ensure-Dir {
     param([string]$Path)
     if (-not (Test-Path -LiteralPath $Path)) {
@@ -107,6 +159,9 @@ function Update-GitIgnore {
 }
 
 Test-OsRepo -Root $Source
+$BootstrapManifest = Get-BootstrapManifest -Root $Source
+$scriptNames = Get-ManifestList -Manifest $BootstrapManifest -Name 'scripts'
+$criticalRelativePaths = Get-ManifestList -Manifest $BootstrapManifest -Name 'criticalPaths'
 
 if ($Profile -and $Profile -notin @('node-ts-service', 'react-vite-app')) {
     throw "Invalid -Profile '$Profile'. Use node-ts-service or react-vite-app."
@@ -176,46 +231,6 @@ Get-ChildItem -LiteralPath $criticalSrc -Filter '*.md' -File -ErrorAction Silent
     Copy-FileAlways -From $_.FullName -To (Join-Path $ProjectRoot (Join-Path '.claude\policies' $_.Name))
 }
 
-$scriptNames = @(
-    'agent-coordinator.sh',
-    'autonomous-learning-loop.sh',
-    'causal-trace.sh',
-    'consolidate-runbook.sh',
-    'context-allocator.sh',
-    'context-builder.sh',
-    'context-topology.sh',
-    'contract-delta.sh',
-    'coordination-check.sh',
-    'cross-project-sync.sh',
-    'decision-append.sh',
-    'decision-audit.sh',
-    'drift-detect.sh',
-    'epistemic-check.sh',
-    'epistemic-state.sh',
-    'heuristic-ratchet.sh',
-    'invariant-engine.sh',
-    'invariant-lifecycle.sh',
-    'invariant-verify.sh',
-    'knowledge-graph.sh',
-    'living-arch-graph.sh',
-    'module-complexity.sh',
-    'os-telemetry.sh',
-    'policy-compliance-audit.sh',
-    'policy-compliance.sh',
-    'post-compact.sh',
-    'pre-compact.sh',
-    'preflight.sh',
-    'probabilistic-risk-model.sh',
-    'promote-heuristics.sh',
-    'risk-surface-scan.sh',
-    'runbook-inject.sh',
-    'salience-score.sh',
-    'semantic-diff-analyze.sh',
-    'session-end.sh',
-    'session-index.sh',
-    'simulate-change.sh',
-    'ts-error-budget.sh'
-)
 foreach ($n in $scriptNames) {
     $sf = Join-Path $scriptsSrc $n
     if (-not (Test-Path -LiteralPath $sf)) { throw "Missing OS script: $sf" }
@@ -336,52 +351,9 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (43 critical paths):'
-$critical = @(
-    (Join-Path $ProjectRoot 'CLAUDE.md'),
-    (Join-Path $ProjectRoot '.claude\session-state.md'),
-    (Join-Path $ProjectRoot '.claude\learning-log.md'),
-    (Join-Path $ProjectRoot '.claude\settings.json'),
-    (Join-Path $ProjectRoot '.claude\commands\session-start.md'),
-    (Join-Path $ProjectRoot '.claude\heuristics\cross-project-evidence.json'),
-    (Join-Path $ProjectRoot '.claude\scripts\preflight.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\session-end.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\drift-detect.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\ts-error-budget.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\heuristic-ratchet.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\promote-heuristics.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\os-telemetry.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\risk-surface-scan.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\session-index.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\causal-trace.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\module-complexity.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\living-arch-graph.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\invariant-verify.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\probabilistic-risk-model.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\semantic-diff-analyze.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\autonomous-learning-loop.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\decision-append.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\policy-compliance-audit.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\context-topology.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\invariant-lifecycle.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\coordination-check.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\epistemic-check.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\decision-audit.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\policy-compliance.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\knowledge-graph.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\context-allocator.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\invariant-engine.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\agent-coordinator.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\epistemic-state.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\salience-score.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\contract-delta.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\simulate-change.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\context-builder.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\runbook-inject.sh'),
-    (Join-Path $ProjectRoot '.claude\invariant-engine\simulate-contract-delta.cjs'),
-    (Join-Path $ProjectRoot '.claude\scripts\consolidate-runbook.sh')
-)
+Write-Host ("Validation (" + $criticalRelativePaths.Count + " manifest critical paths):")
+# Invariant: critical bootstrap checks are declared once in bootstrap-manifest.json.
+$critical = foreach ($rel in $criticalRelativePaths) { Join-Path $ProjectRoot $rel }
 $allOk = $true
 foreach ($p in $critical) {
     if (Test-Path -LiteralPath $p) {
