@@ -104,6 +104,13 @@ function Test-BootstrapSmoke {
     }
 }
 
+function Test-DocsIndexQuery {
+    $raw = & (Join-Path $RepoRoot 'tools/query-docs-index.ps1') -Query health -Limit 1 -Json
+    if ($LASTEXITCODE -ne 0) { throw 'query-docs-index.ps1 returned non-zero exit code' }
+    $result = ($raw | Out-String) | ConvertFrom-Json
+    if ([int]$result.count -lt 1) { throw 'query-docs-index.ps1 returned no health result' }
+}
+
 Write-Host 'claude-operating-system health'
 Write-Host "Repo: $RepoRoot"
 Write-Host ''
@@ -112,6 +119,7 @@ Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verif
 Invoke-HealthStep -Name 'skills' -Script { & (Join-Path $RepoRoot 'tools/verify-skills.ps1') }
 Invoke-HealthStep -Name 'docs' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1') }
 Invoke-HealthStep -Name 'docs-index' -Script { & (Join-Path $RepoRoot 'tools/verify-docs-index.ps1') }
+Invoke-HealthStep -Name 'docs-index-query' -Script { Test-DocsIndexQuery }
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
     Test-PowerShellSyntax -Files @(
         (Join-Path $RepoRoot 'install.ps1'),
@@ -119,6 +127,7 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-docs-index.ps1'),
+        (Join-Path $RepoRoot 'tools/query-docs-index.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
     )
