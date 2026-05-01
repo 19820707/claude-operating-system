@@ -125,6 +125,16 @@ function Test-WorkflowStatus {
     if ([int]$result.phaseCount -lt 1) { throw 'workflow-status.ps1 returned no workflow phase' }
 }
 
+function Test-RuntimeDispatcher {
+    $help = & (Join-Path $RepoRoot 'tools/os-runtime.ps1') help
+    if ($LASTEXITCODE -ne 0) { throw 'os-runtime.ps1 help returned non-zero exit code' }
+    if (-not (($help | Out-String).Contains('Claude OS Runtime v1'))) { throw 'os-runtime.ps1 help missing Runtime v1 banner' }
+    $raw = & (Join-Path $RepoRoot 'tools/os-runtime.ps1') workflow -Phase verify -Json
+    if ($LASTEXITCODE -ne 0) { throw 'os-runtime.ps1 workflow returned non-zero exit code' }
+    $result = ($raw | Out-String) | ConvertFrom-Json
+    if ([int]$result.phaseCount -lt 1) { throw 'os-runtime.ps1 workflow returned no phase' }
+}
+
 function Test-Doctor {
     $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') -Json
     if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
@@ -137,6 +147,7 @@ Write-Host "Repo: $RepoRoot"
 Write-Host ''
 
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
+Invoke-HealthStep -Name 'runtime-release' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1') }
 Invoke-HealthStep -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
 Invoke-HealthStep -Name 'skills' -Script { & (Join-Path $RepoRoot 'tools/verify-skills.ps1') }
 Invoke-HealthStep -Name 'docs' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1') }
@@ -146,6 +157,7 @@ Invoke-HealthStep -Name 'capabilities' -Script { & (Join-Path $RepoRoot 'tools/v
 Invoke-HealthStep -Name 'capability-router' -Script { Test-CapabilityRouter }
 Invoke-HealthStep -Name 'workflow' -Script { & (Join-Path $RepoRoot 'tools/verify-workflow-manifest.ps1') }
 Invoke-HealthStep -Name 'workflow-status' -Script { Test-WorkflowStatus }
+Invoke-HealthStep -Name 'runtime-dispatcher' -Script { Test-RuntimeDispatcher }
 Invoke-HealthStep -Name 'checklists' -Script { & (Join-Path $RepoRoot 'tools/verify-checklists.ps1') }
 Invoke-HealthStep -Name 'doctor' -Script { Test-Doctor }
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
@@ -163,7 +175,9 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/workflow-status.ps1'),
         (Join-Path $RepoRoot 'tools/verify-checklists.ps1'),
         (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1'),
         (Join-Path $RepoRoot 'tools/os-doctor.ps1'),
+        (Join-Path $RepoRoot 'tools/os-runtime.ps1'),
         (Join-Path $RepoRoot 'tools/os-update-project.ps1'),
         (Join-Path $RepoRoot 'tools/os-validate-all.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
