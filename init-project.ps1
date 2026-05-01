@@ -204,6 +204,7 @@ if (-not $DryRun) {
         } finally {
             Pop-Location
         }
+        Write-Host '  (doc) Re-run anytime: bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system>"'
     }
 }
 

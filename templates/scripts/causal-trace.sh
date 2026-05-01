@@ -52,8 +52,19 @@ def decisions_for_commit_hash(idx: dict, short7: str) -> list[dict]:
 
 def mode_file(filepath: str):
     idx = load_index()
+    # Hash + date + subject (20 commits), equivalent to oneline + date
     log = git_text(
-        ["git", "log", "-n", "20", "--format=%h|%ci|%s", "--follow", "--", filepath]
+        [
+            "git",
+            "log",
+            "-n",
+            "20",
+            "--format=%h %ad %s",
+            "--date=short",
+            "--follow",
+            "--",
+            filepath,
+        ]
     )
     print(f"  file: {filepath}")
     if not log.strip():
@@ -63,19 +74,21 @@ def mode_file(filepath: str):
         line = line.strip()
         if not line:
             continue
-        parts = line.split("|", 2)
+        parts = line.split(None, 2)
         h = parts[0]
-        dt = parts[1] if len(parts) > 1 else ""
+        dday = parts[1] if len(parts) > 1 else "????-??-??"
         msg = parts[2] if len(parts) > 2 else ""
-        dday = dt[:10] if len(dt) >= 10 else "????-??-??"
-        print(f"  ── {dday} {h} {msg} →")
         rel = decisions_for_commit_hash(idx, h[:7])
         if rel:
             d = rel[-1]
-            print(f"     decision: {d.get('id')} — {d.get('text')}")
-            print(f"     risk accepted: {d.get('risk') or 'unknown'}")
+            did = d.get("id")
+            txt = d.get("text") or ""
+            rk = d.get("risk") or "unknown"
+            print(
+                f"  ── {dday} {h} {msg} → decisão: {did} — {txt} | risco aceite: {rk}"
+            )
         else:
-            print("     unknown decision (undocumented change)")
+            print(f"  ── {dday} {h} {msg} → unknown decision (undocumented change)")
 
 
 def mode_commit(commit: str):

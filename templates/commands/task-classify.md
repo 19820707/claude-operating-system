@@ -53,7 +53,7 @@ Rollback: ...
 Regression test: ...
 ```
 
-## Complexity check (antes de qualquer edição)
+## Complexity Check (antes de qualquer edição)
 
 Na raiz do repo, para o ficheiro principal que vais alterar:
 
@@ -62,4 +62,4 @@ bash .claude/scripts/module-complexity.sh caminho/relativo/ao/ficheiro.ts
 ```
 
 - Interpreta o bloco **`[OS-MODULE-COMPLEXITY]`**: score **CRITICAL** ou **ELEVATED** → **Opus obrigatório** independentemente do tipo de tarefa.
-- Resultados agregados de `bash .claude/scripts/module-complexity.sh --scan` ficam em `.claude/complexity-map.json` (requer `.claude/risk-surfaces.json` do `risk-surface-scan.sh`).
+- Resultado agregado em `.claude/complexity-map.json` após `bash .claude/scripts/module-complexity.sh --scan` (requer `.claude/risk-surfaces.json` do `risk-surface-scan.sh`).

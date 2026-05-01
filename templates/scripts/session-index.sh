@@ -2,11 +2,8 @@
 # Semantic session index — parses session-state.md → .claude/session-index.json. H10: LF-only; exit 0.
 set -euo pipefail
 
-if [[ "${1:-}" != "--query" ]]; then
-  echo "[OS-SESSION-INDEX]"
-fi
-
 if ! command -v python3 >/dev/null 2>&1; then
+  echo "[OS-SESSION-INDEX]"
   echo "  skip: python3 not available"
   exit 0
 fi
@@ -152,7 +149,6 @@ def load_index(path: Path) -> dict:
 
 def query(idx: dict, module: str):
     dbm = idx.get("decisions_by_module") or {}
-    print(f"[OS-SESSION-INDEX] decisions for {module}:")
     seen = False
     for rec in dbm.get(module, []):
         seen = True
@@ -182,10 +178,12 @@ def main():
     state_path = Path(".claude/session-state.md")
 
     if args and args[0] == "--query" and len(args) > 1:
+        print(f"[OS-SESSION-INDEX] decisions for {args[1]}:")
         idx = load_index(out_path)
         query(idx, args[1])
         return
 
+    print("[OS-SESSION-INDEX]")
     if not state_path.is_file():
         print("  skip: no .claude/session-state.md")
         return

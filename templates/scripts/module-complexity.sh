@@ -63,12 +63,12 @@ def analyze_file(path: str, days: int = 90) -> dict:
     )
     authors = len({l for l in authors_out.splitlines() if l.strip()}) if authors_out else 0
     last = git_text(["git", "log", "-1", "--format=%cr", "--", path]) or "unknown"
+    # Incident proximity (spec: oneline + grep, no --follow)
     inc = git_count(
         [
             "git",
             "log",
             "--oneline",
-            "--follow",
             "--grep=incident",
             "--grep=hotfix",
             "--grep=emergency",
@@ -164,11 +164,11 @@ def cmd_scan():
     except Exception as e:
         print(f"  skip: invalid risk-surfaces.json ({e})")
         return
+    # Spec: declared + detected only (not undeclared-only paths)
     paths = set(data.get("declared") or [])
-    for lst in (data.get("detected") or []), (data.get("undeclared") or []):
-        for item in lst or []:
-            if isinstance(item, dict) and item.get("path"):
-                paths.add(item["path"])
+    for item in data.get("detected") or []:
+        if isinstance(item, dict) and item.get("path"):
+            paths.add(item["path"])
     rows = []
     for p in sorted(paths):
         if not Path(p).is_file() and not Path(p).exists():
