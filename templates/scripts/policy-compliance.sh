@@ -97,7 +97,12 @@ def main():
             continue
 
     if session_filter:
-        rows = [r for r in rows if str(r.get("session", "")) == session_filter]
+        sf = str(session_filter)
+        rows = [
+            r
+            for r in rows
+            if str(r.get("session", "")) == sf or str(r.get("session", "")).startswith(sf + "-")
+        ]
 
     checked_types = ("model_selection", "scope_boundary", "risk_acceptance")
     lines_out = []
