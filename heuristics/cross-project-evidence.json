@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "description": "Aggregate patterns confirmed across multiple projects. Curated manually or via future OS tooling — not auto-telemetried from repos.",
+  "patterns": {
+    "windows-crlf-stash": {
+      "confirmed_in": ["example-repo-a", "example-repo-b"],
+      "total_confirmations": 2,
+      "last_seen": "2026-05-01",
+      "promoted_to": "H1",
+      "impact": "CI noise; accidental CRLF in tracked files"
+    }
+  }
+}

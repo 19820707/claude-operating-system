@@ -4,6 +4,12 @@
 > Actualizar no fecho de cada sessão. Ler no arranque antes de qualquer acção.
 > Não incluir segredos, tokens ou credenciais.
 
+<!--
+  Opt-in — índice semântico (.claude/session-index.json): coloca um bloco YAML entre --- no topo
+  (antes deste título) com campos como session_id, phase, modules_touched: [server/auth], heuristics_applied.
+  O hook session-end corre session-index-build.sh automaticamente.
+-->
+
 ---
 
 ## Identificação

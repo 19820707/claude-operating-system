@@ -69,6 +69,11 @@
       "Bash(bash .claude/scripts/ts-error-budget.sh *)",
       "Bash(bash .claude/scripts/os-telemetry.sh *)",
       "Bash(bash .claude/scripts/promote-heuristics.sh *)",
+      "Bash(bash .claude/scripts/risk-surface-scan.sh)",
+      "Bash(bash .claude/scripts/module-complexity.sh *)",
+      "Bash(bash .claude/scripts/causal-trace.sh *)",
+      "Bash(bash .claude/scripts/session-index-build.sh *)",
+      "Bash(bash .claude/scripts/cross-project-inherit.sh *)",
       "Bash(bash .claude/scripts/preflight.sh)",
       "Bash(bash .claude/scripts/session-end.sh)"
     ],

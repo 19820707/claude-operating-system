@@ -7,19 +7,23 @@ Fecho de sessão operacional: checks automáticos, actualização de estado, com
 1. **Executar checks** (local, na raiz do repo):
    - `bash .claude/scripts/drift-detect.sh`
    - `bash .claude/scripts/heuristic-ratchet.sh`
+   - `bash .claude/scripts/risk-surface-scan.sh`
    - `bash .claude/scripts/ts-error-budget.sh`
    - `bash .claude/scripts/os-telemetry.sh` (ou `bash .claude/scripts/os-telemetry.sh --report` só para ler métricas sem incrementar `sessions`)
+   - O hook **SessionEnd** já corre `session-end.sh` (snapshot WT + `session-index-build.sh` se houver YAML opt-in no `session-state.md`).
 2. **Actualizar** `.claude/session-state.md` com evidência real:
    - **Branch:** `git branch --show-current`
    - **HEAD:** `git log -1 --format="%h %s"`
    - **Fase** e **objectivo** actuais
    - **Estado implementado** (módulos / ficheiros tocados nesta sessão)
    - **WT:** saída de `git status --short`
-   - **Decisões**, **riscos**, **checks executados**, **rollback** (comando exacto), **próximos passos mínimos** (acções concretas, não intenções), **fora de scope**
+   - **Decisões** (preferir IDs `D-NNN` nas mensagens de commit para rastreio causal), **riscos**, **checks executados**, **rollback** (comando exacto), **próximos passos mínimos** (acções concretas, não intenções), **fora de scope**
 3. **Commit** (se houver alterações relevantes):
 
 ```bash
 git add .claude/session-state.md .claude/learning-log.md
+# Se geras `.claude/session-index.json` (YAML opt-in no session-state):
+# git add .claude/session-index.json
 git commit -m "chore(os): session-end — <objectivo curto>"
 ```
 
@@ -33,7 +37,9 @@ WT: <N ficheiros> resumo
 Drift: <OK | DRIFT — resumo>
 Ratchet: <OK | RATCHET — H1/H5/H10>
 TS budget: <OK | REGRESSION — N vs baseline>
+Risk scan: <OK | NEW SURFACE — resumo>
 Telemetry: <score CLEAN|WATCH|ALERT>
+session-index.json: <updated | skipped>
 session-state.md: actualizado
 Commit: <hash ou skipped>
 ```

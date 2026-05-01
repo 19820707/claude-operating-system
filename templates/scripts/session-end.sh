@@ -3,6 +3,8 @@
 # H10: LF-only. Exit 0 always (non-blocking).
 set -euo pipefail
 
+SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd)
+
 BRANCH=$(git branch --show-current 2>/dev/null || echo unknown)
 HEAD=$(git log -1 --format="%h %s" 2>/dev/null || echo unknown)
 WT_OUT=$(git status --short 2>/dev/null || echo "")
@@ -21,5 +23,9 @@ TS=$(date -u +"%Y-%m-%dT%H:%MZ" 2>/dev/null || echo unknown)
     echo "END"
   fi
 } > .claude/wt-snapshot.tmp
+
+if [ -f "${SCRIPTS_DIR}/session-index-build.sh" ]; then
+  bash "${SCRIPTS_DIR}/session-index-build.sh" || true
+fi
 
 exit 0
