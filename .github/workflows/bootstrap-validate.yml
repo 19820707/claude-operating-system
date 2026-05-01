@@ -1,4 +1,4 @@
-# Validates Claude OS integrity, skills, docs, bootstrap behavior, and script syntax.
+# Validates Claude OS integrity, schemas, skills, docs, bootstrap behavior, and runtime diagnostics.
 name: bootstrap-validate
 
 permissions:
@@ -6,7 +6,7 @@ permissions:
 
 # Cancel redundant runs (saves CI minutes + queue latency on rapid pushes).
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.os }}
   cancel-in-progress: true
 
 on:
@@ -17,10 +17,14 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Claude OS health
+      - name: Claude OS strict validation
         shell: pwsh
-        run: ${{ github.workspace }}/tools/verify-os-health.ps1
+        run: ${{ github.workspace }}/tools/os-validate-all.ps1 -Strict
