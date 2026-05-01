@@ -1,4 +1,4 @@
-# Validates template cardinality vs bootstrap-manifest.json and bootstrap script syntax/smoke behavior.
+# Validates Claude OS integrity, skills, docs, bootstrap behavior, and script syntax.
 name: bootstrap-validate
 
 permissions:
@@ -21,79 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Manifest vs repository tree
+      - name: Claude OS health
         shell: pwsh
-        run: ${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1
-
-      - name: Skills vs manifest
-        shell: pwsh
-        run: ${{ github.workspace }}/tools/verify-skills.ps1
-
-      - name: Documentation vs manifest
-        shell: pwsh
-        run: ${{ github.workspace }}/tools/verify-doc-manifest.ps1
-
-      - name: PowerShell syntax (install + init + validators)
-        shell: pwsh
-        run: |
-          $files = @(
-            "${{ github.workspace }}/install.ps1",
-            "${{ github.workspace }}/init-project.ps1",
-            "${{ github.workspace }}/tools/verify-bootstrap-manifest.ps1",
-            "${{ github.workspace }}/tools/verify-doc-manifest.ps1",
-            "${{ github.workspace }}/tools/verify-skills.ps1"
-          )
-          foreach ($f in $files) {
-            $tok = $null
-            $err = $null
-            [void][System.Management.Automation.Language.Parser]::ParseFile($f, [ref]$tok, [ref]$err)
-            if ($err -and $err.Count -gt 0) {
-              Write-Host "Parse errors in $f"
-              $err | ForEach-Object { Write-Host $_ }
-              exit 1
-            }
-            Write-Host "OK: $f"
-          }
-
-      - name: Bootstrap dry-run smoke test
-        shell: pwsh
-        run: |
-          # Invariant: -DryRun must parse manifest-driven bootstrap lists without writing project files.
-          $target = Join-Path $env:RUNNER_TEMP 'claude-os-bootstrap-smoke-dry'
-          ${{ github.workspace }}/init-project.ps1 -ProjectPath $target -DryRun -SkipGitInit
-
-      - name: Bootstrap real scaffold smoke test
-        shell: pwsh
-        run: |
-          # Invariant: canonical source/skills must materialize into .claude/skills during project bootstrap.
-          $manifest = Get-Content -LiteralPath "${{ github.workspace }}/bootstrap-manifest.json" -Raw | ConvertFrom-Json
-          $target = Join-Path $env:RUNNER_TEMP 'claude-os-bootstrap-smoke-real'
-          ${{ github.workspace }}/init-project.ps1 -ProjectPath $target -SkipGitInit
-
-          $missing = @()
-          foreach ($rel in @($manifest.projectBootstrap.criticalPaths)) {
-            $path = Join-Path $target ([string]$rel)
-            if (-not (Test-Path -LiteralPath $path)) { $missing += $rel }
-          }
-          if ($missing.Count -gt 0) {
-            Write-Host 'Missing scaffold critical paths:'
-            $missing | ForEach-Object { Write-Host "  $_" }
-            exit 1
-          }
-
-          $skillFiles = @(Get-ChildItem -LiteralPath (Join-Path $target '.claude/skills') -Filter 'SKILL.md' -File -Recurse)
-          if ($skillFiles.Count -ne [int]$manifest.skills.exact) {
-            Write-Host "Expected $($manifest.skills.exact) bootstrapped skills, found $($skillFiles.Count)"
-            exit 1
-          }
-          Write-Host "OK: real scaffold contains $($skillFiles.Count) skills and all manifest critical paths"
-
-      - name: Bash syntax (install + template scripts)
-        shell: bash
-        run: |
-          set -euo pipefail
-          bash -n install.sh
-          while IFS= read -r -d '' script; do
-            bash -n "$script"
-            echo "OK: $script"
-          done < <(find templates/scripts -type f -name '*.sh' -print0 | sort -z)
+        run: ${{ github.workspace }}/tools/verify-os-health.ps1
