@@ -50,21 +50,17 @@ def decisions_for_commit_hash(idx: dict, short7: str) -> list[dict]:
     return out
 
 
+def commit_date_for_file(rev: str, filepath: str) -> str:
+    d = git_text(
+        ["git", "log", "-1", "--format=%ad", "--date=short", rev, "--", filepath]
+    ).strip()
+    return d or "????-??-??"
+
+
 def mode_file(filepath: str):
     idx = load_index()
-    # Hash + date + subject (20 commits), equivalent to oneline + date
     log = git_text(
-        [
-            "git",
-            "log",
-            "-n",
-            "20",
-            "--format=%h %ad %s",
-            "--date=short",
-            "--follow",
-            "--",
-            filepath,
-        ]
+        ["git", "log", "-n", "20", "--oneline", "--follow", "--", filepath]
     )
     print(f"  file: {filepath}")
     if not log.strip():
@@ -74,26 +70,32 @@ def mode_file(filepath: str):
         line = line.strip()
         if not line:
             continue
-        parts = line.split(None, 2)
-        h = parts[0]
-        dday = parts[1] if len(parts) > 1 else "????-??-??"
-        msg = parts[2] if len(parts) > 2 else ""
+        h, _, msg = line.partition(" ")
+        h = h.strip()
+        msg = msg.strip()
+        if not h:
+            continue
+        dday = commit_date_for_file(h, filepath)
         rel = decisions_for_commit_hash(idx, h[:7])
+        print(f"  ── {dday} {h} {msg}")
         if rel:
             d = rel[-1]
-            did = d.get("id")
-            txt = d.get("text") or ""
-            rk = d.get("risk") or "unknown"
-            print(
-                f"  ── {dday} {h} {msg} → decisão: {did} — {txt} | risco aceite: {rk}"
-            )
+            print(f"     decision: {d.get('id')} — {d.get('text') or ''}")
+            print(f"     risk accepted: {d.get('risk') or 'unknown'}")
         else:
-            print(f"  ── {dday} {h} {msg} → unknown decision (undocumented change)")
+            print("     unknown decision (undocumented change)")
 
 
 def mode_commit(commit: str):
     idx = load_index()
     short = commit[:7]
+    stat = git_text(["git", "show", "--stat", "--oneline", commit])
+    if stat.strip():
+        print("  git show --stat:")
+        for ln in stat.splitlines()[:30]:
+            print(f"    {ln}")
+        if len(stat.splitlines()) > 30:
+            print("    ...")
     head = git_text(
         ["git", "show", "-s", "--format=%h %ci %s", commit]
     ).strip()

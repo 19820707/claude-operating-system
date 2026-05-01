@@ -8,6 +8,12 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 0
 fi
 
+if [[ "${1:-}" == "--query" && -n "${2:-}" ]]; then
+  echo "[OS-SESSION-INDEX] decisions for ${2}:"
+else
+  echo "[OS-SESSION-INDEX]"
+fi
+
 mkdir -p .claude
 
 python3 - "$@" <<'PY'
@@ -178,12 +184,10 @@ def main():
     state_path = Path(".claude/session-state.md")
 
     if args and args[0] == "--query" and len(args) > 1:
-        print(f"[OS-SESSION-INDEX] decisions for {args[1]}:")
         idx = load_index(out_path)
         query(idx, args[1])
         return
 
-    print("[OS-SESSION-INDEX]")
     if not state_path.is_file():
         print("  skip: no .claude/session-state.md")
         return

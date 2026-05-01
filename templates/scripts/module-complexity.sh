@@ -2,14 +2,14 @@
 # Module complexity from git history + optional scan from risk-surfaces.json. H10: LF-only; exit 0.
 set -euo pipefail
 
-echo "[OS-MODULE-COMPLEXITY]"
-
 if ! command -v python3 >/dev/null 2>&1; then
+  echo "[OS-MODULE-COMPLEXITY]"
   echo "  skip: python3 not available"
   exit 0
 fi
 
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "[OS-MODULE-COMPLEXITY]"
   echo "  skip: not a git repository"
   exit 0
 fi
@@ -182,11 +182,11 @@ def cmd_scan():
         m = analyze_file(p)
         rows.append(m)
     rows.sort(key=lambda x: -x["score"])
-    print("  [OS-MODULE-COMPLEXITY] scan complete")
+    print("[OS-MODULE-COMPLEXITY] scan complete")
     for m in rows[:25]:
-        print(f"    {m['level']:8s}: {m['path']} (score: {m['score']})")
+        print(f"  {m['level']:8s}: {m['path']} (score: {m['score']})")
     if len(rows) > 25:
-        print(f"    ... {len(rows) - 25} more paths omitted")
+        print(f"  ... {len(rows) - 25} more paths omitted")
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     out = {
         "scanned_at": ts,

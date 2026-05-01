@@ -189,7 +189,7 @@ if (-not $DryRun) {
     $syncScript = Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh'
     $osEvidence = Join-Path $heuristicsSrc 'cross-project-evidence.json'
     if ((Test-Path -LiteralPath $syncScript) -and (Test-Path -LiteralPath $osEvidence)) {
-        Write-Host '  Inheriting cross-project knowledge...'
+        Write-Host '  [init] Inheriting cross-project knowledge...'
         Push-Location $ProjectRoot
         try {
             $srcUnix = ($Source -replace '\\', '/').TrimEnd('/')
@@ -238,7 +238,7 @@ if ($Profile) {
 Update-GitIgnore -Root $ProjectRoot
 
 Write-Host ''
-Write-Host 'Validation (16 critical paths):'
+Write-Host 'Validation (18 critical paths):'
 $critical = @(
     (Join-Path $ProjectRoot 'CLAUDE.md'),
     (Join-Path $ProjectRoot '.claude\session-state.md'),
@@ -255,7 +255,9 @@ $critical = @(
     (Join-Path $ProjectRoot '.claude\scripts\os-telemetry.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\risk-surface-scan.sh'),
     (Join-Path $ProjectRoot '.claude\scripts\session-index.sh'),
-    (Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh')
+    (Join-Path $ProjectRoot '.claude\scripts\cross-project-sync.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\causal-trace.sh'),
+    (Join-Path $ProjectRoot '.claude\scripts\module-complexity.sh')
 )
 $allOk = $true
 foreach ($p in $critical) {
