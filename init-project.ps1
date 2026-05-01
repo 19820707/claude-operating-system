@@ -25,6 +25,7 @@ function Test-OsRepo {
     $need = @(
         (Join-Path $Root 'CLAUDE.md'),
         (Join-Path $Root 'bootstrap-manifest.json'),
+        (Join-Path $Root 'source\skills'),
         (Join-Path $Root 'templates'),
         (Join-Path $Root 'templates\commands'),
         (Join-Path $Root 'templates\scripts\preflight.sh')
@@ -35,7 +36,6 @@ function Test-OsRepo {
         }
     }
 }
-
 
 function Test-RelativeManifestPath {
     param(
@@ -111,6 +111,21 @@ function Copy-FileAlways {
     }
 }
 
+function Copy-DirectoryContentsAlways {
+    param([string]$From, [string]$To)
+    if (-not (Test-Path -LiteralPath $From)) {
+        throw "Source directory not found: $From"
+    }
+    Ensure-Dir $To
+    Get-ChildItem -LiteralPath $From -Recurse -File | ForEach-Object {
+        $rel = [System.IO.Path]::GetRelativePath($From, $_.FullName)
+        if ([System.IO.Path]::IsPathRooted($rel) -or $rel -match '(^|[\\/])\.\.([\\/]|$)') {
+            throw "Unsafe source-relative path while copying directory: $rel"
+        }
+        Copy-FileAlways -From $_.FullName -To (Join-Path $To $rel)
+    }
+}
+
 function Copy-IfMissing {
     param([string]$From, [string]$To, [string]$Label)
     if (Test-Path -LiteralPath $To) {
@@ -169,6 +184,7 @@ if ($Profile -and $Profile -notin @('node-ts-service', 'react-vite-app')) {
 
 $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectPath)
 $templates = Join-Path $Source 'templates'
+$skillsSrc = Join-Path $Source 'source\skills'
 $policiesSrc = Join-Path $Source 'policies'
 $heuristicsSrc = Join-Path $Source 'heuristics'
 $scriptsSrc = Join-Path $Source 'templates\scripts'
@@ -192,6 +208,7 @@ Ensure-Dir $ProjectRoot
 Ensure-Dir (Join-Path $ProjectRoot '.claude')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\commands')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\agents')
+Ensure-Dir (Join-Path $ProjectRoot '.claude\skills')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\policies')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\scripts')
 Ensure-Dir (Join-Path $ProjectRoot '.claude\contracts')
@@ -221,6 +238,11 @@ Get-ChildItem -LiteralPath $commandsSrc -Filter '*.md' -File | ForEach-Object {
 
 Get-ChildItem -LiteralPath $agentsSrc -Filter '*.md' -File -ErrorAction SilentlyContinue | ForEach-Object {
     Copy-FileAlways -From $_.FullName -To (Join-Path $ProjectRoot (Join-Path '.claude\agents' $_.Name))
+}
+
+# Invariant: source/skills is canonical; .claude/skills is a bootstrap artifact.
+Get-ChildItem -LiteralPath $skillsSrc -Directory | ForEach-Object {
+    Copy-DirectoryContentsAlways -From $_.FullName -To (Join-Path $ProjectRoot (Join-Path '.claude\skills' $_.Name))
 }
 
 Get-ChildItem -Path $policiesSrc -Filter '*.md' -File | ForEach-Object {
