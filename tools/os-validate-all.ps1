@@ -122,21 +122,23 @@ function Test-SessionMemoryCycle {
 Write-Host 'claude-operating-system validate-all'
 Write-Host "Repo  : $RepoRoot"
 Write-Host "Strict: $([bool]$Strict)"
-$BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
-if ($RequireBash -and -not $BashAvailable) {
-    $EffectiveSkipBashSyntax = $false
+# Invariant: bash syntax is optional locally unless -RequireBash; CI Ubuntu uses -RequireBash.
+$script:BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
+if ($RequireBash -and -not $script:BashAvailable) {
     Write-Host 'Bash  : not found; required'
-} elseif ($BashAvailable) {
-    $EffectiveSkipBashSyntax = [bool]$SkipBashSyntax
+    Write-Host ''
+    throw 'os-validate-all: -RequireBash requires bash on PATH.'
+}
+$script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $script:BashAvailable))
+if ($script:BashAvailable) {
     Write-Host 'Bash  : available'
 } else {
-    $EffectiveSkipBashSyntax = $true
     Write-Host 'Bash  : not found; syntax check auto-skipped'
 }
 Write-Host ''
 
 Invoke-Validation -Name 'health' -Script {
-    if ($EffectiveSkipBashSyntax) {
+    if ($script:EffectiveSkipBashSyntax) {
         & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -SkipBashSyntax
     } elseif ($RequireBash) {
         & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -RequireBash
@@ -151,7 +153,20 @@ Invoke-Validation -Name 'session-memory-cycle' -Script { Test-SessionMemoryCycle
 
 Write-Host ''
 if ($failures.Count -gt 0) {
-    throw "Validation failed: $($failures -join ', ')"
+    $names = $failures -join ', '
+    $lines = @("Validation failed: $names", 'Isolated commands (repo root):')
+    if ($names -match 'health') {
+        $hb = if ($script:EffectiveSkipBashSyntax) { ' -SkipBashSyntax' } else { '' }
+        $lines += "  pwsh ./tools/verify-os-health.ps1$hb"
+    }
+    if ($names -match 'doctor') {
+        $db = if ($script:EffectiveSkipBashSyntax) { ' -SkipBashSyntax' } else { '' }
+        $lines += "  pwsh ./tools/os-doctor.ps1 -Json$db"
+    }
+    if ($names -match 'json-contracts') { $lines += '  pwsh ./tools/verify-json-contracts.ps1' }
+    if ($names -match 'generated-project-tools') { $lines += '  pwsh ./tools/os-validate-all.ps1 -Strict (see init-project + temp project logs above)' }
+    if ($names -match 'session-memory-cycle') { $lines += '  pwsh ./tools/verify-session-memory.ps1' }
+    throw ($lines -join "`n")
 }
 
 Write-Host 'All validation checks passed.'

@@ -48,7 +48,7 @@ function Show-Help {
         'Commands:'
         '  health                 Run repository health checks'
         '  doctor                 Diagnose runtime/environment readiness'
-        '  validate [-Strict]     Run release-grade aggregate validation'
+        '  validate [-Strict] [-SkipBashSyntax] [-RequireBash]  Release-grade validation (bash -n optional unless -RequireBash)'
         '  route -Query <text>    Route intent to OS capability'
         '  docs -Query <text>     Query section-first docs index'
         '  workflow [-Phase id]   Show progressive workflow gates/status'
@@ -159,12 +159,16 @@ try {
         }
     }
 } catch {
-    $safe = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 240
-    Write-Error $safe -ErrorAction Continue
+    # Invariant: no long stack traces or raw dumps in default runtime output.
+    $safe = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 360
+    Write-Host "ERROR: $safe"
     if ($Command -eq 'validate') {
-        Write-Host 'Run isolated checks:'
+        Write-Host ''
+        Write-Host 'Isolated checks (repo root):'
         Write-Host '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
         Write-Host '  pwsh ./tools/os-doctor.ps1 -Json -SkipBashSyntax'
+        Write-Host '  pwsh ./tools/verify-json-contracts.ps1'
+        Write-Host '  pwsh ./tools/os-validate-all.ps1 -Strict -SkipBashSyntax'
     }
     exit 1
 }

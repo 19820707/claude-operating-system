@@ -5,8 +5,9 @@ permissions:
   contents: read
 
 # Cancel redundant runs (saves CI minutes + queue latency on rapid pushes).
+# matrix.* is only valid inside a job; workflow-level group uses ref + workflow only.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.os }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:

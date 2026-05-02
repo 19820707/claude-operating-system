@@ -153,19 +153,19 @@ function Test-Doctor {
     if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
 }
 
-$BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
-if ($RequireBash -and -not $BashAvailable) {
-    $EffectiveSkipBashSyntax = $false
-} else {
-    $EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $BashAvailable))
+# Invariant: -RequireBash fails fast; otherwise missing bash auto-skips bash -n (local-first Windows).
+$script:BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
+if ($RequireBash -and -not $script:BashAvailable) {
+    Write-Host 'Bash: not found; required'
+    Write-Host ''
+    throw 'verify-os-health: -RequireBash requires bash on PATH.'
 }
+$script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $script:BashAvailable))
 
 Write-Host 'claude-operating-system health'
 Write-Host "Repo: $RepoRoot"
-if ($BashAvailable) {
+if ($script:BashAvailable) {
     Write-Host 'Bash: available'
-} elseif ($RequireBash) {
-    Write-Host 'Bash: not found; required'
 } else {
     Write-Host 'Bash: not found; syntax check auto-skipped'
 }
@@ -225,7 +225,7 @@ if (-not $SkipBootstrapSmoke) {
     Add-Result -Name 'bootstrap-real-smoke' -Status 'skip' -LatencyMs 0 -Note 'skipped by flag'
 }
 
-if (-not $EffectiveSkipBashSyntax) {
+if (-not $script:EffectiveSkipBashSyntax) {
     Invoke-HealthStep -Name 'bash-syntax' -Script { Test-BashSyntax }
 } else {
     $skipReason = if ($SkipBashSyntax) { 'skipped by flag' } else { 'bash not found on PATH' }
