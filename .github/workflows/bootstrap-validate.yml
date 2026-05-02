@@ -1,36 +1,41 @@
-# Validates Claude OS integrity, schemas, skills, docs, bootstrap behavior, and runtime diagnostics.
-name: bootstrap-validate
-
-permissions:
-  contents: read
-
-# concurrency: matrix.* is only valid under jobs.<job_id> — see validate.concurrency below.
-
-on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
-
-jobs:
-  validate:
-    # Per-OS cancel: matrix context is allowed here (not at workflow root).
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.os }}
-      cancel-in-progress: true
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Claude OS strict validation
-        shell: pwsh
-        run: |
-          if ('${{ matrix.os }}' -eq 'ubuntu-latest') {
-            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict -RequireBash
-          } else {
-            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict
-          }
+# Validates Claude OS integrity, schemas, skills, docs, bootstrap behavior, and runtime diagnostics.
+name: bootstrap-validate
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    # matrix.* is valid only at job level (not workflow-level concurrency).
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.os }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tool versions (diagnostic)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -Command '$PSVersionTable.PSVersion'
+          git --version
+          if (Get-Command bash -ErrorAction SilentlyContinue) { bash --version } else { Write-Host 'bash: not on PATH (expected on some Windows runners)' }
+
+      - name: Claude OS strict validation
+        shell: pwsh
+        run: |
+          if ('${{ matrix.os }}' -eq 'ubuntu-latest') {
+            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict -RequireBash
+          } else {
+            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict
+          }

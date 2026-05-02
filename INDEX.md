@@ -9,6 +9,8 @@ Navigation map. Every file, its purpose, and when to use it.
 | I need to... | Go to |
 |-------------|-------|
 | Check full OS health | `pwsh ./tools/verify-os-health.ps1` |
+| Check Git workspace hygiene (read-only) | `pwsh ./tools/verify-git-hygiene.ps1` |
+| Recover from fetch/rebase/nested clone issues | `GIT-RECOVERY.md` |
 | Start a new session | `templates/commands/session-start.md` |
 | Close a phase | `templates/commands/phase-close.md` |
 | Classify a task | `templates/commands/task-classify.md` |
@@ -35,7 +37,10 @@ Navigation map. Every file, its purpose, and when to use it.
 | `install.ps1` | Copies global files to `~/.claude/` on Windows; writes `os-install.json` provenance | New Windows machine, after format |
 | `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, manifest-driven validation | New app/repo on Windows |
 | `bootstrap-manifest.json` | Canonical counts, skills, project bootstrap script list, and critical-path list for CI drift detection | When adding skills, commands, agents, profiles, scripts, or bootstrap critical paths |
-| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, and Bash checks with concise timing output | Primary local and CI health check |
+| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, Bash checks, safe-output probe, **git-hygiene**, and dispatcher checks | Primary local and CI health check |
+| `tools/verify-git-hygiene.ps1` | Read-only: nested `claude-operating-system/`, nested `.git`, rebase/merge/cherry state, conflict markers, dirty tree (CI fail) | Before `git add`, CI, release |
+| `tools/verify-runtime-dispatcher.ps1` | Contract tests for `tools/os-runtime.ps1` (help, JSON routes, absorb/digest guardrails) | Invoked from health |
+| `GIT-RECOVERY.md` | Safe Git recovery — fetch first, rebase conflicts, nested clone, stash discipline, forbidden commands | When push/pull/rebase fails |
 | `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push, health check component |
 | `tools/verify-skills.ps1` | Fails if `source/skills/*/SKILL.md` frontmatter, categories, links, or counts drift from manifest | CI, local pre-push, health check component |
 | `tools/verify-doc-manifest.ps1` | Fails if INDEX.md summary drifts from manifest counts | CI, local pre-push, health check component |
@@ -267,7 +272,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | install.ps1 | Stable, dry-run validated |
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
 | bootstrap-manifest.json | Source of truth for repo counts, skills, bootstrap scripts, and critical paths |
-| tools/verify-os-health.ps1 | Primary health entrypoint — manifest, skills, docs, syntax, bootstrap, Bash |
+| tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, dispatcher |
 | source/skills/ | 6/6 — manifest verified and bootstrapped to `.claude/skills/` |
 | policies/ | 7/7 — complete |
 | prompts/ | 7/7 — complete |

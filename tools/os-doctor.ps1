@@ -93,6 +93,34 @@ function Test-CommandAvailable {
     }
 }
 
+function Get-DoctorRepoState {
+    $state = [ordered]@{
+        root   = $RepoRoot
+        branch = ''
+        ahead  = 0
+        behind = 0
+        dirty  = $false
+    }
+    if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.git'))) {
+        return [pscustomobject]$state
+    }
+    Push-Location $RepoRoot
+    try {
+        $br = & git rev-parse --abbrev-ref HEAD 2>$null
+        if ($br) { $state.branch = [string]$br.Trim() }
+        $sb = @(& git status -sb 2>$null) | Select-Object -First 1
+        if ($sb -match 'ahead\s+(\d+)') { $state.ahead = [int]$Matches[1] }
+        if ($sb -match 'behind\s+(\d+)') { $state.behind = [int]$Matches[1] }
+        $por = (& git status --porcelain 2>$null | Out-String).Trim()
+        $state.dirty = -not [string]::IsNullOrWhiteSpace($por)
+    } catch {
+        # read-only; never fail doctor on git parse noise
+    } finally {
+        Pop-Location
+    }
+    return [pscustomobject]$state
+}
+
 function Test-ClaudeOsScaffoldSignals {
     $claudeDir = Join-Path $RepoRoot '.claude'
     if (-not (Test-Path -LiteralPath $claudeDir)) {
@@ -143,13 +171,26 @@ Test-ClaudeOsScaffoldSignals
 $failures = @($Checks | Where-Object { $_.status -eq 'fail' })
 $warnings = @($Checks | Where-Object { $_.status -eq 'warn' })
 
+$osDescription = try { [System.Runtime.InteropServices.RuntimeInformation]::OSDescription.Trim() } catch { 'unknown' }
+$doctorEnv = [ordered]@{
+    os              = $osDescription
+    pwshVersion     = $PSVersionTable.PSVersion.ToString()
+    gitVersion      = (Get-CommandVersion -Command 'git' -Args @('--version'))
+    bashAvailable   = [bool](Get-Command bash -ErrorAction SilentlyContinue)
+    nodeAvailable   = [bool](Get-Command node -ErrorAction SilentlyContinue)
+    npmAvailable    = [bool](Get-Command npm -ErrorAction SilentlyContinue)
+}
+$doctorRepo = Get-DoctorRepoState
+
 if ($Json) {
     [pscustomobject]@{
-        status = if ($failures.Count -gt 0) { 'fail' } elseif ($warnings.Count -gt 0) { 'warn' } else { 'ok' }
-        failures = $failures.Count
-        warnings = $warnings.Count
-        checks = $Checks
-    } | ConvertTo-Json -Depth 6
+        status      = if ($failures.Count -gt 0) { 'fail' } elseif ($warnings.Count -gt 0) { 'warn' } else { 'ok' }
+        failures    = $failures.Count
+        warnings    = $warnings.Count
+        environment = [pscustomobject]$doctorEnv
+        repo          = $doctorRepo
+        checks        = $Checks
+    } | ConvertTo-Json -Depth 8
     if ($failures.Count -gt 0) { exit 1 }
     exit 0
 }
@@ -167,6 +208,19 @@ foreach ($check in $Checks) {
 }
 Write-Host ''
 Write-Host "Doctor checks: $($Checks.Count), warnings: $($warnings.Count), failures: $($failures.Count)"
+Write-Host ''
+Write-Host 'Environment / repo (read-only):'
+Write-Host ("  {0,-18} {1}" -f 'os', $doctorEnv.os)
+Write-Host ("  {0,-18} {1}" -f 'pwshVersion', $doctorEnv.pwshVersion)
+Write-Host ("  {0,-18} {1}" -f 'gitVersion', $doctorEnv.gitVersion)
+Write-Host ("  {0,-18} {1}" -f 'bashAvailable', $doctorEnv.bashAvailable)
+Write-Host ("  {0,-18} {1}" -f 'nodeAvailable', $doctorEnv.nodeAvailable)
+Write-Host ("  {0,-18} {1}" -f 'npmAvailable', $doctorEnv.npmAvailable)
+Write-Host ("  {0,-18} {1}" -f 'repo.root', $doctorRepo.root)
+Write-Host ("  {0,-18} {1}" -f 'repo.branch', $doctorRepo.branch)
+Write-Host ("  {0,-18} {1}" -f 'repo.ahead', $doctorRepo.ahead)
+Write-Host ("  {0,-18} {1}" -f 'repo.behind', $doctorRepo.behind)
+Write-Host ("  {0,-18} {1}" -f 'repo.dirty', $doctorRepo.dirty)
 
 if ($failures.Count -gt 0) {
     throw 'Claude OS doctor found blocking environment issues.'

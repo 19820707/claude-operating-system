@@ -1,2 +1,6 @@
-# H10: shell hooks and OS scripts must stay LF-only in the index
+# Reduce CRLF/LF noise: hooks and POSIX scripts stay LF; JSON stable LF.
+* text=auto
 *.sh text eol=lf
+*.ps1 text eol=crlf
+*.md text=auto
+*.json text eol=lf

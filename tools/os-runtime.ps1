@@ -48,7 +48,7 @@ function Show-Help {
         'Commands:'
         '  health                 Run repository health checks'
         '  doctor                 Diagnose runtime/environment readiness'
-        '  validate [-Strict] [-SkipBashSyntax] [-RequireBash]  Release-grade validation (bash -n optional unless -RequireBash)'
+        '  validate [-Strict] [-Json] [-SkipBashSyntax] [-RequireBash]  Release-grade validation (bash -n optional unless -RequireBash)'
         '  route -Query <text>    Route intent to OS capability'
         '  docs -Query <text>     Query section-first docs index'
         '  workflow [-Phase id]   Show progressive workflow gates/status'
@@ -90,6 +90,7 @@ try {
             if ($Strict) { $params['Strict'] = $true }
             if ($SkipBashSyntax) { $params['SkipBashSyntax'] = $true }
             if ($RequireBash) { $params['RequireBash'] = $true }
+            if ($Json) { $params['Json'] = $true }
             & (Join-Path $RepoRoot 'tools/os-validate-all.ps1') @params
         }
         'route' {
@@ -159,15 +160,16 @@ try {
         }
     }
 } catch {
-    # Invariant: no long stack traces or raw dumps in default runtime output.
+    # Invariant: short redacted line — no long stack traces as default output.
     $safe = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 360
-    Write-Host "ERROR: $safe"
+    Write-Host "Claude OS runtime command failed: $safe"
+    Write-Host "Command: $Command"
+    Write-Host 'Suggested diagnostics:'
+    Write-Host '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
+    Write-Host '  pwsh ./tools/os-doctor.ps1 -SkipBashSyntax'
     if ($Command -eq 'validate') {
-        Write-Host ''
-        Write-Host 'Isolated checks (repo root):'
-        Write-Host '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
-        Write-Host '  pwsh ./tools/os-doctor.ps1 -Json -SkipBashSyntax'
         Write-Host '  pwsh ./tools/verify-json-contracts.ps1'
+        Write-Host '  pwsh ./tools/verify-git-hygiene.ps1 -Json'
         Write-Host '  pwsh ./tools/os-validate-all.ps1 -Strict -SkipBashSyntax'
     }
     exit 1

@@ -19,6 +19,8 @@
   "entrypoints": {
     "runtime": "tools/os-runtime.ps1",
     "health": "tools/verify-os-health.ps1",
+    "gitHygiene": "tools/verify-git-hygiene.ps1",
+    "runtimeDispatcherVerify": "tools/verify-runtime-dispatcher.ps1",
     "doctor": "tools/os-doctor.ps1",
     "validateAll": "tools/os-validate-all.ps1",
     "updateProject": "tools/os-update-project.ps1",

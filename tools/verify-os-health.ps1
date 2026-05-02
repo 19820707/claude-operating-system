@@ -127,13 +127,7 @@ function Test-WorkflowStatus {
 }
 
 function Test-RuntimeDispatcher {
-    $help = & (Join-Path $RepoRoot 'tools/os-runtime.ps1') help
-    if (-not $?) { throw 'os-runtime.ps1 help returned non-zero exit code' }
-    if (-not (($help | Out-String).Contains('Claude OS Runtime v1'))) { throw 'os-runtime.ps1 help missing Runtime v1 banner' }
-    $raw = & (Join-Path $RepoRoot 'tools/os-runtime.ps1') workflow -Phase verify -Json
-    if (-not $?) { throw 'os-runtime.ps1 workflow returned non-zero exit code' }
-    $result = ($raw | Out-String) | ConvertFrom-Json
-    if ([int]$result.phaseCount -lt 1) { throw 'os-runtime.ps1 workflow returned no phase' }
+    & (Join-Path $RepoRoot 'tools/verify-runtime-dispatcher.ps1')
 }
 
 function Test-RuntimeProfile {
@@ -144,10 +138,10 @@ function Test-RuntimeProfile {
 }
 
 function Test-Doctor {
-    $doctorArgs = @('-Json')
-    if ($script:EffectiveSkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
-    if ($RequireBash) { $doctorArgs += '-RequireBash' }
-    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorArgs
+    $doctorParams = @{ Json = $true }
+    if ($script:EffectiveSkipBashSyntax) { $doctorParams['SkipBashSyntax'] = $true }
+    if ($RequireBash) { $doctorParams['RequireBash'] = $true }
+    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorParams
     if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
     $result = ($raw | Out-String) | ConvertFrom-Json
     if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
@@ -171,6 +165,16 @@ if ($script:BashAvailable) {
     Write-Host 'Bash: not found; syntax check auto-skipped'
 }
 Write-Host ''
+
+Invoke-HealthStep -Name 'safe-output-lib' -Script {
+    . (Join-Path $RepoRoot 'tools/lib/safe-output.ps1')
+    if (-not (Get-Command Redact-SensitiveText -ErrorAction SilentlyContinue)) { throw 'Redact-SensitiveText not defined after dot-sourcing safe-output.ps1' }
+    if (-not (Get-Command Write-StatusLine -ErrorAction SilentlyContinue)) { throw 'Write-StatusLine not defined after dot-sourcing safe-output.ps1' }
+    $probe = Redact-SensitiveText -Text 'Bearer pretendtokenvaluehere'
+    if ($probe -notmatch 'REDACTED') { throw 'Redact-SensitiveText did not redact Bearer sample' }
+}
+
+Invoke-HealthStep -Name 'git-hygiene' -Script { & (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1') }
 
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
 Invoke-HealthStep -Name 'runtime-release' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1') }
@@ -216,7 +220,9 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/os-update-project.ps1'),
         (Join-Path $RepoRoot 'tools/os-validate-all.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
-        (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
+        (Join-Path $RepoRoot 'tools/verify-os-health.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-runtime-dispatcher.ps1')
     )
 }
 
