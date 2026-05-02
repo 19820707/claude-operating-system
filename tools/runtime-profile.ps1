@@ -37,9 +37,9 @@ if ($Json) {
 
 Write-Host 'Claude OS runtime profiles'
 Write-Host ''
-foreach ($profile in $profiles) {
-    Write-Host "[$($profile.id)] $($profile.purpose)"
-    Write-Host "  commands: $(@($profile.commands) -join ', ')"
-    if ($profile.default) { Write-Host '  default : true' }
+foreach ($prof in $profiles) {
+    Write-Host "[$($prof.id)] $($prof.purpose)"
+    Write-Host "  commands: $(@($prof.commands) -join ', ')"
+    if ($prof.default) { Write-Host '  default : true' }
     Write-Host ''
 }

@@ -33,7 +33,7 @@ function Add-Check {
 function Get-CommandVersion {
     param(
         [string]$Command,
-        [string[]]$Args = @('--version'),
+        [string[]]$CommandArguments = @('--version'),
         [int]$TimeoutMs = 12000
     )
     $cmd = Get-Command $Command -ErrorAction SilentlyContinue
@@ -43,7 +43,7 @@ function Get-CommandVersion {
     try {
         $psi = [System.Diagnostics.ProcessStartInfo]::new()
         $psi.FileName = $path
-        foreach ($a in $Args) {
+        foreach ($a in $CommandArguments) {
             $psi.ArgumentList.Add($a)
         }
         $psi.RedirectStandardOutput = $true
@@ -85,7 +85,7 @@ function Test-CommandAvailable {
         [string[]]$VersionArgs = @('--version'),
         [string]$Severity = 'fail'
     )
-    $version = Get-CommandVersion -Command $Command -Args $VersionArgs
+    $version = Get-CommandVersion -Command $Command -CommandArguments $VersionArgs
     if ($version) {
         Add-Check -Name $Name -Status 'ok' -Detail "${Command}: $version"
     } else {
@@ -216,7 +216,7 @@ $osDescription = try { [System.Runtime.InteropServices.RuntimeInformation]::OSDe
 $doctorEnv = [ordered]@{
     os              = $osDescription
     pwshVersion     = $PSVersionTable.PSVersion.ToString()
-    gitVersion      = (Get-CommandVersion -Command 'git' -Args @('--version'))
+    gitVersion      = (Get-CommandVersion -Command 'git' -CommandArguments @('--version'))
     bashAvailable   = [bool](Get-Command bash -ErrorAction SilentlyContinue)
     nodeAvailable   = [bool](Get-Command node -ErrorAction SilentlyContinue)
     npmAvailable    = [bool](Get-Command npm -ErrorAction SilentlyContinue)

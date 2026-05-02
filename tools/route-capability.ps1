@@ -85,15 +85,15 @@ if ($ListTags) {
     exit 0
 }
 
-$matches = @()
+$capabilityMatches = @()
 if ($Id) {
-    $matches = @($capabilities | Where-Object { [string]$_.id -eq $Id })
+    $capabilityMatches = @($capabilities | Where-Object { [string]$_.id -eq $Id })
 } elseif ($Tag) {
     $needle = $Tag.ToLowerInvariant()
-    $matches = @($capabilities | Where-Object { @($_.tags | ForEach-Object { ([string]$_).ToLowerInvariant() }) -contains $needle })
+    $capabilityMatches = @($capabilities | Where-Object { @($_.tags | ForEach-Object { ([string]$_).ToLowerInvariant() }) -contains $needle })
 } elseif ($Query) {
     $terms = @($Query.ToLowerInvariant().Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries))
-    $matches = @(
+    $capabilityMatches = @(
         $capabilities |
             ForEach-Object {
                 $score = Get-Score -Capability $_ -Terms $terms
@@ -104,10 +104,10 @@ if ($Id) {
             ForEach-Object { $_.capability }
     )
 } else {
-    $matches = @($capabilities | Select-Object -First $Limit)
+    $capabilityMatches = @($capabilities | Select-Object -First $Limit)
 }
 
-$result = @($matches | Select-Object -First $Limit | ForEach-Object { Select-CapabilityFields -Capability $_ })
+$result = @($capabilityMatches | Select-Object -First $Limit | ForEach-Object { Select-CapabilityFields -Capability $_ })
 
 if ($Json) {
     [pscustomobject]@{ count = $result.Count; results = $result } | ConvertTo-Json -Depth 8 -Compress | Write-Output
