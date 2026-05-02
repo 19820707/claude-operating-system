@@ -5,6 +5,10 @@ alwaysApply: true
 
 # Claude OS runtime (Cursor)
 
+## Cursor stack (native surfaces)
+
+Use **this rule** (`.cursor/rules/`) together with repo-root **`AGENTS.md`** and the operational tree **`.claude/`** — same runtime as Codex/CLI agents; do not fork a second OS root.
+
 ## Single source of truth
 
 All operational state, workflow gates, capability routing, and session scripts live under **`.claude/`**.
