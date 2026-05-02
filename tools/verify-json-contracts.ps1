@@ -38,7 +38,7 @@ function Test-SafeRelativePath {
     }
 }
 
-function Require-SchemaVersion {
+function Test-JsonSchemaVersion {
     param([object]$Json, [string]$Name)
     if (-not $Json) { return }
     if (-not ($Json.PSObject.Properties.Name -contains 'schemaVersion')) {
@@ -64,7 +64,7 @@ $manifestPairs = @{
 foreach ($pair in $manifestPairs.GetEnumerator() | Sort-Object Name) {
     $json = Read-JsonFile -RelativePath $pair.Key
     $schema = Read-JsonFile -RelativePath $pair.Value
-    Require-SchemaVersion -Json $json -Name $pair.Key
+    Test-JsonSchemaVersion -Json $json -Name $pair.Key
     if (-not $schema) { continue }
     if (-not ($schema.PSObject.Properties.Name -contains '$schema')) { Fail "$($pair.Value) missing `$schema declaration" }
     Write-Host "OK:  $($pair.Key) + $($pair.Value)"
