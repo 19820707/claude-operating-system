@@ -93,6 +93,36 @@ function Test-CommandAvailable {
     }
 }
 
+function Invoke-GitDoctorRead {
+    param(
+        [string[]]$Arguments,
+        [int]$TimeoutMs = 8000
+    )
+    $gitCmd = Get-Command git -ErrorAction SilentlyContinue
+    if (-not $gitCmd) { return $null }
+    $psi = [System.Diagnostics.ProcessStartInfo]::new()
+    $psi.FileName = [string]$gitCmd.Source
+    foreach ($a in $Arguments) { [void]$psi.ArgumentList.Add($a) }
+    $psi.WorkingDirectory = $RepoRoot
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+    $p = [System.Diagnostics.Process]::new()
+    $p.StartInfo = $psi
+    try {
+        [void]$p.Start()
+        if (-not $p.WaitForExit($TimeoutMs)) {
+            try { $p.Kill($true) } catch { }
+            return @{ timedOut = $true; text = '' }
+        }
+        $out = ($p.StandardOutput.ReadToEnd()).Trim()
+        return @{ timedOut = $false; text = $out }
+    } catch {
+        return @{ timedOut = $false; text = '' }
+    }
+}
+
 function Get-DoctorRepoState {
     $state = [ordered]@{
         root   = $RepoRoot
@@ -104,19 +134,30 @@ function Get-DoctorRepoState {
     if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.git'))) {
         return [pscustomobject]$state
     }
-    Push-Location $RepoRoot
     try {
-        $br = & git rev-parse --abbrev-ref HEAD 2>$null
-        if ($br) { $state.branch = [string]$br.Trim() }
-        $sb = @(& git status -sb 2>$null) | Select-Object -First 1
-        if ($sb -match 'ahead\s+(\d+)') { $state.ahead = [int]$Matches[1] }
-        if ($sb -match 'behind\s+(\d+)') { $state.behind = [int]$Matches[1] }
-        $por = (& git status --porcelain 2>$null | Out-String).Trim()
-        $state.dirty = -not [string]::IsNullOrWhiteSpace($por)
+        $brOut = Invoke-GitDoctorRead -Arguments @('rev-parse', '--abbrev-ref', 'HEAD')
+        if ($brOut.timedOut) {
+            Add-Check -Name 'git:rev-parse' -Status 'warn' -Detail 'git rev-parse timed out (doctor budget)' -Remediation 'Investigate hung git or repo locks.'
+        } elseif ($brOut.text) { $state.branch = [string]$brOut.text.Trim() }
+
+        $sbOut = Invoke-GitDoctorRead -Arguments @('status', '-sb')
+        if ($sbOut.timedOut) {
+            Add-Check -Name 'git:status-sb' -Status 'warn' -Detail 'git status -sb timed out (doctor budget)' -Remediation 'Investigate hung git or repo locks.'
+        } else {
+            $sb = @($sbOut.text -split "`r?`n") | Select-Object -First 1
+            if ($sb -match 'ahead\s+(\d+)') { $state.ahead = [int]$Matches[1] }
+            if ($sb -match 'behind\s+(\d+)') { $state.behind = [int]$Matches[1] }
+        }
+
+        $porOut = Invoke-GitDoctorRead -Arguments @('status', '--porcelain')
+        if ($porOut.timedOut) {
+            Add-Check -Name 'git:status-porcelain' -Status 'warn' -Detail 'git status --porcelain timed out (doctor budget)' -Remediation 'Investigate hung git or repo locks.'
+        } else {
+            $por = $porOut.text.Trim()
+            $state.dirty = -not [string]::IsNullOrWhiteSpace($por)
+        }
     } catch {
         # read-only; never fail doctor on git parse noise
-    } finally {
-        Pop-Location
     }
     return [pscustomobject]$state
 }

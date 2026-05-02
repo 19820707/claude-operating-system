@@ -1,6 +1,7 @@
 # verify-os-health.ps1 — Aggregate Claude OS health verifier
 # Run from repo root or any cwd (uses script location):
 #   pwsh ./tools/verify-os-health.ps1
+#   pwsh ./tools/verify-os-health.ps1 -Json
 # Optional:
 #   pwsh ./tools/verify-os-health.ps1 -SkipBootstrapSmoke -SkipBashSyntax
 
@@ -8,7 +9,8 @@ param(
     [switch]$SkipBootstrapSmoke,
     [switch]$SkipBashSyntax,
     [switch]$RequireBash,
-    [switch]$Strict
+    [switch]$Strict,
+    [switch]$Json
 )
 
 $ErrorActionPreference = 'Stop'
@@ -16,6 +18,7 @@ $RepoRoot = Split-Path $PSScriptRoot -Parent
 $Failures = @()
 $Results = @()
 . (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
+. (Join-Path $PSScriptRoot 'lib/validation-envelope.ps1')
 
 function Add-Result {
     param(
@@ -45,6 +48,41 @@ function Invoke-HealthStep {
     } catch {
         $sw.Stop()
         # Invariant: health output is concise; no raw stack traces or dumped JSON.
+        $msg = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 240
+        Add-Result -Name $Name -Status 'fail' -LatencyMs ([int]$sw.ElapsedMilliseconds) -Note $msg
+        $script:Failures += $Name
+    }
+}
+
+# In-process latency budgets (WARN soft, FAIL if wall-clock exceeds FailMs after completion).
+# Does not preempt a hung child process; prefer keeping doctor bounded via os-doctor internals where possible.
+function Invoke-HealthStepWithBudget {
+    param(
+        [string]$Name,
+        [scriptblock]$Script,
+        [int]$WarnMs = 10000,
+        [int]$FailMs = 30000
+    )
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    try {
+        & $Script
+        $sw.Stop()
+        $ms = [int]$sw.ElapsedMilliseconds
+        if ($ms -gt $FailMs) {
+            $msg = Redact-SensitiveText -Text "${Name}: exceeded hard latency budget ${FailMs}ms (observed ${ms}ms)" -MaxLength 240
+            Add-Result -Name $Name -Status 'fail' -LatencyMs $ms -Note $msg
+            $script:Failures += $Name
+            return
+        }
+        $note = ''
+        $st = 'ok'
+        if ($ms -gt $WarnMs) {
+            $st = 'warn'
+            $note = "soft latency budget ${WarnMs}ms exceeded (observed ${ms}ms)"
+        }
+        Add-Result -Name $Name -Status $st -LatencyMs $ms -Note $note
+    } catch {
+        $sw.Stop()
         $msg = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 240
         Add-Result -Name $Name -Status 'fail' -LatencyMs ([int]$sw.ElapsedMilliseconds) -Note $msg
         $script:Failures += $Name
@@ -138,34 +176,35 @@ function Test-RuntimeProfile {
     if ([int]$result.count -ne 1) { throw 'runtime-profile.ps1 did not return core profile' }
 }
 
-function Test-Doctor {
-    $doctorParams = @{ Json = $true }
-    if ($script:EffectiveSkipBashSyntax) { $doctorParams['SkipBashSyntax'] = $true }
-    if ($RequireBash) { $doctorParams['RequireBash'] = $true }
-    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorParams
-    if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
-    $result = ($raw | Out-String) | ConvertFrom-Json
-    if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
-}
-
 # Invariant: -RequireBash fails fast; otherwise missing bash auto-skips bash -n (local-first Windows).
 $script:BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
 if ($RequireBash -and -not $script:BashAvailable) {
-    Write-Host 'Bash: not found; required'
-    Write-Host ''
+    if (-not $Json) {
+        Write-Host 'Bash: not found; required'
+        Write-Host ''
+    }
+    if ($Json) {
+        $pre = New-OsHealthEnvelope -Strict $Strict.IsPresent -Checks @(
+            [pscustomobject]@{ name = 'preconditions'; status = 'fail'; latency_ms = 0; note = 'bash required on PATH when -RequireBash is set' }
+        ) -FailureCount 1 -WarningCount 0 -RepoRoot $RepoRoot -TotalLatencyMs 0
+        $pre | ConvertTo-Json -Depth 10 -Compress | Write-Output
+        exit 1
+    }
     throw 'verify-os-health: -RequireBash requires bash on PATH.'
 }
 # Same contract as os-validate-all.ps1 (RequireBash+bash-missing aborted above).
 $script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or ((-not $script:BashAvailable) -and -not $RequireBash))
 
-Write-Host 'claude-operating-system health'
-Write-Host "Repo: $RepoRoot"
-if ($script:BashAvailable) {
-    Write-Host 'Bash: available'
-} else {
-    Write-Host 'Bash: not found; syntax check auto-skipped'
+if (-not $Json) {
+    Write-Host 'claude-operating-system health'
+    Write-Host "Repo: $RepoRoot"
+    if ($script:BashAvailable) {
+        Write-Host 'Bash: available'
+    } else {
+        Write-Host 'Bash: not found; syntax check auto-skipped'
+    }
+    Write-Host ''
 }
-Write-Host ''
 
 Invoke-HealthStep -Name 'safe-output-lib' -Script {
     . (Join-Path $RepoRoot 'tools/lib/safe-output.ps1')
@@ -202,7 +241,15 @@ Invoke-HealthStep -Name 'workflow' -Script { & (Join-Path $RepoRoot 'tools/verif
 Invoke-HealthStep -Name 'workflow-status' -Script { Test-WorkflowStatus }
 Invoke-HealthStep -Name 'runtime-dispatcher' -Script { Test-RuntimeDispatcher }
 Invoke-HealthStep -Name 'checklists' -Script { & (Join-Path $RepoRoot 'tools/verify-checklists.ps1') }
-Invoke-HealthStep -Name 'doctor' -Script { Test-Doctor }
+Invoke-HealthStepWithBudget -Name 'doctor' -WarnMs 10000 -FailMs 30000 -Script {
+    $doctorParams = @{ Json = $true }
+    if ($script:EffectiveSkipBashSyntax) { $doctorParams['SkipBashSyntax'] = $true }
+    if ($RequireBash) { $doctorParams['RequireBash'] = $true }
+    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorParams
+    if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
+    $result = ($raw | Out-String) | ConvertFrom-Json
+    if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
+}
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
     Test-PowerShellSyntax -Files @(
         (Join-Path $RepoRoot 'install.ps1'),
@@ -232,6 +279,7 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/os-validate-all.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1'),
+        (Join-Path $RepoRoot 'tools/lib/validation-envelope.ps1'),
         (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1'),
         (Join-Path $RepoRoot 'tools/verify-runtime-dispatcher.ps1')
     )
@@ -250,20 +298,40 @@ if (-not $script:EffectiveSkipBashSyntax) {
     Add-Result -Name 'bash-syntax' -Status 'skip' -LatencyMs 0 -Note $skipReason
 }
 
-Write-Host ''
-Write-Host 'Summary:'
-foreach ($r in $Results) {
-    $line = "  $($r.status.ToUpper().PadRight(4)) $($r.name) ($($r.latency_ms) ms)"
-    if ($r.note) { $line += " - $(Redact-SensitiveText -Text $r.note -MaxLength 180)" }
-    Write-Host $line
+$totalMs = [int]($Results | Measure-Object -Property latency_ms -Sum).Sum
+$warnCount = @($Results | Where-Object { $_.status -eq 'warn' }).Count
+$failCount = $Failures.Count
+
+if ($Json) {
+    $envelope = New-OsHealthEnvelope -Strict $Strict.IsPresent -Checks @($Results) -FailureCount $failCount -WarningCount $warnCount -RepoRoot $RepoRoot -TotalLatencyMs $totalMs
+    $envelope | ConvertTo-Json -Depth 10 -Compress | Write-Output
 }
 
-$totalMs = ($Results | Measure-Object -Property latency_ms -Sum).Sum
-Write-Host ''
-Write-Host "Health checks: $($Results.Count), failures: $($Failures.Count), total: $totalMs ms"
+if (-not $Json) {
+    Write-Host ''
+    Write-Host 'Summary:'
+    foreach ($r in $Results) {
+        $line = "  $($r.status.ToUpper().PadRight(4)) $($r.name) ($($r.latency_ms) ms)"
+        if ($r.note) { $line += " - $(Redact-SensitiveText -Text $r.note -MaxLength 180)" }
+        Write-Host $line
+    }
+    Write-Host ''
+    Write-Host "Health checks: $($Results.Count), failures: $failCount, warnings: $warnCount, total: $totalMs ms"
+}
 
-if ($Failures.Count -gt 0) {
+if ($failCount -gt 0) {
+    if ($Json) { exit 1 }
     throw "Claude OS health failed: $($Failures -join ', ')"
 }
+if ($Strict -and $warnCount -gt 0) {
+    if ($Json) { exit 1 }
+    $wn = @($Results | Where-Object { $_.status -eq 'warn' } | ForEach-Object { $_.name }) -join ', '
+    throw "Claude OS health strict mode: warning(s) not permitted on check(s): $wn"
+}
 
-Write-Host 'Claude OS health passed.'
+if (-not $Json) {
+    Write-Host 'Claude OS health passed.'
+}
+if ($Json) {
+    exit 0
+}

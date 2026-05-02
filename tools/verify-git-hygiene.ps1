@@ -175,20 +175,40 @@ $lines = @($porcelain -split "`r?`n" | Where-Object { $_ -match '^\?\?' })
 foreach ($line in $lines) {
     $path = ($line -replace '^\?\?\s+', '').Trim()
     if ($path -match '(?i)claude-operating-system') {
-        Add-Fail "Untracked nested repo path detected: $path — treat as FAIL; do not git add ."
+        Add-Fail "Untracked nested repo path detected: $path - treat as FAIL; avoid git add ."
     }
 }
 
+# Strict: any remaining hygiene warning becomes a blocking failure (aggregate health -Strict / release gates).
+if ($Strict -and $script:HygieneWarns.Count -gt 0) {
+    Add-Fail "Strict mode: $($script:HygieneWarns.Count) git-hygiene warning(s) must be cleared (see JSON warnings or re-run without -Json)."
+}
+
+$checkList = [System.Collections.Generic.List[object]]::new()
+$i = 0
+foreach ($f in $script:HygieneFails) {
+    [void]$checkList.Add([ordered]@{ name = "hygiene_fail_$i"; status = 'fail'; latencyMs = 0; detail = $f })
+    $i++
+}
+$i = 0
+foreach ($w in $script:HygieneWarns) {
+    [void]$checkList.Add([ordered]@{ name = "hygiene_warn_$i"; status = 'warn'; latencyMs = 0; detail = $w })
+    $i++
+}
+
 $result = [ordered]@{
-    repoRoot     = $RepoRoot
-    branch       = $branch
-    ahead        = $ahead
-    behind       = $behind
-    dirty        = [bool]$dirty
-    strict       = [bool]$Strict
-    failures     = @($script:HygieneFails)
-    warnings     = @($script:HygieneWarns)
-    status       = if ($script:HygieneFails.Count -gt 0) { 'fail' } elseif ($script:HygieneWarns.Count -gt 0) { 'warn' } else { 'ok' }
+    repoRoot      = $RepoRoot
+    branch        = $branch
+    ahead         = $ahead
+    behind        = $behind
+    dirty         = [bool]$dirty
+    strict        = [bool]$Strict
+    failures      = @($script:HygieneFails)
+    warnings      = @($script:HygieneWarns)
+    failureCount  = [int]$script:HygieneFails.Count
+    warningCount  = [int]$script:HygieneWarns.Count
+    checks        = @($checkList)
+    status        = if ($script:HygieneFails.Count -gt 0) { 'fail' } elseif ($script:HygieneWarns.Count -gt 0) { 'warn' } else { 'ok' }
 }
 
 if ($Json) {

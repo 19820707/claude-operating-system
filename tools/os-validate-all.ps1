@@ -16,6 +16,7 @@ $RepoRoot = Split-Path $PSScriptRoot -Parent
 $failures = @()
 $script:JsonMode = [bool]$Json
 $script:ValidateRecords = [System.Collections.Generic.List[object]]::new()
+$script:ValidateHealthEnvelope = $null
 
 . (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
 
@@ -42,7 +43,7 @@ function Invoke-Validation {
         }
         $sw.Stop()
         $ms = [int]$sw.ElapsedMilliseconds
-        $script:ValidateRecords.Add([pscustomobject]@{ name = $Name; status = 'ok'; latencyMs = $ms })
+        $script:ValidateRecords.Add([pscustomobject]@{ name = $Name; status = 'ok'; latencyMs = $ms; detail = '' })
         if (-not $script:JsonMode) {
             Write-StatusLine -Status 'ok' -Name $Name -Detail "$ms ms"
         }
@@ -71,7 +72,7 @@ function Invoke-DoctorStrict {
         $allowedWarnings = @('project-scaffold', 'node', 'npm', 'invariant-bundles')
         if ($script:EffectiveSkipBashSyntax) { $allowedWarnings += 'bash' }
         $unexpectedWarnings = @($doctor.checks | Where-Object {
-            $_.status -eq 'warn' -and $_.name -notin $allowedWarnings -and $_.name -notlike 'scaffold:*'
+            $_.status -eq 'warn' -and $_.name -notin $allowedWarnings -and $_.name -notlike 'scaffold:*' -and $_.name -notlike 'git:*'
         })
         if ($unexpectedWarnings.Count -gt 0) {
             $warnNames = @(
@@ -167,18 +168,68 @@ function Test-SessionMemoryCycle {
 
 function Write-ValidateSummaryJson {
     param([string]$Status)
+    $failN = @($script:ValidateRecords | Where-Object { $_.status -eq 'fail' }).Count
+    $warnN = @($script:ValidateRecords | Where-Object { $_.status -eq 'warn' }).Count
+    $failedNames = @(
+        @($script:ValidateRecords | Where-Object { $_.status -eq 'fail' } | ForEach-Object { [string]$_.name }) | Select-Object -First 16
+    )
+    $diag = [System.Collections.Generic.List[string]]::new()
+    if ($failedNames -contains 'health') {
+        $hb = if ($script:EffectiveSkipBashSyntax) { ' -SkipBashSyntax' } else { '' }
+        [void]$diag.Add("pwsh ./tools/verify-os-health.ps1 -Json$hb")
+        [void]$diag.Add('pwsh ./tools/verify-git-hygiene.ps1 -Json')
+    }
+    if ($failedNames -contains 'doctor') {
+        $db = if ($script:EffectiveSkipBashSyntax) { ' -SkipBashSyntax' } else { '' }
+        [void]$diag.Add("pwsh ./tools/os-doctor.ps1 -Json$db")
+    }
+    if ($failedNames -contains 'json-contracts') { [void]$diag.Add('pwsh ./tools/verify-json-contracts.ps1') }
+    if ($failedNames -contains 'generated-project-tools') { [void]$diag.Add('pwsh ./tools/os-validate-all.ps1 -Strict (see init-project logs above)') }
+    if ($failedNames -contains 'session-memory-cycle') { [void]$diag.Add('pwsh ./tools/verify-session-memory.ps1') }
+
+    $checkObjs = foreach ($r in $script:ValidateRecords) {
+        $d = if ($null -eq $r.detail) { '' } else { [string]$r.detail }
+        [ordered]@{
+            name      = [string]$r.name
+            status    = [string]$r.status
+            latencyMs = [int]$r.latencyMs
+            detail    = (Redact-SensitiveText -Text $d -MaxLength 220)
+        }
+    }
+    $fmsg = if ($failN -gt 0) {
+        Redact-SensitiveText -Text ("Validation failed ($failN): " + ($failedNames -join ', ')) -MaxLength 400
+    } else { '' }
+
+    $healthSummary = $null
+    if ($null -ne $script:ValidateHealthEnvelope) {
+        $h = $script:ValidateHealthEnvelope
+        $healthSummary = [ordered]@{
+            status   = [string]$h.status
+            failures = [int]$h.failures
+            warnings = [int]$h.warnings
+            totalMs  = [int]$h.totalMs
+        }
+    }
+
     $out = [ordered]@{
-        status  = $Status
-        strict  = [bool]$Strict
-        bash    = [ordered]@{
+        name              = 'os-validate-all'
+        status            = $Status
+        strict            = [bool]$Strict
+        checks            = @($checkObjs)
+        warnings          = [int]$warnN
+        failures          = [int]$failN
+        failedChecks      = @($failedNames)
+        failureMessage     = $fmsg
+        suggestedCommands = @($diag)
+        bash              = [ordered]@{
             available = [bool]$script:BashAvailable
             skipped   = [bool]$script:EffectiveSkipBashSyntax
             required  = [bool]$RequireBash
         }
-        checks  = @($script:ValidateRecords)
-        repo    = (Redact-SensitiveText -Text $RepoRoot -MaxLength 200)
+        healthSummary     = $healthSummary
+        repo              = (Redact-SensitiveText -Text $RepoRoot -MaxLength 200)
     }
-    $out | ConvertTo-Json -Depth 8 -Compress | Write-Output
+    $out | ConvertTo-Json -Depth 12 -Compress | Write-Output
 }
 
 if (-not $Json) {
@@ -205,13 +256,68 @@ if (-not $Json) {
     Write-Host ''
 }
 
-Invoke-Validation -Name 'health' -Script {
+function Invoke-HealthAggregate {
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $hp = @{}
     if ($script:EffectiveSkipBashSyntax) { $hp['SkipBashSyntax'] = $true }
     elseif ($RequireBash) { $hp['RequireBash'] = $true }
     if ($Strict) { $hp['Strict'] = $true }
-    & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @hp
+    if ($script:JsonMode) { $hp['Json'] = $true }
+    $cap = [System.Collections.Generic.List[string]]::new()
+    try {
+        foreach ($line in @(& (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @hp 2>$null)) {
+            [void]$cap.Add([string]$line)
+        }
+        $exitCode = $LASTEXITCODE
+        $sw.Stop()
+        if ($exitCode -ne 0) {
+            $script:ValidateHealthEnvelope = $null
+            if ($cap.Count -gt 0) {
+                try { $script:ValidateHealthEnvelope = ($cap[$cap.Count - 1] | ConvertFrom-Json) } catch { }
+            }
+            $sum = if ($null -ne $script:ValidateHealthEnvelope -and $script:ValidateHealthEnvelope.status) {
+                "aggregate status=$($script:ValidateHealthEnvelope.status)"
+            } else {
+                'verify-os-health returned non-zero exit code'
+            }
+            $script:ValidateRecords.Add([pscustomobject]@{ name = 'health'; status = 'fail'; latencyMs = [int]$sw.ElapsedMilliseconds; detail = $sum })
+            if (-not $script:JsonMode) {
+                Write-StatusLine -Status 'fail' -Name 'health' -Detail "$sum ($($sw.ElapsedMilliseconds) ms)"
+            }
+            $script:failures += 'health'
+            return
+        }
+        if ($script:JsonMode -and $cap.Count -gt 0) {
+            try { $script:ValidateHealthEnvelope = ($cap[$cap.Count - 1] | ConvertFrom-Json) } catch { $script:ValidateHealthEnvelope = $null }
+        }
+        $aggSt = 'ok'
+        if ($null -ne $script:ValidateHealthEnvelope) {
+            if ($script:ValidateHealthEnvelope.status -eq 'fail') { $aggSt = 'fail' }
+            elseif ($script:ValidateHealthEnvelope.status -eq 'warn') { $aggSt = 'warn' }
+        }
+        $detail = if ($script:JsonMode -and $null -ne $script:ValidateHealthEnvelope) {
+            "aggregate status=$($script:ValidateHealthEnvelope.status)"
+        } else { '' }
+        $script:ValidateRecords.Add([pscustomobject]@{ name = 'health'; status = $aggSt; latencyMs = [int]$sw.ElapsedMilliseconds; detail = $detail })
+        if ($aggSt -eq 'fail') { $script:failures += 'health' }
+        if (-not $script:JsonMode) {
+            Write-StatusLine -Status $(if ($aggSt -eq 'warn') { 'warn' } else { 'ok' }) -Name 'health' -Detail "$($sw.ElapsedMilliseconds) ms"
+        }
+    } catch {
+        $sw.Stop()
+        $msg = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 220
+        if ($cap.Count -gt 0) {
+            try { $script:ValidateHealthEnvelope = ($cap[$cap.Count - 1] | ConvertFrom-Json) } catch { }
+        }
+        $script:ValidateRecords.Add([pscustomobject]@{ name = 'health'; status = 'fail'; latencyMs = [int]$sw.ElapsedMilliseconds; detail = $msg })
+        if (-not $script:JsonMode) {
+            Write-StatusLine -Status 'fail' -Name 'health' -Detail "$msg ($($sw.ElapsedMilliseconds) ms)"
+        }
+        $script:failures += 'health'
+    }
 }
+
+Invoke-HealthAggregate
 Invoke-Validation -Name 'doctor' -Script { Invoke-DoctorStrict }
 Invoke-Validation -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
 Invoke-Validation -Name 'generated-project-tools' -Script { Test-GeneratedProjectTools }
@@ -219,9 +325,17 @@ Invoke-Validation -Name 'session-memory-cycle' -Script { Test-SessionMemoryCycle
 
 if (-not $Json) { Write-Host '' }
 
+$aggregateStatus = if ($failures.Count -gt 0) {
+    'fail'
+} elseif (@($script:ValidateRecords | Where-Object { $_.status -eq 'warn' }).Count -gt 0) {
+    'warn'
+} else {
+    'ok'
+}
+
 if ($failures.Count -gt 0) {
     if ($Json) {
-        Write-ValidateSummaryJson -Status 'fail'
+        Write-ValidateSummaryJson -Status $aggregateStatus
         exit 1
     }
     $names = $failures -join ', '
@@ -242,7 +356,7 @@ if ($failures.Count -gt 0) {
 }
 
 if ($Json) {
-    Write-ValidateSummaryJson -Status 'ok'
+    Write-ValidateSummaryJson -Status $aggregateStatus
     exit 0
 }
 

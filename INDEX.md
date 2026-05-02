@@ -8,7 +8,8 @@ Navigation map. Every file, its purpose, and when to use it.
 
 | I need to... | Go to |
 |-------------|-------|
-| Check full OS health | `pwsh ./tools/verify-os-health.ps1` |
+| Check full OS health | `pwsh ./tools/verify-os-health.ps1` (optional **`-Json`**; redirect stderr with **`2>$null`** when piping JSON only) |
+| Release aggregate validation | `pwsh ./tools/os-validate-all.ps1 -Strict` (optional **`-Json`**) |
 | Check Git workspace hygiene (read-only) | `pwsh ./tools/verify-git-hygiene.ps1` |
 | Verify multi-agent adapter templates + manifest | `pwsh ./tools/verify-agent-adapters.ps1` (optional `-Json`) |
 | Recover from fetch/rebase/nested clone issues | `GIT-RECOVERY.md` (also `docs/GIT-RECOVERY.md`) |
@@ -39,8 +40,9 @@ Navigation map. Every file, its purpose, and when to use it.
 | `install.ps1` | Copies global files to `~/.claude/` on Windows; writes `os-install.json` provenance | New Windows machine, after format |
 | `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, manifest-driven validation | New app/repo on Windows |
 | `bootstrap-manifest.json` | Canonical counts, skills, project bootstrap script list, and critical-path list for CI drift detection | When adding skills, commands, agents, profiles, scripts, or bootstrap critical paths |
-| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, Bash checks, safe-output probe, **git-hygiene**, and dispatcher checks; pass **`-Strict`** to make git-hygiene blocking for nested clone (same as `os-validate-all -Strict`) | Primary local and CI health check |
-| `tools/verify-git-hygiene.ps1` | Read-only: nested `claude-operating-system/`, nested `.git`, rebase/merge/cherry state, conflict markers (`<<<<<<<` / `=======` / `>>>>>>>`), dirty tree; **`-Strict`** or CI = nested clone **FAIL**; local default = nested clone **WARN** | Before `git add`, CI, release |
+| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, Bash checks, safe-output probe, **git-hygiene**, dispatcher checks, **doctor** (soft **10s** / hard **30s** latency budgets); **`-Json`** emits a compact envelope and uses **process exit codes** (`0` ok/warn-only, `1` fail / strict blocked); **`-Strict`** matches `os-validate-all -Strict` and fails on disallowed warnings (for example doctor soft-budget) | Primary local and CI health check |
+| `tools/os-validate-all.ps1` | Release gate: health, doctor (strict rules), json-contracts, generated project tools, session-memory cycle; **`-Json`** emits compact summary plus optional **healthSummary** (status, failure/warning counts, totalMs) | CI / pre-push |
+| `tools/verify-git-hygiene.ps1` | Read-only: nested `claude-operating-system/`, nested `.git`, rebase/merge/cherry state, conflict markers (`<<<<<<<` / `=======` / `>>>>>>>`), dirty tree; **`-Strict`** or CI = nested clone **FAIL**; **`-Strict`** also elevates remaining hygiene warnings to failures; optional **`-Json`** includes `checks`, `failureCount`, `warningCount` | Before `git add`, CI, release |
 | `tools/verify-runtime-dispatcher.ps1` | Contract tests for `tools/os-runtime.ps1` (help, JSON routes, absorb/digest guardrails) | Invoked from health |
 | `GIT-RECOVERY.md` | Safe Git recovery — fetch first, rebase conflicts, nested clone, stash discipline, forbidden commands | When push/pull/rebase fails |
 | `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push, health check component |
