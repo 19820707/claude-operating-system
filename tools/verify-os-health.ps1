@@ -135,6 +135,13 @@ function Test-RuntimeDispatcher {
     if ([int]$result.phaseCount -lt 1) { throw 'os-runtime.ps1 workflow returned no phase' }
 }
 
+function Test-RuntimeProfile {
+    $raw = & (Join-Path $RepoRoot 'tools/runtime-profile.ps1') -Id core -Json
+    if ($LASTEXITCODE -ne 0) { throw 'runtime-profile.ps1 returned non-zero exit code' }
+    $result = ($raw | Out-String) | ConvertFrom-Json
+    if ([int]$result.count -ne 1) { throw 'runtime-profile.ps1 did not return core profile' }
+}
+
 function Test-Doctor {
     $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') -Json
     if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
@@ -149,6 +156,8 @@ Write-Host ''
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
 Invoke-HealthStep -Name 'runtime-release' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1') }
 Invoke-HealthStep -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
+Invoke-HealthStep -Name 'runtime-profiles' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-profiles.ps1') }
+Invoke-HealthStep -Name 'runtime-profile' -Script { Test-RuntimeProfile }
 Invoke-HealthStep -Name 'skills' -Script { & (Join-Path $RepoRoot 'tools/verify-skills.ps1') }
 Invoke-HealthStep -Name 'docs' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1') }
 Invoke-HealthStep -Name 'docs-index' -Script { & (Join-Path $RepoRoot 'tools/verify-docs-index.ps1') }
@@ -173,6 +182,11 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/route-capability.ps1'),
         (Join-Path $RepoRoot 'tools/verify-workflow-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/workflow-status.ps1'),
+        (Join-Path $RepoRoot 'tools/runtime-profile.ps1'),
+        (Join-Path $RepoRoot 'tools/session-prime.ps1'),
+        (Join-Path $RepoRoot 'tools/session-absorb.ps1'),
+        (Join-Path $RepoRoot 'tools/session-digest.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-runtime-profiles.ps1'),
         (Join-Path $RepoRoot 'tools/verify-checklists.ps1'),
         (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1'),
         (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1'),
