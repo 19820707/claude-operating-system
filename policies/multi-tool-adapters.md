@@ -83,6 +83,26 @@ Project templates today reference a **neutral multi-agent contract** under **`.a
 
 ---
 
+## Repository separation (OS source vs application work)
+
+The **`claude-operating-system`** clone on disk is the **distribution source**: templates, manifests, `tools/os-update-project.ps1`, validators. It is **not** where application product code should live.
+
+| Do | Why |
+|----|-----|
+| Keep **features, fixes, and product tests** only in each **application repository** (e.g. Rallyo-Platform). | Preserves one git history, correct CI, and clear ownership. |
+| From the **OS clone**, run `pwsh ./tools/os-runtime.ps1 update -ProjectPath <path-to-app>` (or `os-update-project.ps1`) to **refresh managed OS files inside the app**. | Reads from the OS tree, writes into the app tree — no need to nest repos. |
+| Use a **separate terminal or workspace** per root: either you are in the **OS clone** (pull, validate, `update` out) or in the **app repo** (prime, digest, build). | Avoids wrong-`cwd` commits and path confusion. |
+
+| Do **not** | Why it fails |
+|-----------|--------------|
+| Nest an application repo **inside** `claude-operating-system/` (e.g. `claude-operating-system/claude-operating-system/`). | Triggers hygiene failures, ambiguous remotes, and accidental edits in the wrong tree. |
+| Treat the OS clone as the **working tree** for an unrelated product. | Risk of committing app changes to the OS repo or polluting OS `main` with product noise. |
+| Run **`init-project.ps1 -ProjectPath`** pointing at the OS clone **for product work**. | `init-project` scaffolds a **project** layout; the OS repo already *is* the source layout. |
+
+For production-impacting bootstrap/update behaviour or changing this separation: **human approval required**.
+
+---
+
 ## Operational rule
 
 **`.claude/` = operational truth.**  

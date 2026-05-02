@@ -25,6 +25,7 @@ Navigation map. Every file, its purpose, and when to use it.
 | Understand operating modes | `policies/operating-modes.md` |
 | Review engineering rules | `policies/engineering-governance.md` |
 | Same repo, Claude + Cursor + Codex | `policies/multi-tool-adapters.md` |
+| Refresh OS into an **app** repo (never mix app work inside the OS clone) | `cd` to **claude-operating-system** clone → `pwsh ./tools/os-runtime.ps1 update -ProjectPath <path-to-app>` |
 | Check production safety rules | `policies/production-safety.md` |
 | Understand global mandate | `CLAUDE.md` |
 
