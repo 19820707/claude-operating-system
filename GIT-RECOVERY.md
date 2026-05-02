@@ -20,8 +20,9 @@ Safe patterns when Git is blocked, dirty, or mid-operation. This repo treats **h
 
 - **Never** `git add .` while that folder exists
 - Inspect: `Get-ChildItem .\claude-operating-system -Force` and `Test-Path .\claude-operating-system\.git`
-- After human review only: remove (`Remove-Item -Recurse -Force .\claude-operating-system`) or move outside the repo (backup)
-- The repo lists `/claude-operating-system/` in `.gitignore` to reduce accidental tracking; hygiene still flags a physical nested clone as **FAIL**
+- After human review only: remove (`Remove-Item -Recurse -Force .\claude-operating-system`) or move outside the repo (backup). **Never** delete automatically from scripts or agents.
+- The repo lists `/claude-operating-system/` in `.gitignore` to reduce accidental tracking; `verify-git-hygiene.ps1` still detects a physical nested clone on disk.
+- **Severity:** `pwsh ./tools/verify-git-hygiene.ps1` alone reports a **WARN** locally so health can surface the risk before `git add .`. With **`-Strict`** (as used by `pwsh ./tools/os-validate-all.ps1 -Strict` and CI), the same condition is a **FAIL** until the folder is removed or moved. **CI** (`CI` / `GITHUB_ACTIONS`) always treats a dirty tree or nested clone as **FAIL**.
 
 ## Stash
 
@@ -38,7 +39,7 @@ Safe patterns when Git is blocked, dirty, or mid-operation. This repo treats **h
 
 ## Verifiers
 
-- `pwsh ./tools/verify-git-hygiene.ps1` — read-only Git state (rebase, merge, markers, nested `.git`, dirty in CI)
+- `pwsh ./tools/verify-git-hygiene.ps1` — read-only Git state (rebase, merge, markers, nested `.git`, nested `claude-operating-system/`, dirty in CI); add `-Strict` for release-style blocking checks
 - `pwsh ./tools/verify-os-health.ps1` — full OS health including git hygiene
 
 **human approval required** for policy changes, CI, and anything that alters protected branches or production gates.

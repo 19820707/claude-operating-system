@@ -7,7 +7,8 @@
 param(
     [switch]$SkipBootstrapSmoke,
     [switch]$SkipBashSyntax,
-    [switch]$RequireBash
+    [switch]$RequireBash,
+    [switch]$Strict
 )
 
 $ErrorActionPreference = 'Stop'
@@ -172,9 +173,17 @@ Invoke-HealthStep -Name 'safe-output-lib' -Script {
     if (-not (Get-Command Write-StatusLine -ErrorAction SilentlyContinue)) { throw 'Write-StatusLine not defined after dot-sourcing safe-output.ps1' }
     $probe = Redact-SensitiveText -Text 'Bearer pretendtokenvaluehere'
     if ($probe -notmatch 'REDACTED') { throw 'Redact-SensitiveText did not redact Bearer sample' }
+    $p2 = Redact-SensitiveText -Text 'password=secret123'
+    if ($p2 -notmatch 'REDACTED') { throw 'Redact-SensitiveText did not redact password sample' }
+    $p3 = Redact-SensitiveText -Text "at line 1`nat System.Management.Automation" -MaxLength 400
+    if ($p3 -match 'System\.Management') { throw 'Redact-SensitiveText should shorten stack-like lines' }
 }
 
-Invoke-HealthStep -Name 'git-hygiene' -Script { & (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1') }
+Invoke-HealthStep -Name 'git-hygiene' -Script {
+    $gh = @{}
+    if ($Strict) { $gh['Strict'] = $true }
+    & (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1') @gh
+}
 
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
 Invoke-HealthStep -Name 'runtime-release' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1') }

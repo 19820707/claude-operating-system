@@ -39,8 +39,8 @@ Navigation map. Every file, its purpose, and when to use it.
 | `install.ps1` | Copies global files to `~/.claude/` on Windows; writes `os-install.json` provenance | New Windows machine, after format |
 | `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, manifest-driven validation | New app/repo on Windows |
 | `bootstrap-manifest.json` | Canonical counts, skills, project bootstrap script list, and critical-path list for CI drift detection | When adding skills, commands, agents, profiles, scripts, or bootstrap critical paths |
-| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, Bash checks, safe-output probe, **git-hygiene**, and dispatcher checks | Primary local and CI health check |
-| `tools/verify-git-hygiene.ps1` | Read-only: nested `claude-operating-system/`, nested `.git`, rebase/merge/cherry state, conflict markers, dirty tree (CI fail) | Before `git add`, CI, release |
+| `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, Bash checks, safe-output probe, **git-hygiene**, and dispatcher checks; pass **`-Strict`** to make git-hygiene blocking for nested clone (same as `os-validate-all -Strict`) | Primary local and CI health check |
+| `tools/verify-git-hygiene.ps1` | Read-only: nested `claude-operating-system/`, nested `.git`, rebase/merge/cherry state, conflict markers (`<<<<<<<` / `=======` / `>>>>>>>`), dirty tree; **`-Strict`** or CI = nested clone **FAIL**; local default = nested clone **WARN** | Before `git add`, CI, release |
 | `tools/verify-runtime-dispatcher.ps1` | Contract tests for `tools/os-runtime.ps1` (help, JSON routes, absorb/digest guardrails) | Invoked from health |
 | `GIT-RECOVERY.md` | Safe Git recovery — fetch first, rebase conflicts, nested clone, stash discipline, forbidden commands | When push/pull/rebase fails |
 | `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push, health check component |

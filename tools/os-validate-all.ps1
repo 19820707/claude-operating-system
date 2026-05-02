@@ -205,13 +205,11 @@ if (-not $Json) {
 }
 
 Invoke-Validation -Name 'health' -Script {
-    if ($script:EffectiveSkipBashSyntax) {
-        & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -SkipBashSyntax
-    } elseif ($RequireBash) {
-        & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -RequireBash
-    } else {
-        & (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
-    }
+    $hp = @{}
+    if ($script:EffectiveSkipBashSyntax) { $hp['SkipBashSyntax'] = $true }
+    elseif ($RequireBash) { $hp['RequireBash'] = $true }
+    if ($Strict) { $hp['Strict'] = $true }
+    & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @hp
 }
 Invoke-Validation -Name 'doctor' -Script { Invoke-DoctorStrict }
 Invoke-Validation -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }

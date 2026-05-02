@@ -23,7 +23,14 @@
     },
     "entrypoints": {
       "type": "object",
-      "required": ["health", "doctor", "validateAll", "updateProject"],
+      "required": [
+        "health",
+        "gitHygiene",
+        "runtimeDispatcherVerify",
+        "doctor",
+        "validateAll",
+        "updateProject"
+      ],
       "additionalProperties": { "type": "string", "minLength": 1 }
     },
     "managedProjectArtifacts": {

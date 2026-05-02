@@ -16,14 +16,17 @@ function Redact-SensitiveText {
         '(?i)(bearer\s+)[a-z0-9._~+\-/]+=*',
         '(?i)(authorization:\s*bearer\s+)[^\s]+',
         '(?i)(api[_-]?key\s*[=:]\s*)[^\s''"`]+',
+        '(?i)(x-api-key\s*:\s*)[^\s]+',
         '(?i)(token\s*[=:]\s*)[^\s''"`]+',
         '(?i)(secret\s*[=:]\s*)[^\s''"`]+',
         '(?i)(password\s*[=:]\s*)[^\s''"`]+',
+        '(?i)(passwd\s*[=:]\s*)[^\s''"`]+',
         '(?i)(connection\s*string\s*[=:]\s*)[^\s''"`]{8,}',
         '(?i)(mongodb(\+srv)?://)[^\s''"`]+',
         '(?i)(postgres(ql)?://)[^\s''"`]+',
         '(?i)(mysql://)[^\s''"`]+',
         '(?i)(redis://)[^\s''"`]+',
+        '(?i)(AKIA[0-9A-Z]{16})',
         'ghp_[A-Za-z0-9_]{20,}',
         'github_pat_[A-Za-z0-9_]{20,}',
         'sk-[A-Za-z0-9]{20,}',
@@ -43,11 +46,12 @@ function Redact-SensitiveText {
     # Invariant: user-facing output never dumps raw stack traces or huge generated JSON.
     $safe = [regex]::Replace($safe, '(?im)^\s*at\s+.+$', '  at [REDACTED-STACK]')
     $safe = [regex]::Replace($safe, '(?s)\{\s*"[^\n]{120,}', '{ [REDACTED-LARGE-JSON]')
+    $safe = [regex]::Replace($safe, '(?s)\[\s*\{\s*"[^\n]{120,}', '[ [REDACTED-LARGE-JSON]')
     # Long temp / workspace paths (reduce noise; keep tail for orientation)
     $safe = [regex]::Replace(
         $safe,
         '(?i)([A-Za-z]:\\Users\\[^\\]+\\AppData\\Local\\Temp\\claude-os-[^\s]{16,})',
-        { return '[REDACTED-TEMP]/' + (Split-Path -Path $args[0].Value -Leaf) }
+        { param($m) return '[REDACTED-TEMP]/' + (Split-Path -Path $m.Value -Leaf) }
     )
 
     if ($MaxLength -gt 0 -and $safe.Length -gt $MaxLength) {

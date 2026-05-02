@@ -36,10 +36,14 @@ $prof = Invoke-RT @('profile', '-Id', 'core', '-Json')
 if ($prof.Exit -ne 0) { throw 'dispatcher: profile -Json must exit 0' }
 $null = ($prof.Out | Out-String) | ConvertFrom-Json
 
-# Strict forwarding is asserted statically (full validate -Strict runs in os-validate-all / CI only).
+# Strict / bash flags must be forwarded via splat (never reuse $args as a local variable).
+# Do not invoke `validate` from this script: os-validate-all -> health -> verify-runtime-dispatcher would recurse.
 $src = Get-Content -LiteralPath $rt -Raw
 if (-not $src.Contains('$params[''Strict'']')) {
     throw "dispatcher: os-runtime.ps1 must forward -Strict to os-validate-all (expected splat key Strict)."
+}
+if (-not $src.Contains('$params[''SkipBashSyntax'']')) {
+    throw "dispatcher: os-runtime.ps1 must forward -SkipBashSyntax to os-validate-all when set."
 }
 
 $abs = Invoke-RT @('absorb')

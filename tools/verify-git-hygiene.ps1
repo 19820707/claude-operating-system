@@ -1,8 +1,12 @@
 # verify-git-hygiene.ps1 — Read-only Git workspace hygiene (no reset, no stash, no mutations)
 #   pwsh ./tools/verify-git-hygiene.ps1
 #   pwsh ./tools/verify-git-hygiene.ps1 -Json
+#   pwsh ./tools/verify-git-hygiene.ps1 -Strict   # nested clone + nested .git become blocking failures (release / os-validate-all -Strict)
 
-param([switch]$Json)
+param(
+    [switch]$Json,
+    [switch]$Strict
+)
 
 $ErrorActionPreference = 'Stop'
 $RepoRoot = Split-Path $PSScriptRoot -Parent
@@ -48,38 +52,58 @@ if (-not (Test-Path -LiteralPath $rootGit)) {
 }
 
 # Known Windows/Cursor footgun: nested clone at ./claude-operating-system (also listed in .gitignore).
-# CI checkouts must never ship with this path present. Locally it may be temporarily file-locked; still surface loudly.
+# Never delete automatically — human review first. Suggested remediation after review:
+#   Remove-Item -Recurse -Force .\claude-operating-system
 $nestedCloneDir = Join-Path $RepoRoot 'claude-operating-system'
+$nestedCloneFull = $null
 if (Test-Path -LiteralPath $nestedCloneDir) {
+    $nestedCloneFull = [System.IO.Path]::GetFullPath($nestedCloneDir).TrimEnd('\', '/')
     $isCi = ($env:CI -eq 'true') -or ($env:GITHUB_ACTIONS -eq 'true')
-    $msg = 'Nested folder claude-operating-system/ at repo root — accidental nested clone risk. Do not git add . After closing editors to release file locks: Remove-Item -Recurse -Force .\claude-operating-system (or move outside repo).'
-    if ($isCi) {
+    $msg = 'Nested folder claude-operating-system/ at repo root — accidental nested clone. Do not use git add . Review contents, then after human approval only: Remove-Item -Recurse -Force .\claude-operating-system (or move outside repo).'
+    if ($Strict -or $isCi) {
         Add-Fail $msg
     } else {
         Add-Warn $msg
     }
 }
 
-# Nested .git directories (exclude root). Bounded depth; skip node_modules; skip scanning a full nested clone tree.
+# Nested .git directories (exclude root). Bounded depth; skip node_modules; skip scanning *inside* known nested clone tree (folder rule covers it).
 $expectedRootGitFull = [System.IO.Path]::GetFullPath($rootGit).TrimEnd('\', '/')
-if (-not (Test-Path -LiteralPath $nestedCloneDir)) {
-    $rawNested = @(
-        try {
-            Get-ChildItem -LiteralPath $RepoRoot -Force -Depth 12 -Recurse -Directory -Filter '.git' -ErrorAction SilentlyContinue
-        } catch {
-            @()
-        }
-    )
-    $nestedGits = @(
-        $rawNested | Where-Object {
-            $p = $_.FullName.TrimEnd('\', '/')
-            -not $p.Equals($expectedRootGitFull, [StringComparison]::OrdinalIgnoreCase) -and
-            $_.FullName -notmatch '[\\/]node_modules[\\/]'
-        }
-    )
-    foreach ($g in $nestedGits) {
-        Add-Fail 'Nested .git directory under repo (not root). Remove nested clone after human review.'
+$rawNested = @(
+    try {
+        Get-ChildItem -LiteralPath $RepoRoot -Force -Depth 14 -Recurse -Directory -Filter '.git' -ErrorAction SilentlyContinue
+    } catch {
+        @()
     }
+)
+$nestedGits = @(
+    foreach ($item in $rawNested) {
+        $p = $item.FullName.TrimEnd('\', '/')
+        if ($p.Equals($expectedRootGitFull, [StringComparison]::OrdinalIgnoreCase)) { continue }
+        if ($item.FullName -match '[\\/]node_modules[\\/]') { continue }
+        if ($null -ne $nestedCloneFull) {
+            $prefA = $nestedCloneFull + '\'
+            $prefB = $nestedCloneFull + '/'
+            if ($p.StartsWith($prefA, [StringComparison]::OrdinalIgnoreCase) -or $p.StartsWith($prefB, [StringComparison]::OrdinalIgnoreCase)) {
+                continue
+            }
+        }
+        $item
+    }
+)
+foreach ($g in $nestedGits) {
+    $rel = try {
+        $full = $g.FullName
+        $rr = [System.IO.Path]::GetFullPath($RepoRoot).TrimEnd('\', '/')
+        if ($full.StartsWith($rr, [StringComparison]::OrdinalIgnoreCase)) {
+            '.' + $full.Substring($rr.Length)
+        } else {
+            (Split-Path -Path $full -Parent | Split-Path -Leaf) + '/.git'
+        }
+    } catch {
+        'nested/.git'
+    }
+    Add-Fail "Nested .git directory under repo (not root): $(Redact-SensitiveText -Text $rel -MaxLength 200). Remove nested clone or submodule after human review; never delete automatically."
 }
 
 if (Test-Path -LiteralPath (Join-Path $RepoRoot '.git/rebase-merge')) { Add-Fail 'Rebase in progress (.git/rebase-merge). Resolve or continue rebase before shipping.' }
@@ -97,9 +121,12 @@ foreach ($u in $unmerged) {
     Add-Fail "Unmerged (conflict) path: $u"
 }
 
-# Conflict markers in tracked content (sample; git grep is authoritative when available)
-if (Invoke-GitOk @('grep', '-q', '-I', '--no-color', '^<<<<<<< ', '--')) {
-    Add-Fail 'Conflict markers (^<<<<<<< ) found in repository content. Fix before commit.'
+# Conflict markers in tracked content (git grep is authoritative when available)
+foreach ($pat in @('^<<<<<<< ', '^=======$', '^>>>>>>> ')) {
+    if (Invoke-GitOk @('grep', '-q', '-I', '--no-color', $pat, '--')) {
+        Add-Fail "Conflict markers ($pat) found in tracked repository content. Fix before commit."
+        break
+    }
 }
 
 # Critical paths must not be conflicted / missing merge — already unmerged; optional explicit list
@@ -158,6 +185,7 @@ $result = [ordered]@{
     ahead        = $ahead
     behind       = $behind
     dirty        = [bool]$dirty
+    strict       = [bool]$Strict
     failures     = @($script:HygieneFails)
     warnings     = @($script:HygieneWarns)
     status       = if ($script:HygieneFails.Count -gt 0) { 'fail' } elseif ($script:HygieneWarns.Count -gt 0) { 'warn' } else { 'ok' }
