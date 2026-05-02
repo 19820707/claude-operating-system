@@ -32,15 +32,22 @@ function Read-JsonFile {
 }
 
 function Get-ArtifactStatus {
-    param([string]$Path)
+    param([string]$Path, [string]$ArtifactRoot)
     if ([string]::IsNullOrWhiteSpace($Path)) { return 'missing' }
     if ([System.IO.Path]::IsPathRooted($Path) -or $Path -match '(^|[\\/])\.\.([\\/]|$)') { return 'unsafe' }
-    $full = Join-Path (Split-Path (Resolve-WorkflowManifestPath) -Parent) $Path
+    $full = Join-Path $ArtifactRoot $Path
     if (Test-Path -LiteralPath $full) { return 'present' }
     return 'missing'
 }
 
 $manifestPath = Resolve-WorkflowManifestPath
+$manifestDir = Split-Path $manifestPath -Parent
+# Paths in workflow-manifest are repo-root-relative; when the file lives under .claude/, base is repo root.
+$artifactRoot = if ((Split-Path $manifestDir -Leaf) -eq '.claude') {
+    Split-Path $manifestDir -Parent
+} else {
+    $manifestDir
+}
 $workflow = Read-JsonFile -Path $manifestPath
 $phases = @($workflow.phases)
 
@@ -63,7 +70,7 @@ $phaseViews = foreach ($phase in $phases) {
 $artifactViews = foreach ($path in @($workflow.artifactFirstPaths | ForEach-Object { [string]$_ })) {
     [pscustomobject]@{
         path = $path
-        status = Get-ArtifactStatus -Path $path
+        status = Get-ArtifactStatus -Path $path -ArtifactRoot $artifactRoot
     }
 }
 
