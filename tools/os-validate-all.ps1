@@ -48,7 +48,14 @@ function Invoke-DoctorStrict {
             $_.status -eq 'warn' -and $_.name -notin $allowedWarnings -and $_.name -notlike 'scaffold:*'
         })
         if ($unexpectedWarnings.Count -gt 0) {
-            throw "strict mode: doctor reported $($unexpectedWarnings.Count) unexpected warning(s)"
+            $warnNames = @(
+                $unexpectedWarnings | Select-Object -First 8 | ForEach-Object {
+                    $n = [string]$_.name
+                    if ($n.Length -gt 48) { $n.Substring(0, 45) + '...' } else { $n }
+                }
+            )
+            $list = ($warnNames -join ', ')
+            throw "strict mode: doctor reported $($unexpectedWarnings.Count) unexpected warning(s): $list"
         }
     }
 }
@@ -129,7 +136,9 @@ if ($RequireBash -and -not $script:BashAvailable) {
     Write-Host ''
     throw 'os-validate-all: -RequireBash requires bash on PATH.'
 }
-$script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $script:BashAvailable))
+# Invariant: bash -n only when bash exists and not skipped; mirrors CI vs local-first Windows.
+# EffectiveSkipBashSyntax = $SkipBashSyntax -or ((-not $BashAvailable) -and -not $RequireBash); unreachable RequireBash+bash-missing aborted above.
+$script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or ((-not $script:BashAvailable) -and -not $RequireBash))
 if ($script:BashAvailable) {
     Write-Host 'Bash  : available'
 } else {

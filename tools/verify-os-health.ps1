@@ -160,7 +160,8 @@ if ($RequireBash -and -not $script:BashAvailable) {
     Write-Host ''
     throw 'verify-os-health: -RequireBash requires bash on PATH.'
 }
-$script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $script:BashAvailable))
+# Same contract as os-validate-all.ps1 (RequireBash+bash-missing aborted above).
+$script:EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or ((-not $script:BashAvailable) -and -not $RequireBash))
 
 Write-Host 'claude-operating-system health'
 Write-Host "Repo: $RepoRoot"
