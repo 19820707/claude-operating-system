@@ -179,6 +179,7 @@ Invoke-HealthStep -Name 'git-hygiene' -Script { & (Join-Path $RepoRoot 'tools/ve
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
 Invoke-HealthStep -Name 'runtime-release' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1') }
 Invoke-HealthStep -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
+Invoke-HealthStep -Name 'agent-adapters' -Script { & (Join-Path $RepoRoot 'tools/verify-agent-adapters.ps1') }
 Invoke-HealthStep -Name 'runtime-profiles' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-profiles.ps1') }
 Invoke-HealthStep -Name 'runtime-profile' -Script { Test-RuntimeProfile }
 Invoke-HealthStep -Name 'session-memory' -Script { & (Join-Path $RepoRoot 'tools/verify-session-memory.ps1') }
@@ -198,6 +199,7 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'install.ps1'),
         (Join-Path $RepoRoot 'init-project.ps1'),
         (Join-Path $RepoRoot 'tools/lib/safe-output.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-agent-adapters.ps1'),
         (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-docs-index.ps1'),

@@ -146,7 +146,16 @@ if (-not $manifest.projectBootstrap) {
 
     foreach ($rel in $criticalPaths) {
         $normalized = $rel -replace '\\', '/'
-        if (-not ($normalized -eq 'CLAUDE.md' -or $normalized.StartsWith('.claude/') -or $normalized.StartsWith('.local/') -or $normalized -eq '.gitignore')) {
+        $allowed = (
+            $normalized -eq 'CLAUDE.md' -or
+            $normalized -eq 'AGENTS.md' -or
+            $normalized.StartsWith('.claude/') -or
+            $normalized.StartsWith('.local/') -or
+            $normalized.StartsWith('.cursor/') -or
+            $normalized.StartsWith('.agent/') -or
+            $normalized -eq '.gitignore'
+        )
+        if (-not $allowed) {
             Fail "critical path is outside bootstrap output surface: $normalized"
         }
     }

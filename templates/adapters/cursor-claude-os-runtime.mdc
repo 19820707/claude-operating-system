@@ -1,0 +1,25 @@
+---
+description: Claude OS — align Cursor agent with the single project runtime under .claude/
+alwaysApply: true
+---
+
+# Claude OS runtime (Cursor)
+
+## Single source of truth
+
+All operational state, workflow gates, capability routing, and session scripts live under **`.claude/`**.
+
+- **Capabilities / routing**: read **`.claude/os-capabilities.json`** before suggesting high-risk automation.
+- **Session**: **`.claude/session-state.md`**, **`.claude/learning-log.md`**, append-only **`.claude/decision-log.jsonl`** where applicable.
+- **Scripts**: prefer **`pwsh .claude/scripts/*.ps1`** (or documented `bash` hooks) already installed by bootstrap.
+
+## What not to do
+
+- Invent a parallel runtime tree (e.g. `.cursor-os/`) — use **`.claude/`** only.
+- Broad `git add .` or force-push — follow project **`.agent/operating-contract.md`** and team policy.
+
+## Shared agent contract
+
+**`AGENTS.md`** at the repo root is the cross-tool thin contract; keep Cursor behaviour consistent with it.
+
+**human approval required** for production deploys, auth/billing/PII changes, and schema migrations unless explicitly out of scope.

@@ -27,7 +27,8 @@
     "prompts": { "include": "*.md", "minimum": 7 },
     "heuristics": { "include": "*.md", "minimum": 1 },
     "templates/scripts": { "include": "*.sh", "exact": 38 },
-    "templates/invariant-engine/dist": { "include": "*.cjs", "exact": 3 }
+    "templates/invariant-engine/dist": { "include": "*.cjs", "exact": 3 },
+    "templates/adapters": { "include": "*", "exact": 5 }
   },
   "projectBootstrap": {
     "scripts": [
@@ -130,7 +131,12 @@
       ".claude/scripts/context-builder.sh",
       ".claude/scripts/runbook-inject.sh",
       ".claude/invariant-engine/simulate-contract-delta.cjs",
-      ".claude/scripts/consolidate-runbook.sh"
+      ".claude/scripts/consolidate-runbook.sh",
+      "AGENTS.md",
+      ".cursor/rules/claude-os-runtime.mdc",
+      ".agent/runtime.md",
+      ".agent/handoff.md",
+      ".agent/operating-contract.md"
     ]
   }
 }

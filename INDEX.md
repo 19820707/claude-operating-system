@@ -274,7 +274,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | install.ps1 | Stable, dry-run validated |
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
 | bootstrap-manifest.json | Source of truth for repo counts, skills, bootstrap scripts, and critical paths |
-| tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, dispatcher |
+| tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, agent-adapters, dispatcher |
 | source/skills/ | 6/6 — manifest verified and bootstrapped to `.claude/skills/` |
 | policies/ | 8/8 — complete |
 | prompts/ | 7/7 — complete |
@@ -286,6 +286,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | templates/settings.json | Stable — 4 hooks + permissions |
 | heuristics/ | operational.md + cross-project-evidence.json (MVP) |
 | templates/critical-surfaces/ | 5/9 — auth, migrations, billing, deploy, pii |
+| templates/adapters/ | 5/5 — AGENTS.md, Cursor rule, Codex .agent/ docs |
 | templates/task-modes/ | 5/5 — bugfix, architecture, migration, incident-response, release-hardening |
 | INDEX.md | Manifest-aligned navigation map |
 

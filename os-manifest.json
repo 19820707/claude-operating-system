@@ -15,12 +15,14 @@
     "workflow": "workflow-manifest.json",
     "runtimeProfiles": "runtime-profiles.json",
     "sessionMemory": "session-memory-manifest.json",
-    "gitRecoveryPolicy": "GIT-RECOVERY.md"
+    "gitRecoveryPolicy": "GIT-RECOVERY.md",
+    "agentAdapters": "agent-adapters-manifest.json"
   },
   "entrypoints": {
     "runtime": "tools/os-runtime.ps1",
     "health": "tools/verify-os-health.ps1",
     "gitHygiene": "tools/verify-git-hygiene.ps1",
+    "agentAdaptersVerify": "tools/verify-agent-adapters.ps1",
     "runtimeDispatcherVerify": "tools/verify-runtime-dispatcher.ps1",
     "doctor": "tools/os-doctor.ps1",
     "validateAll": "tools/os-validate-all.ps1",

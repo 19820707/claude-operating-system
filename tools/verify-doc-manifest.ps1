@@ -57,13 +57,14 @@ $agents = Get-ExactCount -RelativePath 'templates/agents'
 $profiles = Get-ExactCount -RelativePath 'templates/profiles'
 $criticalSurfaces = Get-ExactCount -RelativePath 'templates/critical-surfaces'
 $bundles = Get-ExactCount -RelativePath 'templates/invariant-engine/dist'
+$adapters = Get-ExactCount -RelativePath 'templates/adapters'
 $skills = [int]$manifest.skills.exact
 
 # Invariant: documentation summaries must quote manifest-backed counts, not stale hardcoded history.
 Require-Text "Canonical count: **$skills/$skills** from ``bootstrap-manifest.json``." "skills section count"
 Require-Text "Commands to copy into ``.claude/commands/`` of each project. Canonical count: **$commands/$commands** from ``bootstrap-manifest.json``." "commands section count"
 Require-Text "Session lifecycle hooks. Copy to ``.claude/scripts/`` — **must remain LF-only**. Canonical count: **$scripts/$scripts** from ``bootstrap-manifest.json``; ``init-project.ps1`` consumes that manifest list directly." "scripts section count"
-Require-Text "| tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, dispatcher |" "system state health entrypoint"
+Require-Text "| tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, agent-adapters, dispatcher |" "system state health entrypoint"
 Require-Text "| source/skills/ | $skills/$skills — manifest verified and bootstrapped to ``.claude/skills/`` |" "system state skills count"
 Require-Text "| templates/commands/ | $commands/$commands — manifest verified |" "system state commands count"
 Require-Text "| templates/scripts/ | $scripts/$scripts — manifest verified; health check runs ``bash -n`` |" "system state scripts count"
@@ -71,6 +72,7 @@ Require-Text "| templates/invariant-engine/dist/ | $bundles/$bundles — invaria
 Require-Text "| templates/profiles/ | $profiles/$profiles — node-ts-service, react-vite-app |" "system state profiles count"
 Require-Text "| templates/agents/ |" "agents section exists"
 Require-Text "| templates/critical-surfaces/ | $criticalSurfaces/9 — auth, migrations, billing, deploy, pii |" "system state critical-surface count"
+Require-Text "| templates/adapters/ | $adapters/$adapters — AGENTS.md, Cursor rule, Codex .agent/ docs |" "system state adapters count"
 Require-Text "manifest-driven validation" "init-project description"
 Require-Text "tools/verify-os-health.ps1" "health verifier listed"
 Require-Text "tools/verify-doc-manifest.ps1" "doc verifier listed"

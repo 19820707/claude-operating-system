@@ -64,6 +64,18 @@ Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/session-digest.ps1') -To (Joi
 Copy-ManagedDirectory -From (Join-Path $RepoRoot 'templates/checklists') -To (Join-Path $target '.claude/checklists')
 Copy-ManagedDirectory -From (Join-Path $RepoRoot 'source/skills') -To (Join-Path $target '.claude/skills')
 
+$adaptersSrc = Join-Path $RepoRoot 'templates/adapters'
+$agentsDest = Join-Path $target 'AGENTS.md'
+if (-not (Test-Path -LiteralPath $agentsDest)) {
+    Copy-ManagedFile -From (Join-Path $adaptersSrc 'AGENTS.md') -To $agentsDest
+} else {
+    Write-StatusLine -Status 'skip' -Name 'AGENTS.md (exists — project-owned, not overwriting)'
+}
+Copy-ManagedFile -From (Join-Path $adaptersSrc 'cursor-claude-os-runtime.mdc') -To (Join-Path $target '.cursor/rules/claude-os-runtime.mdc')
+Copy-ManagedFile -From (Join-Path $adaptersSrc 'agent-runtime.md') -To (Join-Path $target '.agent/runtime.md')
+Copy-ManagedFile -From (Join-Path $adaptersSrc 'agent-handoff.md') -To (Join-Path $target '.agent/handoff.md')
+Copy-ManagedFile -From (Join-Path $adaptersSrc 'agent-operating-contract.md') -To (Join-Path $target '.agent/operating-contract.md')
+
 $installRecord = [pscustomobject]@{
     managedBy = 'claude-operating-system'
     updatedAt = (Get-Date).ToUniversalTime().ToString('o')
@@ -79,7 +91,12 @@ $installRecord = [pscustomobject]@{
         '.claude/scripts/session-absorb.ps1',
         '.claude/scripts/session-digest.ps1',
         '.claude/checklists',
-        '.claude/skills'
+        '.claude/skills',
+        'AGENTS.md',
+        '.cursor/rules/claude-os-runtime.mdc',
+        '.agent/runtime.md',
+        '.agent/handoff.md',
+        '.agent/operating-contract.md'
     )
 }
 

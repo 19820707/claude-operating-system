@@ -58,6 +58,7 @@ $manifestPairs = @{
     'docs-index.json' = 'schemas/docs-index.schema.json'
     'os-capabilities.json' = 'schemas/os-capabilities.schema.json'
     'workflow-manifest.json' = 'schemas/workflow-manifest.schema.json'
+    'agent-adapters-manifest.json' = 'schemas/agent-adapters-manifest.schema.json'
 }
 
 foreach ($pair in $manifestPairs.GetEnumerator() | Sort-Object Name) {

@@ -38,7 +38,12 @@ function Test-OsRepo {
         (Join-Path $Root 'templates'),
         (Join-Path $Root 'templates\checklists'),
         (Join-Path $Root 'templates\commands'),
-        (Join-Path $Root 'templates\scripts\preflight.sh')
+        (Join-Path $Root 'templates\scripts\preflight.sh'),
+        (Join-Path $Root 'templates\adapters\AGENTS.md'),
+        (Join-Path $Root 'templates\adapters\cursor-claude-os-runtime.mdc'),
+        (Join-Path $Root 'templates\adapters\agent-runtime.md'),
+        (Join-Path $Root 'templates\adapters\agent-handoff.md'),
+        (Join-Path $Root 'templates\adapters\agent-operating-contract.md')
     )
     foreach ($p in $need) {
         if (-not (Test-Path -LiteralPath $p)) {
@@ -392,6 +397,18 @@ if (-not $DryRun -and -not (Test-Path -LiteralPath $decisionLog)) {
 
 Copy-ClaudeMd -From (Join-Path $templates 'project-CLAUDE.md') -To (Join-Path $ProjectRoot 'CLAUDE.md')
 
+$adaptersSrc = Join-Path $Source 'templates\adapters'
+if (-not (Test-Path -LiteralPath $adaptersSrc)) {
+    throw "Missing templates\adapters (OS repo incomplete): $adaptersSrc"
+}
+Copy-IfMissing -From (Join-Path $adaptersSrc 'AGENTS.md') -To (Join-Path $ProjectRoot 'AGENTS.md') -Label 'AGENTS.md'
+Ensure-Dir (Join-Path $ProjectRoot '.cursor\rules')
+Copy-FileAlways -From (Join-Path $adaptersSrc 'cursor-claude-os-runtime.mdc') -To (Join-Path $ProjectRoot '.cursor\rules\claude-os-runtime.mdc')
+Ensure-Dir (Join-Path $ProjectRoot '.agent')
+Copy-FileAlways -From (Join-Path $adaptersSrc 'agent-runtime.md') -To (Join-Path $ProjectRoot '.agent\runtime.md')
+Copy-FileAlways -From (Join-Path $adaptersSrc 'agent-handoff.md') -To (Join-Path $ProjectRoot '.agent\handoff.md')
+Copy-FileAlways -From (Join-Path $adaptersSrc 'agent-operating-contract.md') -To (Join-Path $ProjectRoot '.agent\operating-contract.md')
+
 if ($Profile) {
     $prof = Join-Path $Source "templates\profiles\$Profile.md"
     if (-not (Test-Path -LiteralPath $prof)) { throw "Profile file not found: $prof" }
@@ -426,7 +443,7 @@ Write-Host "Done. Scaffold at: $ProjectRoot"
 Write-Host ''
 Write-Host 'Suggested git commit:'
 Write-Host ("  cd `"" + $ProjectRoot + "`"")
-Write-Host '  git add CLAUDE.md .claude .local .gitignore'
+Write-Host '  git add CLAUDE.md AGENTS.md .claude .cursor .agent .local .gitignore'
 Write-Host '  git commit -m "ops: bootstrap Claude operational system"'
 Write-Host ''
 Write-Host 'Next steps:'

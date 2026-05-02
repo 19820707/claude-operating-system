@@ -13,6 +13,8 @@ Applies when **Claude Code**, **Cursor**, and **Codex** (or similar agents) touc
 
 Do **not** split into three roots of truth (e.g. `.claude/` + `.cursor-os/` + `.codex-os/`). That creates conflicting phase, stash, learning, and policy state.
 
+In the **claude-operating-system** repo, the adapter map is also declared in **`agent-adapters-manifest.json`** (schema: `schemas/agent-adapters-manifest.schema.json`) and checked by **`tools/verify-agent-adapters.ps1`** so the layer stays manifest-governed like the rest of the runtime.
+
 ---
 
 ## Recommended layout (project repo)

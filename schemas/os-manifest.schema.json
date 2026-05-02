@@ -16,7 +16,8 @@
         "workflow": { "type": "string", "minLength": 1 },
         "runtimeProfiles": { "type": "string", "minLength": 1, "description": "runtime-profiles.json path" },
         "sessionMemory": { "type": "string", "minLength": 1, "description": "session-memory-manifest.json path" },
-        "gitRecoveryPolicy": { "type": "string", "minLength": 1, "description": "Human Git recovery policy (markdown)" }
+        "gitRecoveryPolicy": { "type": "string", "minLength": 1, "description": "Human Git recovery policy (markdown)" },
+        "agentAdapters": { "type": "string", "minLength": 1, "description": "Multi-tool adapter manifest (JSON)" }
       },
       "additionalProperties": { "type": "string", "minLength": 1 }
     },

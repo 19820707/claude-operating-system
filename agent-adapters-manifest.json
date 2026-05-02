@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "description": "Maps multi-tool adapters to the single operational runtime under .claude/",
+  "adapters": [
+    {
+      "id": "claude-code",
+      "entrypoint": "CLAUDE.md",
+      "runtime": ".claude/",
+      "role": "project memory and operational policy"
+    },
+    {
+      "id": "cursor",
+      "entrypoint": ".cursor/rules/claude-os-runtime.mdc",
+      "runtime": ".claude/",
+      "role": "IDE agent rules"
+    },
+    {
+      "id": "codex",
+      "entrypoint": "AGENTS.md",
+      "runtime": ".claude/",
+      "role": "generic coding agent contract"
+    }
+  ]
+}
