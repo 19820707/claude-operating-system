@@ -47,9 +47,17 @@ if (-not (Test-Path -LiteralPath $rootGit)) {
     Add-Fail 'No .git at repository root (not a Git checkout).'
 }
 
+# Known Windows/Cursor footgun: nested clone at ./claude-operating-system (also listed in .gitignore).
+# CI checkouts must never ship with this path present. Locally it may be temporarily file-locked; still surface loudly.
 $nestedCloneDir = Join-Path $RepoRoot 'claude-operating-system'
 if (Test-Path -LiteralPath $nestedCloneDir) {
-    Add-Fail 'Nested folder claude-operating-system/ at repo root — likely accidental nested clone. Do not git add . Review contents, then after human review: Remove-Item -Recurse -Force .\claude-operating-system'
+    $isCi = ($env:CI -eq 'true') -or ($env:GITHUB_ACTIONS -eq 'true')
+    $msg = 'Nested folder claude-operating-system/ at repo root — accidental nested clone risk. Do not git add . After closing editors to release file locks: Remove-Item -Recurse -Force .\claude-operating-system (or move outside repo).'
+    if ($isCi) {
+        Add-Fail $msg
+    } else {
+        Add-Warn $msg
+    }
 }
 
 # Nested .git directories (exclude root). Bounded depth; skip node_modules; skip scanning a full nested clone tree.
