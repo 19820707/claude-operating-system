@@ -12,7 +12,9 @@
     "bootstrap": "bootstrap-manifest.json",
     "docs": "docs-index.json",
     "capabilities": "os-capabilities.json",
-    "workflow": "workflow-manifest.json"
+    "workflow": "workflow-manifest.json",
+    "runtimeProfiles": "runtime-profiles.json",
+    "sessionMemory": "session-memory-manifest.json"
   },
   "entrypoints": {
     "runtime": "tools/os-runtime.ps1",
@@ -22,7 +24,11 @@
     "updateProject": "tools/os-update-project.ps1",
     "route": "tools/route-capability.ps1",
     "docs": "tools/query-docs-index.ps1",
-    "workflow": "tools/workflow-status.ps1"
+    "workflow": "tools/workflow-status.ps1",
+    "runtimeProfile": "tools/runtime-profile.ps1",
+    "sessionPrime": "tools/session-prime.ps1",
+    "sessionAbsorb": "tools/session-absorb.ps1",
+    "sessionDigest": "tools/session-digest.ps1"
   },
   "managedProjectArtifacts": [
     ".claude/docs-index.json",
@@ -31,6 +37,9 @@
     ".claude/scripts/query-docs-index.ps1",
     ".claude/scripts/route-capability.ps1",
     ".claude/scripts/workflow-status.ps1",
+    ".claude/scripts/session-prime.ps1",
+    ".claude/scripts/session-absorb.ps1",
+    ".claude/scripts/session-digest.ps1",
     ".claude/checklists/SECURITY-CHECKLIST.md",
     ".claude/checklists/RELEASE-CHECKLIST.md"
   ],
