@@ -3,9 +3,11 @@
 #   pwsh ./tools/os-doctor.ps1
 # Optional:
 #   pwsh ./tools/os-doctor.ps1 -Json
+#   pwsh ./tools/os-doctor.ps1 -Json -SkipBashSyntax
 
 param(
-    [switch]$Json
+    [switch]$Json,
+    [switch]$SkipBashSyntax
 )
 
 $ErrorActionPreference = 'Stop'
@@ -93,7 +95,11 @@ Test-PathExists -Name 'capabilities' -RelativePath 'os-capabilities.json' -Kind 
 Test-PathExists -Name 'health-verifier' -RelativePath 'tools/verify-os-health.ps1' -Kind 'tool'
 
 Test-CommandAvailable -Name 'powershell' -Command 'pwsh' -RequiredFor 'all validators and Windows bootstrap' -VersionArgs @('-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()')
-Test-CommandAvailable -Name 'bash' -Command 'bash' -RequiredFor 'template script syntax checks and project hooks'
+if ($SkipBashSyntax) {
+    Test-CommandAvailable -Name 'bash' -Command 'bash' -RequiredFor 'optional Bash hook syntax validation' -Severity 'warn'
+} else {
+    Test-CommandAvailable -Name 'bash' -Command 'bash' -RequiredFor 'template script syntax checks and project hooks'
+}
 Test-CommandAvailable -Name 'git' -Command 'git' -RequiredFor 'session drift, architecture graph, and bootstrap workflows'
 Test-CommandAvailable -Name 'node' -Command 'node' -RequiredFor 'invariant-engine bundle development' -Severity 'warn'
 Test-CommandAvailable -Name 'npm' -Command 'npm' -RequiredFor 'invariant-engine bundle rebuilds' -Severity 'warn'
