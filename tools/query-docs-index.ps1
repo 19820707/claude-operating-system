@@ -76,7 +76,7 @@ $sections = @($index.sections)
 if ($ListTags) {
     $tags = $sections | ForEach-Object { $_.tags } | ForEach-Object { [string]$_ } | Sort-Object -Unique
     if ($Json) {
-        [pscustomobject]@{ tags = @($tags); count = @($tags).Count } | ConvertTo-Json -Depth 4
+        [pscustomobject]@{ tags = @($tags); count = @($tags).Count } | ConvertTo-Json -Depth 4 -Compress | Write-Output
     } else {
         Write-Host 'Tags:'
         foreach ($t in $tags) { Write-Host "  $t" }
@@ -114,7 +114,7 @@ if ($Json) {
     [pscustomobject]@{
         count = $result.Count
         results = $result
-    } | ConvertTo-Json -Depth 6
+    } | ConvertTo-Json -Depth 6 -Compress | Write-Output
     exit 0
 }
 

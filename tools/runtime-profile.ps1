@@ -31,7 +31,7 @@ $result = [pscustomobject]@{
 }
 
 if ($Json) {
-    $result | ConvertTo-Json -Depth 6
+    $result | ConvertTo-Json -Depth 6 -Compress | Write-Output
     exit 0
 }
 

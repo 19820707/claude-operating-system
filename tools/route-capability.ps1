@@ -77,7 +77,7 @@ $capabilities = @($registry.capabilities)
 if ($ListTags) {
     $tags = $capabilities | ForEach-Object { $_.tags } | ForEach-Object { [string]$_ } | Sort-Object -Unique
     if ($Json) {
-        [pscustomobject]@{ tags = @($tags); count = @($tags).Count } | ConvertTo-Json -Depth 5
+        [pscustomobject]@{ tags = @($tags); count = @($tags).Count } | ConvertTo-Json -Depth 5 -Compress | Write-Output
     } else {
         Write-Host 'Capability tags:'
         foreach ($t in $tags) { Write-Host "  $t" }
@@ -110,7 +110,7 @@ if ($Id) {
 $result = @($matches | Select-Object -First $Limit | ForEach-Object { Select-CapabilityFields -Capability $_ })
 
 if ($Json) {
-    [pscustomobject]@{ count = $result.Count; results = $result } | ConvertTo-Json -Depth 8
+    [pscustomobject]@{ count = $result.Count; results = $result } | ConvertTo-Json -Depth 8 -Compress | Write-Output
     exit 0
 }
 

@@ -52,7 +52,7 @@ $markdown = @"
 
 # Invariant: digest records handoff facts; it does not infer hidden state or dump raw tool output.
 if ($DryRun) {
-    $record | ConvertTo-Json -Depth 4
+    $record | ConvertTo-Json -Depth 4 -Compress | Write-Output
     Write-Host $markdown
     exit 0
 }

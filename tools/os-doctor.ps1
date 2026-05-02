@@ -231,7 +231,7 @@ if ($Json) {
         environment = [pscustomobject]$doctorEnv
         repo          = $doctorRepo
         checks        = $Checks
-    } | ConvertTo-Json -Depth 8
+    } | ConvertTo-Json -Depth 8 -Compress | Write-Output
     if ($failures.Count -gt 0) { exit 1 }
     exit 0
 }
