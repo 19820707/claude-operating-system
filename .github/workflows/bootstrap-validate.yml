@@ -1,36 +1,36 @@
-# Validates Claude OS integrity, schemas, skills, docs, bootstrap behavior, and runtime diagnostics.
-name: bootstrap-validate
-
-permissions:
-  contents: read
-
-# Cancel redundant runs (saves CI minutes + queue latency on rapid pushes).
-# matrix.* is only valid inside a job; workflow-level group uses ref + workflow only.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
-
-jobs:
-  validate:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Claude OS strict validation
-        shell: pwsh
-        run: |
-          if ('${{ matrix.os }}' -eq 'ubuntu-latest') {
-            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict -RequireBash
-          } else {
-            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict
-          }
+# Validates Claude OS integrity, schemas, skills, docs, bootstrap behavior, and runtime diagnostics.
+name: bootstrap-validate
+
+permissions:
+  contents: read
+
+# concurrency: matrix.* is only valid under jobs.<job_id> — see validate.concurrency below.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    # Per-OS cancel: matrix context is allowed here (not at workflow root).
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.os }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Claude OS strict validation
+        shell: pwsh
+        run: |
+          if ('${{ matrix.os }}' -eq 'ubuntu-latest') {
+            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict -RequireBash
+          } else {
+            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict
+          }
