@@ -33,14 +33,17 @@ function Invoke-Validation {
 }
 
 function Invoke-DoctorStrict {
-    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') -Json
+    $doctorArgs = @('-Json')
+    if ($SkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
+    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorArgs
     if ($LASTEXITCODE -ne 0) { throw 'doctor failed' }
     $doctor = ($raw | Out-String) | ConvertFrom-Json
     if ($doctor.failures -gt 0) { throw "doctor reported $($doctor.failures) failure(s)" }
     if ($Strict) {
+        $allowedWarnings = @('project-scaffold','node','npm','invariant-bundles')
+        if ($SkipBashSyntax) { $allowedWarnings += 'bash' }
         $unexpectedWarnings = @($doctor.checks | Where-Object {
-            $_.status -eq 'warn' -and
-            $_.name -notin @('project-scaffold','node','npm','invariant-bundles')
+            $_.status -eq 'warn' -and $_.name -notin $allowedWarnings
         })
         if ($unexpectedWarnings.Count -gt 0) {
             throw "strict mode: doctor reported $($unexpectedWarnings.Count) unexpected warning(s)"
