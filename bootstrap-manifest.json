@@ -23,7 +23,7 @@
     "templates/agents": { "include": "*.md", "exact": 5 },
     "templates/critical-surfaces": { "include": "*.md", "exact": 5 },
     "templates/profiles": { "include": "*.md", "exact": 2 },
-    "policies": { "include": "*.md", "minimum": 7 },
+    "policies": { "include": "*.md", "minimum": 8 },
     "prompts": { "include": "*.md", "minimum": 7 },
     "heuristics": { "include": "*.md", "minimum": 1 },
     "templates/scripts": { "include": "*.sh", "exact": 38 },

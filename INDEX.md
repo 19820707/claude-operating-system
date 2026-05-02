@@ -22,6 +22,7 @@ Navigation map. Every file, its purpose, and when to use it.
 | Choose the right model | `policies/model-selection.md` |
 | Understand operating modes | `policies/operating-modes.md` |
 | Review engineering rules | `policies/engineering-governance.md` |
+| Same repo, Claude + Cursor + Codex | `policies/multi-tool-adapters.md` |
 | Check production safety rules | `policies/production-safety.md` |
 | Understand global mandate | `CLAUDE.md` |
 
@@ -78,6 +79,7 @@ Binding operational rules. All are loaded via `CLAUDE.md` references.
 | `token-economy.md` | Context/token discipline — reading, response, model economy | All sessions |
 | `reporting-format.md` | Standard response structure — diagnosis, pre-impl plan, exec result | All responses |
 | `rollback-policy.md` | Rollback requirements by change type; anti-patterns; staged rollback | Every change |
+| `multi-tool-adapters.md` | One `.claude/` runtime + thin adapters (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.agent/`) — avoid drift | Multi-tool teams |
 
 ---
 
@@ -274,7 +276,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | bootstrap-manifest.json | Source of truth for repo counts, skills, bootstrap scripts, and critical paths |
 | tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, dispatcher |
 | source/skills/ | 6/6 — manifest verified and bootstrapped to `.claude/skills/` |
-| policies/ | 7/7 — complete |
+| policies/ | 8/8 — complete |
 | prompts/ | 7/7 — complete |
 | templates/commands/ | 18/18 — manifest verified |
 | templates/scripts/ | 38/38 — manifest verified; health check runs `bash -n` |

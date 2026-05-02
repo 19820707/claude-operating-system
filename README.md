@@ -37,6 +37,10 @@ claude-operating-system/          ← this repo (global source of truth)
 
 **Key principle:** `~/.claude/` is disposable. Everything important lives either here (global) or inside project repos.
 
+### Multi-tool projects (Claude Code, Cursor, Codex)
+
+Use **one operational tree per project** (`.claude/`) and **thin tool adapters** at the repo root (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, optional `.agent/`). Avoid parallel “OS” directories or three full copies of the same policies — see [policies/multi-tool-adapters.md](policies/multi-tool-adapters.md).
+
 ### Advanced engineering (project hooks)
 
 Templates ship **proactive** checks, not only policy text:
