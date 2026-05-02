@@ -5,11 +5,14 @@
 #   pwsh ./tools/os-runtime.ps1 route -Query "security review"
 #   pwsh ./tools/os-runtime.ps1 docs -Query bootstrap
 #   pwsh ./tools/os-runtime.ps1 workflow -Phase verify
-#   pwsh ./tools/os-runtime.ps1 update -ProjectPath ../my-app
+#   pwsh ./tools/os-runtime.ps1 profile -Id core
+#   pwsh ./tools/os-runtime.ps1 prime -ProjectPath ../my-app
+#   pwsh ./tools/os-runtime.ps1 absorb -ProjectPath ../my-app -Note "Validated before editing"
+#   pwsh ./tools/os-runtime.ps1 digest -ProjectPath ../my-app -Summary "Finished" -Outcome passed
 
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('help', 'health', 'doctor', 'validate', 'route', 'docs', 'workflow', 'update', 'bootstrap')]
+    [ValidateSet('help', 'health', 'doctor', 'validate', 'route', 'docs', 'workflow', 'profile', 'prime', 'absorb', 'digest', 'update', 'bootstrap')]
     [string]$Command = 'help',
 
     [string]$Query = '',
@@ -18,6 +21,13 @@ param(
     [string]$Phase = '',
     [string]$ProjectPath = '',
     [string]$Profile = '',
+    [string]$Note = '',
+    [string]$Kind = 'observation',
+    [string]$Summary = '',
+    [string]$Outcome = 'unknown',
+    [string]$Validation = '',
+    [string]$Risks = '',
+    [string]$Next = '',
     [switch]$Strict,
     [switch]$Json,
     [switch]$DryRun,
@@ -39,6 +49,10 @@ function Show-Help {
     Write-Host '  route -Query <text>    Route intent to OS capability'
     Write-Host '  docs -Query <text>     Query section-first docs index'
     Write-Host '  workflow [-Phase id]   Show progressive workflow gates/status'
+    Write-Host '  profile [-Id id]       Show local runtime profiles'
+    Write-Host '  prime                  Build bounded session startup context'
+    Write-Host '  absorb -Note <text>    Append bounded operational learning note'
+    Write-Host '  digest -Summary <text> Append end-of-session handoff digest'
     Write-Host '  bootstrap -ProjectPath <path> [-Profile name] [-SkipGitInit]'
     Write-Host '  update -ProjectPath <path> [-DryRun]'
     Write-Host ''
@@ -91,6 +105,35 @@ try {
             if ($Phase) { $args += @('-Phase', $Phase) }
             if ($Json) { $args += '-Json' }
             & (Join-Path $RepoRoot 'tools/workflow-status.ps1') @args
+        }
+        'profile' {
+            $args = @()
+            if ($Id) { $args += @('-Id', $Id) }
+            if ($Json) { $args += '-Json' }
+            & (Join-Path $RepoRoot 'tools/runtime-profile.ps1') @args
+        }
+        'prime' {
+            $args = @()
+            if ($ProjectPath) { $args += @('-ProjectPath', $ProjectPath) }
+            if ($Json) { $args += '-Json' }
+            & (Join-Path $RepoRoot 'tools/session-prime.ps1') @args
+        }
+        'absorb' {
+            if ([string]::IsNullOrWhiteSpace($Note)) { throw 'Note is required for absorb.' }
+            $args = @('-Note', $Note, '-Kind', $Kind)
+            if ($ProjectPath) { $args += @('-ProjectPath', $ProjectPath) }
+            if ($DryRun) { $args += '-DryRun' }
+            & (Join-Path $RepoRoot 'tools/session-absorb.ps1') @args
+        }
+        'digest' {
+            if ([string]::IsNullOrWhiteSpace($Summary)) { throw 'Summary is required for digest.' }
+            $args = @('-Summary', $Summary, '-Outcome', $Outcome)
+            if ($Validation) { $args += @('-Validation', $Validation) }
+            if ($Risks) { $args += @('-Risks', $Risks) }
+            if ($Next) { $args += @('-Next', $Next) }
+            if ($ProjectPath) { $args += @('-ProjectPath', $ProjectPath) }
+            if ($DryRun) { $args += '-DryRun' }
+            & (Join-Path $RepoRoot 'tools/session-digest.ps1') @args
         }
         'update' {
             Require-ProjectPath
