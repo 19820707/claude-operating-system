@@ -31,6 +31,9 @@ function Test-OsRepo {
         (Join-Path $Root 'tools\query-docs-index.ps1'),
         (Join-Path $Root 'tools\route-capability.ps1'),
         (Join-Path $Root 'tools\workflow-status.ps1'),
+        (Join-Path $Root 'tools\session-prime.ps1'),
+        (Join-Path $Root 'tools\session-absorb.ps1'),
+        (Join-Path $Root 'tools\session-digest.ps1'),
         (Join-Path $Root 'source\skills'),
         (Join-Path $Root 'templates'),
         (Join-Path $Root 'templates\checklists'),
@@ -250,6 +253,10 @@ Copy-FileAlways -From (Join-Path $Source 'tools\route-capability.ps1') -To (Join
 # Invariant: workflow-manifest.json defines the progressive delivery gates for artifact-first work.
 Copy-FileAlways -From (Join-Path $Source 'workflow-manifest.json') -To (Join-Path $ProjectRoot '.claude\workflow-manifest.json')
 Copy-FileAlways -From (Join-Path $Source 'tools\workflow-status.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\workflow-status.ps1')
+# Invariant: session memory tools are bounded local artifacts, not external memory services.
+Copy-FileAlways -From (Join-Path $Source 'tools\session-prime.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\session-prime.ps1')
+Copy-FileAlways -From (Join-Path $Source 'tools\session-absorb.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\session-absorb.ps1')
+Copy-FileAlways -From (Join-Path $Source 'tools\session-digest.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\session-digest.ps1')
 # Invariant: checklists are safety/release gates, not optional prose.
 Copy-DirectoryContentsAlways -From $checklistsSrc -To (Join-Path $ProjectRoot '.claude\checklists')
 
@@ -423,19 +430,20 @@ Write-Host '  git add CLAUDE.md .claude .local .gitignore'
 Write-Host '  git commit -m "ops: bootstrap Claude operational system"'
 Write-Host ''
 Write-Host 'Next steps:'
-Write-Host '  1. bash .claude/scripts/ts-error-budget.sh   # set TS baseline (TypeScript repos)'
-Write-Host '  2. Route task: pwsh .claude/scripts/route-capability.ps1 -Query "bootstrap"'
-Write-Host '  3. Check workflow status: pwsh .claude/scripts/workflow-status.ps1 -Phase verify'
-Write-Host '  4. Check workflow gates: open .claude/workflow-manifest.json'
-Write-Host '  5. Review safety gates: open .claude/checklists/SECURITY-CHECKLIST.md'
-Write-Host '  6. Query OS docs: pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap'
-Write-Host '  7. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD)'
-Write-Host '  8. Review .claude/settings.json permissions'
-Write-Host ("  9. cd `"" + $ProjectRoot + "`" ; claude")
-Write-Host ' 10. /session-start'
-Write-Host ' 11. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
-Write-Host ' 12. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
-Write-Host ' 13. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
-Write-Host ' 14. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
-Write-Host ' 15. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
+Write-Host '  1. Prime session: pwsh .claude/scripts/session-prime.ps1'
+Write-Host '  2. bash .claude/scripts/ts-error-budget.sh   # set TS baseline (TypeScript repos)'
+Write-Host '  3. Route task: pwsh .claude/scripts/route-capability.ps1 -Query "bootstrap"'
+Write-Host '  4. Check workflow status: pwsh .claude/scripts/workflow-status.ps1 -Phase verify'
+Write-Host '  5. Check workflow gates: open .claude/workflow-manifest.json'
+Write-Host '  6. Review safety gates: open .claude/checklists/SECURITY-CHECKLIST.md'
+Write-Host '  7. Query OS docs: pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap'
+Write-Host '  8. Edit CLAUDE.md + .claude/session-state.md (table: Branch + HEAD)'
+Write-Host '  9. Review .claude/settings.json permissions'
+Write-Host (" 10. cd `"" + $ProjectRoot + "`" ; claude")
+Write-Host ' 11. /session-start'
+Write-Host ' 12. Cross-project (optional): bash .claude/scripts/cross-project-sync.sh --inherit "<path-to-claude-operating-system-clone>"'
+Write-Host ' 13. Invariants (optional): INVARIANT_VERIFY=1 on SessionStart, or: bash .claude/scripts/invariant-verify.sh'
+Write-Host ' 14. Invariant lifecycle (optional): INVARIANT_LIFECYCLE=1 or: bash .claude/scripts/invariant-lifecycle.sh [--for path] [--apply]'
+Write-Host ' 15. Multi-agent coordination (optional): COORDINATION_CHECK=1 or: bash .claude/scripts/coordination-check.sh [--paths a,b]'
+Write-Host ' 16. Epistemic state (optional): EPISTEMIC_CHECK=1 or: bash .claude/scripts/epistemic-check.sh [--gate --depends k1,k2] [--score-decision D-...] [--decision-debt]'
 Write-Host ''
