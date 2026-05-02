@@ -34,10 +34,11 @@ function Invoke-Validation {
 }
 
 function Invoke-DoctorStrict {
-    $doctorArgs = @('-Json')
-    if ($script:EffectiveSkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
-    if ($RequireBash) { $doctorArgs += '-RequireBash' }
-    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorArgs
+    # Invariant: splat named switches — do not pass string '-Json' positionally (fragile vs $args).
+    $doctorParams = @{ Json = $true }
+    if ($script:EffectiveSkipBashSyntax) { $doctorParams['SkipBashSyntax'] = $true }
+    if ($RequireBash) { $doctorParams['RequireBash'] = $true }
+    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorParams
     if ($LASTEXITCODE -ne 0) { throw 'doctor failed' }
     $doctor = ($raw | Out-String) | ConvertFrom-Json
     if ($doctor.failures -gt 0) { throw "doctor reported $($doctor.failures) failure(s)" }

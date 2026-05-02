@@ -73,89 +73,89 @@ try {
     switch ($Command) {
         'help' { Show-Help }
         'health' {
-            $childArgs = @{}
-            if ($SkipBashSyntax) { $childArgs.SkipBashSyntax = $true }
-            if ($RequireBash) { $childArgs.RequireBash = $true }
-            & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @childArgs
+            $params = @{}
+            if ($SkipBashSyntax) { $params['SkipBashSyntax'] = $true }
+            if ($RequireBash) { $params['RequireBash'] = $true }
+            & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @params
         }
         'doctor' {
-            $childArgs = @{}
-            if ($Json) { $childArgs.Json = $true }
-            if ($SkipBashSyntax) { $childArgs.SkipBashSyntax = $true }
-            if ($RequireBash) { $childArgs.RequireBash = $true }
-            & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @childArgs
+            $params = @{}
+            if ($Json) { $params['Json'] = $true }
+            if ($SkipBashSyntax) { $params['SkipBashSyntax'] = $true }
+            if ($RequireBash) { $params['RequireBash'] = $true }
+            & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @params
         }
         'validate' {
-            $childArgs = @{}
-            if ($Strict) { $childArgs.Strict = $true }
-            if ($SkipBashSyntax) { $childArgs.SkipBashSyntax = $true }
-            if ($RequireBash) { $childArgs.RequireBash = $true }
-            & (Join-Path $RepoRoot 'tools/os-validate-all.ps1') @childArgs
+            $params = @{}
+            if ($Strict) { $params['Strict'] = $true }
+            if ($SkipBashSyntax) { $params['SkipBashSyntax'] = $true }
+            if ($RequireBash) { $params['RequireBash'] = $true }
+            & (Join-Path $RepoRoot 'tools/os-validate-all.ps1') @params
         }
         'route' {
-            $childArgs = @{}
-            if ($Query) { $childArgs.Query = $Query }
-            if ($Tag) { $childArgs.Tag = $Tag }
-            if ($Id) { $childArgs.Id = $Id }
-            if ($Json) { $childArgs.Json = $true }
-            & (Join-Path $RepoRoot 'tools/route-capability.ps1') @childArgs
+            $params = @{}
+            if ($Query) { $params['Query'] = $Query }
+            if ($Tag) { $params['Tag'] = $Tag }
+            if ($Id) { $params['Id'] = $Id }
+            if ($Json) { $params['Json'] = $true }
+            & (Join-Path $RepoRoot 'tools/route-capability.ps1') @params
         }
         'docs' {
-            $childArgs = @{}
-            if ($Query) { $childArgs.Query = $Query }
-            if ($Tag) { $childArgs.Tag = $Tag }
-            if ($Id) { $childArgs.Id = $Id }
-            if ($Json) { $childArgs.Json = $true }
-            & (Join-Path $RepoRoot 'tools/query-docs-index.ps1') @childArgs
+            $params = @{}
+            if ($Query) { $params['Query'] = $Query }
+            if ($Tag) { $params['Tag'] = $Tag }
+            if ($Id) { $params['Id'] = $Id }
+            if ($Json) { $params['Json'] = $true }
+            & (Join-Path $RepoRoot 'tools/query-docs-index.ps1') @params
         }
         'workflow' {
-            $childArgs = @{}
-            if ($Phase) { $childArgs.Phase = $Phase }
-            if ($Json) { $childArgs.Json = $true }
-            & (Join-Path $RepoRoot 'tools/workflow-status.ps1') @childArgs
+            $params = @{}
+            if ($Phase) { $params['Phase'] = $Phase }
+            if ($Json) { $params['Json'] = $true }
+            & (Join-Path $RepoRoot 'tools/workflow-status.ps1') @params
         }
         'profile' {
-            $childArgs = @{}
-            if ($Id) { $childArgs.Id = $Id }
-            if ($Json) { $childArgs.Json = $true }
-            & (Join-Path $RepoRoot 'tools/runtime-profile.ps1') @childArgs
+            $params = @{}
+            if ($Id) { $params['Id'] = $Id }
+            if ($Json) { $params['Json'] = $true }
+            & (Join-Path $RepoRoot 'tools/runtime-profile.ps1') @params
         }
         'prime' {
-            $childArgs = @{}
-            if ($ProjectPath) { $childArgs.ProjectPath = $ProjectPath }
-            if ($Json) { $childArgs.Json = $true }
-            & (Join-Path $RepoRoot 'tools/session-prime.ps1') @childArgs
+            $params = @{}
+            if ($ProjectPath) { $params['ProjectPath'] = $ProjectPath }
+            if ($Json) { $params['Json'] = $true }
+            & (Join-Path $RepoRoot 'tools/session-prime.ps1') @params
         }
         'absorb' {
             if ([string]::IsNullOrWhiteSpace($Note)) { throw 'Note is required for absorb.' }
-            $childArgs = @{ Note = $Note; Kind = $Kind }
-            if ($ProjectPath) { $childArgs.ProjectPath = $ProjectPath }
-            if ($DryRun) { $childArgs.DryRun = $true }
-            & (Join-Path $RepoRoot 'tools/session-absorb.ps1') @childArgs
+            $params = @{ Note = $Note; Kind = $Kind }
+            if ($ProjectPath) { $params['ProjectPath'] = $ProjectPath }
+            if ($DryRun) { $params['DryRun'] = $true }
+            & (Join-Path $RepoRoot 'tools/session-absorb.ps1') @params
         }
         'digest' {
             if ([string]::IsNullOrWhiteSpace($Summary)) { throw 'Summary is required for digest.' }
-            $childArgs = @{ Summary = $Summary; Outcome = $Outcome }
-            if ($Validation) { $childArgs.Validation = $Validation }
-            if ($Risks) { $childArgs.Risks = $Risks }
-            if ($Next) { $childArgs.Next = $Next }
-            if ($ProjectPath) { $childArgs.ProjectPath = $ProjectPath }
-            if ($DryRun) { $childArgs.DryRun = $true }
-            & (Join-Path $RepoRoot 'tools/session-digest.ps1') @childArgs
+            $params = @{ Summary = $Summary; Outcome = $Outcome }
+            if ($Validation) { $params['Validation'] = $Validation }
+            if ($Risks) { $params['Risks'] = $Risks }
+            if ($Next) { $params['Next'] = $Next }
+            if ($ProjectPath) { $params['ProjectPath'] = $ProjectPath }
+            if ($DryRun) { $params['DryRun'] = $true }
+            & (Join-Path $RepoRoot 'tools/session-digest.ps1') @params
         }
         'update' {
             Require-ProjectPath
-            $childArgs = @{ ProjectPath = $ProjectPath }
-            if ($DryRun) { $childArgs.DryRun = $true }
-            & (Join-Path $RepoRoot 'tools/os-update-project.ps1') @childArgs
+            $params = @{ ProjectPath = $ProjectPath }
+            if ($DryRun) { $params['DryRun'] = $true }
+            & (Join-Path $RepoRoot 'tools/os-update-project.ps1') @params
         }
         'bootstrap' {
             Require-ProjectPath
-            $childArgs = @{ ProjectPath = $ProjectPath }
-            if ($Profile) { $childArgs.Profile = $Profile }
-            if ($DryRun) { $childArgs.DryRun = $true }
-            if ($SkipGitInit) { $childArgs.SkipGitInit = $true }
-            & (Join-Path $RepoRoot 'init-project.ps1') @childArgs
+            $params = @{ ProjectPath = $ProjectPath }
+            if ($Profile) { $params['Profile'] = $Profile }
+            if ($DryRun) { $params['DryRun'] = $true }
+            if ($SkipGitInit) { $params['SkipGitInit'] = $true }
+            & (Join-Path $RepoRoot 'init-project.ps1') @params
         }
     }
 } catch {
