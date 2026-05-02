@@ -10,6 +10,7 @@ Navigation map. Every file, its purpose, and when to use it.
 |-------------|-------|
 | Check full OS health | `pwsh ./tools/verify-os-health.ps1` |
 | Check Git workspace hygiene (read-only) | `pwsh ./tools/verify-git-hygiene.ps1` |
+| Verify multi-agent adapter templates + manifest | `pwsh ./tools/verify-agent-adapters.ps1` (optional `-Json`) |
 | Recover from fetch/rebase/nested clone issues | `GIT-RECOVERY.md` (also `docs/GIT-RECOVERY.md`) |
 | Start a new session | `templates/commands/session-start.md` |
 | Close a phase | `templates/commands/phase-close.md` |
@@ -263,6 +264,25 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | `token-economy.md` | Context compression, reading discipline | Planned Fase 3 |
 | `incident.md` | Triage, escalation, recovery patterns | Planned |
 | `refactoring.md` | Safe change, seam, wiring patterns | Planned |
+
+---
+
+## Multi-agent adapters
+
+Thin adapters for **Claude Code**, **Cursor**, and **Codex / generic agents** against the **same** operational runtime **`.claude/`**. Templates live under **`templates/adapters/`**; **`init-project.ps1`** installs them into a new project (**`AGENTS.md`** only if missing); **`tools/os-update-project.ps1`** refreshes managed files without overwriting an existing **`AGENTS.md`**.
+
+| Artifact | Role |
+|----------|------|
+| **`AGENTS.md`** (project root) | Codex / generic contract — read order, scripts, git safety |
+| **`.cursor/rules/claude-os-runtime.mdc`** | Cursor Project Rules (`alwaysApply: true`) |
+| **`.agent/runtime.md`** | Neutral map: what `.claude/` is vs adapters |
+| **`.agent/handoff.md`** | Prime → absorb → digest; update session-state |
+| **`.agent/operating-contract.md`** | local-first, artifact-first, no secrets, git rules, validate before close |
+| **`agent-adapters-manifest.json`** | Declares consumers (`claude-code`, `cursor`, `codex`, `neutral-agent-docs`) |
+| **`schemas/agent-adapters.schema.json`** | JSON Schema for the manifest |
+| **`tools/verify-agent-adapters.ps1`** | Read-only validation (`-Json` for machine output) |
+
+Policy background: **`policies/multi-tool-adapters.md`**.
 
 ---
 

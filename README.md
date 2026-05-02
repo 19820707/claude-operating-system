@@ -39,7 +39,7 @@ claude-operating-system/          ← this repo (global source of truth)
 
 ### Multi-tool projects (Claude Code, Cursor, Codex)
 
-Use **one operational tree per project** (`.claude/`) and **thin tool adapters** at the repo root (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, optional `.agent/`). Avoid parallel “OS” directories or three full copies of the same policies — see [policies/multi-tool-adapters.md](policies/multi-tool-adapters.md).
+Use **one operational tree per project** (`.claude/`) and **thin tool adapters** at the repo root (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, optional `.agent/`). Avoid parallel “OS” directories or three full copies of the same policies — see [policies/multi-tool-adapters.md](policies/multi-tool-adapters.md). The adapter map in this repo is **`agent-adapters-manifest.json`** (schema **`schemas/agent-adapters.schema.json`**); validate with **`pwsh ./tools/verify-agent-adapters.ps1`**.
 
 ### Advanced engineering (project hooks)
 

@@ -1,24 +1,38 @@
 {
   "schemaVersion": 1,
-  "description": "Maps multi-tool adapters to the single operational runtime under .claude/",
+  "description": "Maps Claude Code, Cursor, Codex, and neutral agent docs to the single operational runtime under .claude/",
   "adapters": [
     {
       "id": "claude-code",
       "entrypoint": "CLAUDE.md",
-      "runtime": ".claude/",
-      "role": "project memory and operational policy"
+      "runtimePath": ".claude/",
+      "managed": false,
+      "purpose": "Claude Code project memory and operational policy; defers execution to .claude/"
     },
     {
       "id": "cursor",
       "entrypoint": ".cursor/rules/claude-os-runtime.mdc",
-      "runtime": ".claude/",
-      "role": "IDE agent rules"
+      "runtimePath": ".claude/",
+      "managed": true,
+      "purpose": "Cursor Project Rules (always-on); defers state and gates to .claude/"
     },
     {
       "id": "codex",
       "entrypoint": "AGENTS.md",
-      "runtime": ".claude/",
-      "role": "generic coding agent contract"
+      "runtimePath": ".claude/",
+      "managed": false,
+      "purpose": "Thin contract for Codex and generic agents; bootstrap creates once, never overwritten by updater"
+    },
+    {
+      "id": "neutral-agent-docs",
+      "entrypoints": [
+        ".agent/runtime.md",
+        ".agent/handoff.md",
+        ".agent/operating-contract.md"
+      ],
+      "runtimePath": ".claude/",
+      "managed": true,
+      "purpose": "Tool-neutral runtime summary, handoff protocol, and operating contract"
     }
   ]
 }

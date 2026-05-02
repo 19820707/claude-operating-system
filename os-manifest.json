@@ -46,7 +46,12 @@
     ".claude/scripts/session-absorb.ps1",
     ".claude/scripts/session-digest.ps1",
     ".claude/checklists/SECURITY-CHECKLIST.md",
-    ".claude/checklists/RELEASE-CHECKLIST.md"
+    ".claude/checklists/RELEASE-CHECKLIST.md",
+    "AGENTS.md",
+    ".cursor/rules/claude-os-runtime.mdc",
+    ".agent/runtime.md",
+    ".agent/handoff.md",
+    ".agent/operating-contract.md"
   ],
   "validationPolicy": {
     "defaultMode": "normal",

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claude OS agent adapters manifest",
+  "type": "object",
+  "required": ["schemaVersion", "adapters"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "adapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "entrypoint", "runtimePath", "managed", "purpose"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "entrypoint": { "type": "string", "minLength": 1 },
+              "runtimePath": { "type": "string", "minLength": 1 },
+              "managed": { "type": "boolean" },
+              "purpose": { "type": "string", "minLength": 1 }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "entrypoints", "runtimePath", "managed", "purpose"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "entrypoints": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "runtimePath": { "type": "string", "minLength": 1 },
+              "managed": { "type": "boolean" },
+              "purpose": { "type": "string", "minLength": 1 }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

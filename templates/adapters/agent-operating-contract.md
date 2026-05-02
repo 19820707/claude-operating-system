@@ -1,21 +1,27 @@
 # Operating contract (all agents)
 
-## Local-first
+## Principles
 
-- Prefer repo manifests, scripts, and checklists under **`.claude/`**.
-- Do not add mandatory external SaaS dependencies for core OS workflows unless the project explicitly opts in.
-
-## Git (hard negatives)
-
-- **Never** `git add .` — stage paths explicitly after review.
-- **Never** `git push --force` (or `--force-with-lease`) on shared default branches without explicit human approval.
-- **Never** `git stash pop` without reviewing `git stash show` first.
+- **local-first** — prefer repo manifests and scripts; no new mandatory external SaaS for core OS flows.
+- **artifact-first** — commit deliberate artifacts; stage paths explicitly after review.
+- **deterministic validation** — use repo checklists and `pwsh`/scripted gates where provided.
+- **human-gated critical surfaces** — auth, security, CI, release, filesystem, permissions, production, payments.
 
 ## Safety
 
-- No secrets, API keys, or bearer tokens in committed files, logs, or pasted output.
-- **human approval required** for auth, billing, production deploy, destructive migrations, and broad permission changes.
+- **no secrets** — never commit or paste tokens, keys, or PII into logs or markdown.
+- **no raw stack traces** in user-facing summaries — keep diagnostics short and redacted.
 
-## Drift
+## Git (hard negatives)
 
-- Do not create parallel OS roots (`.cursor-os/`, `.codex-os/`, duplicate full policy trees). Use **`.claude/`** + thin adapters only.
+- **no git add .** — stage explicit paths.
+- **no `git push --force`** — do not `git push --force` or `--force-with-lease` on shared default branches without approval.
+- **no stash pop** without reviewing `git stash show` first.
+
+## Close-out
+
+- **validate before close** — run project/OS validation scripts expected for the change (e.g. `pwsh ./tools/os-validate-all.ps1 -Strict` in the OS repo).
+
+## human approval required
+
+Runtime, bootstrap, validation, CI, security, filesystem, and production-impacting edits require **human approval required**.

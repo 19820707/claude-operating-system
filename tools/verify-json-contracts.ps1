@@ -58,7 +58,7 @@ $manifestPairs = @{
     'docs-index.json' = 'schemas/docs-index.schema.json'
     'os-capabilities.json' = 'schemas/os-capabilities.schema.json'
     'workflow-manifest.json' = 'schemas/workflow-manifest.schema.json'
-    'agent-adapters-manifest.json' = 'schemas/agent-adapters-manifest.schema.json'
+    'agent-adapters-manifest.json' = 'schemas/agent-adapters.schema.json'
 }
 
 foreach ($pair in $manifestPairs.GetEnumerator() | Sort-Object Name) {
@@ -87,7 +87,10 @@ if ($os) {
     }
     foreach ($artifact in @($os.managedProjectArtifacts | ForEach-Object { [string]$_ })) {
         Test-SafeRelativePath -Path $artifact -Field 'os-manifest.managedProjectArtifacts'
-        if (-not $artifact.StartsWith('.claude/')) { Fail "managed artifact must be under .claude/: $artifact" }
+        $norm = $artifact -replace '\\', '/'
+        if ($norm -notmatch '^(\.claude/|AGENTS\.md|\.cursor/rules/|\.agent/)') {
+            Fail "managed artifact outside allowed surfaces (.claude/, AGENTS.md, .cursor/rules/, .agent/): $artifact"
+        }
     }
 }
 

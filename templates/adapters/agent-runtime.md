@@ -1,20 +1,16 @@
-# Runtime overview (.claude/)
+# Runtime overview — one tree, many adapters
 
-This document is **neutral** reference for any agent (Codex, Cursor, other). It does **not** replace `.claude/`; it describes how to use it.
+## `.claude/` is the common runtime
 
-## What lives in `.claude/`
+Session memory, workflow gates, capability registry, checklists, copied policies, and installed scripts live under **`.claude/`**. Every agent must treat that directory as the **only** operational root.
 
-| Area | Purpose |
-|------|---------|
-| `session-state.md` | Live branch, decisions, risks, next steps |
-| `learning-log.md` | Cumulative learning and heuristics |
-| `decision-log.jsonl` | Append-only decision records |
-| `workflow-manifest.json` | Progressive delivery gates |
-| `os-capabilities.json` | Capability registry for routing |
-| `scripts/` | Installed OS tools (prime, route, workflow, validators, hooks) |
-| `policies/` | Project policy copies and critical-surface checklists |
-| `skills/` | Installed skill artifacts |
+## Adapters (thin; no second runtime)
 
-## Principle
+| Surface | Role |
+|---------|------|
+| **`CLAUDE.md`** | Adapter for **Claude Code** — how to read and honour `.claude/`. |
+| **`AGENTS.md`** | Adapter for **Codex / generic agents** — read order and commands; still defers to `.claude/`. |
+| **`.cursor/rules/`** (e.g. `claude-os-runtime.mdc`) | Adapter for **Cursor** — Project Rules that reference the same paths. |
+| **`.agent/`** (`runtime.md`, `handoff.md`, `operating-contract.md`) | **Tool-neutral** prose — contract and handoff; not a parallel runtime. |
 
-**One runtime.** Tool-specific files (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`) only explain *how to enter* this tree — they are not a second source of truth.
+Nothing in the adapters replaces manifests under **`.claude/`**; they only explain how to use them.

@@ -104,6 +104,18 @@ function Test-GeneratedProjectTools {
 
         Push-Location $target
         try {
+            foreach ($rel in @(
+                    'AGENTS.md',
+                    '.cursor/rules/claude-os-runtime.mdc',
+                    '.agent/runtime.md',
+                    '.agent/handoff.md',
+                    '.agent/operating-contract.md'
+                )) {
+                $p = Join-Path $target $rel
+                if (-not (Test-Path -LiteralPath $p)) {
+                    throw "bootstrap missing adapter artifact: $rel"
+                }
+            }
             foreach ($check in $checks) {
                 $out = & pwsh $check.cmd @($check.args)
                 if ($LASTEXITCODE -ne 0) { throw "$($check.name) returned non-zero" }

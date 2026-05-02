@@ -1,24 +1,38 @@
-# AGENTS.md — multi-agent contract (Codex / generic agents)
+# AGENTS.md — Codex / generic agents (Claude OS Runtime)
 
-This file is a **thin adapter**. The **operational source of truth** is **`.claude/`** (session, workflow, capabilities, checklists, scripts).
+This project uses **Claude OS Runtime**. The operational source of truth is **`.claude/`** — not this file.
 
-## Read order (start of work)
+## Before you edit
 
-1. **`.claude/session-state.md`** — branch, decisions, risks, next steps (do not assume chat history).
-2. **`.claude/learning-log.md`** — patterns and heuristics from prior work.
+Read, in order:
+
+1. **`CLAUDE.md`** — project-level policy and how Claude Code expects work to run.
+2. **`.claude/session-state.md`** — branch, decisions, risks, next steps (do not assume chat history).
 3. **`.claude/workflow-manifest.json`** — phase gates for this repo.
-4. **`.agent/runtime.md`** and **`.agent/handoff.md`** — how adapters relate to the shared runtime.
+4. **`.claude/os-capabilities.json`** — capability routing and automation boundaries.
 
-## Rules
+## Commands to prefer (installed under `.claude/scripts/`)
 
-- **Local-first**: prefer repo scripts and manifests; no new external services for core OS flows.
-- **Secrets**: never print or commit secrets, tokens, or connection strings.
-- **Git hygiene**: do not use `git add .`; do not `git push --force` on shared branches; review stash before apply.
-- **Production and critical surfaces**: **human approval required** before irreversible or customer-impacting changes.
+- **Prime (bounded context):**
+  `pwsh .claude/scripts/session-prime.ps1`
+- **Route a task:**
+  `pwsh .claude/scripts/route-capability.ps1 -Query "<task>"`
+- **Workflow status:**
+  `pwsh .claude/scripts/workflow-status.ps1 -Phase verify`
+- **Close session:**
+  `pwsh .claude/scripts/session-digest.ps1 -Summary "<summary>" -Outcome passed`
 
-## Anti-patterns
+Also use **session-absorb** during work when you learn something durable:
+`pwsh .claude/scripts/session-absorb.ps1 -Note "<note>" -Kind ops`
 
-- A second “OS root” (e.g. `.cursor-os/`, `.codex-os/`) parallel to `.claude/` — causes drift.
-- Duplicating full policy corpora here — keep this file short; link into `.claude/policies/` instead.
+## Git and safety (hard negatives)
 
-See also: **`policies/multi-tool-adapters.md`** in the `claude-operating-system` repo for the full hybrid model.
+- Do **not** use `git add .`, `git push --force`, or `git reset --hard` without explicit human direction.
+- Do **not** run `git stash pop` without reviewing the stash diff first.
+- Do **not** delete backups or whole directories without human review.
+
+## human approval required
+
+**human approval required** before changes to auth, security, CI, release, filesystem layout, permissions, production systems, or payments — and whenever policy says so.
+
+See **`.agent/runtime.md`**, **`.agent/handoff.md`**, and **`.agent/operating-contract.md`** for the shared neutral contract.
