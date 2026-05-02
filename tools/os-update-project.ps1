@@ -58,6 +58,9 @@ Copy-ManagedFile -From (Join-Path $RepoRoot 'workflow-manifest.json') -To (Join-
 Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/query-docs-index.ps1') -To (Join-Path $target '.claude/scripts/query-docs-index.ps1')
 Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/route-capability.ps1') -To (Join-Path $target '.claude/scripts/route-capability.ps1')
 Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/workflow-status.ps1') -To (Join-Path $target '.claude/scripts/workflow-status.ps1')
+Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/session-prime.ps1') -To (Join-Path $target '.claude/scripts/session-prime.ps1')
+Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/session-absorb.ps1') -To (Join-Path $target '.claude/scripts/session-absorb.ps1')
+Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/session-digest.ps1') -To (Join-Path $target '.claude/scripts/session-digest.ps1')
 Copy-ManagedDirectory -From (Join-Path $RepoRoot 'templates/checklists') -To (Join-Path $target '.claude/checklists')
 Copy-ManagedDirectory -From (Join-Path $RepoRoot 'source/skills') -To (Join-Path $target '.claude/skills')
 
@@ -72,6 +75,9 @@ $installRecord = [pscustomobject]@{
         '.claude/scripts/query-docs-index.ps1',
         '.claude/scripts/route-capability.ps1',
         '.claude/scripts/workflow-status.ps1',
+        '.claude/scripts/session-prime.ps1',
+        '.claude/scripts/session-absorb.ps1',
+        '.claude/scripts/session-digest.ps1',
         '.claude/checklists',
         '.claude/skills'
     )
