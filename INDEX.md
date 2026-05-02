@@ -163,6 +163,8 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 For the complete script list, use `bootstrap-manifest.json` → `projectBootstrap.scripts`; CI verifies every listed script exists and parses with `bash -n`.
 
+Manifest-only script entries: `agent-coordinator.sh`, `consolidate-runbook.sh`, `context-allocator.sh`, `context-builder.sh`, `contract-delta.sh`, `decision-audit.sh`, `epistemic-state.sh`, `invariant-engine.sh`, `knowledge-graph.sh`, `policy-compliance.sh`, `runbook-inject.sh`, `salience-score.sh`, `simulate-change.sh`.
+
 ### templates/invariant-engine/
 
 | Artefacto | Propósito |
@@ -273,6 +275,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence �
 | templates/scripts/ | 38/38 — manifest verified; health check runs `bash -n` |
 | templates/invariant-engine/dist/ | 3/3 — invariant-engine, semantic-diff, simulate-contract-delta |
 | templates/profiles/ | 2/2 — node-ts-service, react-vite-app |
+| templates/agents/ | 5/5 — principal architect, QA strategist, release manager, reliability engineer, security engineer |
 | templates/settings.json | Stable — 4 hooks + permissions |
 | heuristics/ | operational.md + cross-project-evidence.json (MVP) |
 | templates/critical-surfaces/ | 5/9 — auth, migrations, billing, deploy, pii |

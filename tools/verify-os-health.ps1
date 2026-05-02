@@ -6,7 +6,8 @@
 
 param(
     [switch]$SkipBootstrapSmoke,
-    [switch]$SkipBashSyntax
+    [switch]$SkipBashSyntax,
+    [switch]$RequireBash
 )
 
 $ErrorActionPreference = 'Stop'
@@ -127,10 +128,10 @@ function Test-WorkflowStatus {
 
 function Test-RuntimeDispatcher {
     $help = & (Join-Path $RepoRoot 'tools/os-runtime.ps1') help
-    if ($LASTEXITCODE -ne 0) { throw 'os-runtime.ps1 help returned non-zero exit code' }
+    if (-not $?) { throw 'os-runtime.ps1 help returned non-zero exit code' }
     if (-not (($help | Out-String).Contains('Claude OS Runtime v1'))) { throw 'os-runtime.ps1 help missing Runtime v1 banner' }
     $raw = & (Join-Path $RepoRoot 'tools/os-runtime.ps1') workflow -Phase verify -Json
-    if ($LASTEXITCODE -ne 0) { throw 'os-runtime.ps1 workflow returned non-zero exit code' }
+    if (-not $?) { throw 'os-runtime.ps1 workflow returned non-zero exit code' }
     $result = ($raw | Out-String) | ConvertFrom-Json
     if ([int]$result.phaseCount -lt 1) { throw 'os-runtime.ps1 workflow returned no phase' }
 }
@@ -143,14 +144,31 @@ function Test-RuntimeProfile {
 }
 
 function Test-Doctor {
-    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') -Json
+    $doctorArgs = @('-Json')
+    if ($script:EffectiveSkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
+    if ($RequireBash) { $doctorArgs += '-RequireBash' }
+    $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorArgs
     if ($LASTEXITCODE -ne 0) { throw 'os-doctor.ps1 returned non-zero exit code' }
     $result = ($raw | Out-String) | ConvertFrom-Json
     if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
 }
 
+$BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
+if ($RequireBash -and -not $BashAvailable) {
+    $EffectiveSkipBashSyntax = $false
+} else {
+    $EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $BashAvailable))
+}
+
 Write-Host 'claude-operating-system health'
 Write-Host "Repo: $RepoRoot"
+if ($BashAvailable) {
+    Write-Host 'Bash: available'
+} elseif ($RequireBash) {
+    Write-Host 'Bash: not found; required'
+} else {
+    Write-Host 'Bash: not found; syntax check auto-skipped'
+}
 Write-Host ''
 
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
@@ -207,10 +225,11 @@ if (-not $SkipBootstrapSmoke) {
     Add-Result -Name 'bootstrap-real-smoke' -Status 'skip' -LatencyMs 0 -Note 'skipped by flag'
 }
 
-if (-not $SkipBashSyntax) {
+if (-not $EffectiveSkipBashSyntax) {
     Invoke-HealthStep -Name 'bash-syntax' -Script { Test-BashSyntax }
 } else {
-    Add-Result -Name 'bash-syntax' -Status 'skip' -LatencyMs 0 -Note 'skipped by flag'
+    $skipReason = if ($SkipBashSyntax) { 'skipped by flag' } else { 'bash not found on PATH' }
+    Add-Result -Name 'bash-syntax' -Status 'skip' -LatencyMs 0 -Note $skipReason
 }
 
 Write-Host ''

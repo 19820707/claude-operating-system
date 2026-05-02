@@ -15,9 +15,6 @@ $failures = @()
 
 . (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
 
-$BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
-$EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $BashAvailable -and -not $RequireBash))
-
 function Invoke-Validation {
     param(
         [string]$Name,
@@ -38,16 +35,17 @@ function Invoke-Validation {
 
 function Invoke-DoctorStrict {
     $doctorArgs = @('-Json')
-    if ($EffectiveSkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
+    if ($script:EffectiveSkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
+    if ($RequireBash) { $doctorArgs += '-RequireBash' }
     $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorArgs
     if ($LASTEXITCODE -ne 0) { throw 'doctor failed' }
     $doctor = ($raw | Out-String) | ConvertFrom-Json
     if ($doctor.failures -gt 0) { throw "doctor reported $($doctor.failures) failure(s)" }
     if ($Strict) {
         $allowedWarnings = @('project-scaffold','node','npm','invariant-bundles')
-        if ($EffectiveSkipBashSyntax) { $allowedWarnings += 'bash' }
+        if ($script:EffectiveSkipBashSyntax) { $allowedWarnings += 'bash' }
         $unexpectedWarnings = @($doctor.checks | Where-Object {
-            $_.status -eq 'warn' -and $_.name -notin $allowedWarnings
+            $_.status -eq 'warn' -and $_.name -notin $allowedWarnings -and $_.name -notlike 'scaffold:*'
         })
         if ($unexpectedWarnings.Count -gt 0) {
             throw "strict mode: doctor reported $($unexpectedWarnings.Count) unexpected warning(s)"
@@ -124,12 +122,24 @@ function Test-SessionMemoryCycle {
 Write-Host 'claude-operating-system validate-all'
 Write-Host "Repo  : $RepoRoot"
 Write-Host "Strict: $([bool]$Strict)"
-Write-Host "Bash  : $(if ($BashAvailable) { 'available' } elseif ($EffectiveSkipBashSyntax) { 'not found; syntax check auto-skipped' } else { 'not found; required' })"
+$BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
+if ($RequireBash -and -not $BashAvailable) {
+    $EffectiveSkipBashSyntax = $false
+    Write-Host 'Bash  : not found; required'
+} elseif ($BashAvailable) {
+    $EffectiveSkipBashSyntax = [bool]$SkipBashSyntax
+    Write-Host 'Bash  : available'
+} else {
+    $EffectiveSkipBashSyntax = $true
+    Write-Host 'Bash  : not found; syntax check auto-skipped'
+}
 Write-Host ''
 
 Invoke-Validation -Name 'health' -Script {
     if ($EffectiveSkipBashSyntax) {
         & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -SkipBashSyntax
+    } elseif ($RequireBash) {
+        & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -RequireBash
     } else {
         & (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
     }

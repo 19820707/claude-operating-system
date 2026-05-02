@@ -27,4 +27,9 @@ jobs:
 
       - name: Claude OS strict validation
         shell: pwsh
-        run: ${{ github.workspace }}/tools/os-validate-all.ps1 -Strict
+        run: |
+          if ('${{ matrix.os }}' -eq 'ubuntu-latest') {
+            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict -RequireBash
+          } else {
+            & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict
+          }

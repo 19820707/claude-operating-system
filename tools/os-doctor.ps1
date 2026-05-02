@@ -7,7 +7,8 @@
 
 param(
     [switch]$Json,
-    [switch]$SkipBashSyntax
+    [switch]$SkipBashSyntax,
+    [switch]$RequireBash
 )
 
 $ErrorActionPreference = 'Stop'
@@ -65,7 +66,7 @@ function Test-CommandAvailable {
     )
     $version = Get-CommandVersion -Command $Command -Args $VersionArgs
     if ($version) {
-        Add-Check -Name $Name -Status 'ok' -Detail "$Command: $version"
+        Add-Check -Name $Name -Status 'ok' -Detail "${Command}: $version"
     } else {
         Add-Check -Name $Name -Status $Severity -Detail "$Command not found" -Remediation "Install $Command for $RequiredFor."
     }
@@ -95,7 +96,7 @@ Test-PathExists -Name 'capabilities' -RelativePath 'os-capabilities.json' -Kind 
 Test-PathExists -Name 'health-verifier' -RelativePath 'tools/verify-os-health.ps1' -Kind 'tool'
 
 Test-CommandAvailable -Name 'powershell' -Command 'pwsh' -RequiredFor 'all validators and Windows bootstrap' -VersionArgs @('-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()')
-if ($SkipBashSyntax) {
+if ($SkipBashSyntax -or -not $RequireBash) {
     Test-CommandAvailable -Name 'bash' -Command 'bash' -RequiredFor 'optional Bash hook syntax validation' -Severity 'warn'
 } else {
     Test-CommandAvailable -Name 'bash' -Command 'bash' -RequiredFor 'template script syntax checks and project hooks'

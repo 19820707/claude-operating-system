@@ -17,7 +17,8 @@
       "tags": ["health", "validation", "ci", "bootstrap"],
       "entrypoint": "pwsh ./tools/verify-os-health.ps1",
       "validations": ["pwsh ./tools/verify-os-health.ps1"],
-      "docs": ["root/health", "validators/manifest", "validators/docs"]
+      "docs": ["root/health", "validators/manifest", "validators/docs"],
+      "requiresHumanApproval": true
     },
     {
       "id": "os.bootstrap-project",

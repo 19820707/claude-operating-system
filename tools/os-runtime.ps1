@@ -10,6 +10,7 @@
 #   pwsh ./tools/os-runtime.ps1 absorb -ProjectPath ../my-app -Note "Validated before editing"
 #   pwsh ./tools/os-runtime.ps1 digest -ProjectPath ../my-app -Summary "Finished" -Outcome passed
 
+[CmdletBinding(PositionalBinding = $false)]
 param(
     [Parameter(Position = 0)]
     [ValidateSet('help', 'health', 'doctor', 'validate', 'route', 'docs', 'workflow', 'profile', 'prime', 'absorb', 'digest', 'update', 'bootstrap')]
@@ -32,7 +33,8 @@ param(
     [switch]$Json,
     [switch]$DryRun,
     [switch]$SkipGitInit,
-    [switch]$SkipBashSyntax
+    [switch]$SkipBashSyntax,
+    [switch]$RequireBash
 )
 
 $ErrorActionPreference = 'Stop'
@@ -40,23 +42,25 @@ $RepoRoot = Split-Path $PSScriptRoot -Parent
 . (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
 
 function Show-Help {
-    Write-Host 'Claude OS Runtime v1'
-    Write-Host ''
-    Write-Host 'Commands:'
-    Write-Host '  health                 Run repository health checks'
-    Write-Host '  doctor                 Diagnose runtime/environment readiness'
-    Write-Host '  validate [-Strict]     Run release-grade aggregate validation'
-    Write-Host '  route -Query <text>    Route intent to OS capability'
-    Write-Host '  docs -Query <text>     Query section-first docs index'
-    Write-Host '  workflow [-Phase id]   Show progressive workflow gates/status'
-    Write-Host '  profile [-Id id]       Show local runtime profiles'
-    Write-Host '  prime                  Build bounded session startup context'
-    Write-Host '  absorb -Note <text>    Append bounded operational learning note'
-    Write-Host '  digest -Summary <text> Append end-of-session handoff digest'
-    Write-Host '  bootstrap -ProjectPath <path> [-Profile name] [-SkipGitInit]'
-    Write-Host '  update -ProjectPath <path> [-DryRun]'
-    Write-Host ''
-    Write-Host 'Critical mutations require human approval.'
+    @(
+        'Claude OS Runtime v1'
+        ''
+        'Commands:'
+        '  health                 Run repository health checks'
+        '  doctor                 Diagnose runtime/environment readiness'
+        '  validate [-Strict]     Run release-grade aggregate validation'
+        '  route -Query <text>    Route intent to OS capability'
+        '  docs -Query <text>     Query section-first docs index'
+        '  workflow [-Phase id]   Show progressive workflow gates/status'
+        '  profile [-Id id]       Show local runtime profiles'
+        '  prime                  Build bounded session startup context'
+        '  absorb -Note <text>    Append bounded operational learning note'
+        '  digest -Summary <text> Append end-of-session handoff digest'
+        '  bootstrap -ProjectPath <path> [-Profile name] [-SkipGitInit]'
+        '  update -ProjectPath <path> [-DryRun]'
+        ''
+        'Critical mutations require human approval.'
+    ) | Write-Output
 }
 
 function Require-ProjectPath {
@@ -69,87 +73,98 @@ try {
     switch ($Command) {
         'help' { Show-Help }
         'health' {
-            $args = @()
-            if ($SkipBashSyntax) { $args += '-SkipBashSyntax' }
-            & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @args
+            $childArgs = @{}
+            if ($SkipBashSyntax) { $childArgs.SkipBashSyntax = $true }
+            if ($RequireBash) { $childArgs.RequireBash = $true }
+            & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @childArgs
         }
         'doctor' {
-            $args = @()
-            if ($Json) { $args += '-Json' }
-            & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @args
+            $childArgs = @{}
+            if ($Json) { $childArgs.Json = $true }
+            if ($SkipBashSyntax) { $childArgs.SkipBashSyntax = $true }
+            if ($RequireBash) { $childArgs.RequireBash = $true }
+            & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @childArgs
         }
         'validate' {
-            $args = @()
-            if ($Strict) { $args += '-Strict' }
-            if ($SkipBashSyntax) { $args += '-SkipBashSyntax' }
-            & (Join-Path $RepoRoot 'tools/os-validate-all.ps1') @args
+            $childArgs = @{}
+            if ($Strict) { $childArgs.Strict = $true }
+            if ($SkipBashSyntax) { $childArgs.SkipBashSyntax = $true }
+            if ($RequireBash) { $childArgs.RequireBash = $true }
+            & (Join-Path $RepoRoot 'tools/os-validate-all.ps1') @childArgs
         }
         'route' {
-            $args = @()
-            if ($Query) { $args += @('-Query', $Query) }
-            if ($Tag) { $args += @('-Tag', $Tag) }
-            if ($Id) { $args += @('-Id', $Id) }
-            if ($Json) { $args += '-Json' }
-            & (Join-Path $RepoRoot 'tools/route-capability.ps1') @args
+            $childArgs = @{}
+            if ($Query) { $childArgs.Query = $Query }
+            if ($Tag) { $childArgs.Tag = $Tag }
+            if ($Id) { $childArgs.Id = $Id }
+            if ($Json) { $childArgs.Json = $true }
+            & (Join-Path $RepoRoot 'tools/route-capability.ps1') @childArgs
         }
         'docs' {
-            $args = @()
-            if ($Query) { $args += @('-Query', $Query) }
-            if ($Tag) { $args += @('-Tag', $Tag) }
-            if ($Id) { $args += @('-Id', $Id) }
-            if ($Json) { $args += '-Json' }
-            & (Join-Path $RepoRoot 'tools/query-docs-index.ps1') @args
+            $childArgs = @{}
+            if ($Query) { $childArgs.Query = $Query }
+            if ($Tag) { $childArgs.Tag = $Tag }
+            if ($Id) { $childArgs.Id = $Id }
+            if ($Json) { $childArgs.Json = $true }
+            & (Join-Path $RepoRoot 'tools/query-docs-index.ps1') @childArgs
         }
         'workflow' {
-            $args = @()
-            if ($Phase) { $args += @('-Phase', $Phase) }
-            if ($Json) { $args += '-Json' }
-            & (Join-Path $RepoRoot 'tools/workflow-status.ps1') @args
+            $childArgs = @{}
+            if ($Phase) { $childArgs.Phase = $Phase }
+            if ($Json) { $childArgs.Json = $true }
+            & (Join-Path $RepoRoot 'tools/workflow-status.ps1') @childArgs
         }
         'profile' {
-            $args = @()
-            if ($Id) { $args += @('-Id', $Id) }
-            if ($Json) { $args += '-Json' }
-            & (Join-Path $RepoRoot 'tools/runtime-profile.ps1') @args
+            $childArgs = @{}
+            if ($Id) { $childArgs.Id = $Id }
+            if ($Json) { $childArgs.Json = $true }
+            & (Join-Path $RepoRoot 'tools/runtime-profile.ps1') @childArgs
         }
         'prime' {
-            $args = @()
-            if ($ProjectPath) { $args += @('-ProjectPath', $ProjectPath) }
-            if ($Json) { $args += '-Json' }
-            & (Join-Path $RepoRoot 'tools/session-prime.ps1') @args
+            $childArgs = @{}
+            if ($ProjectPath) { $childArgs.ProjectPath = $ProjectPath }
+            if ($Json) { $childArgs.Json = $true }
+            & (Join-Path $RepoRoot 'tools/session-prime.ps1') @childArgs
         }
         'absorb' {
             if ([string]::IsNullOrWhiteSpace($Note)) { throw 'Note is required for absorb.' }
-            $args = @('-Note', $Note, '-Kind', $Kind)
-            if ($ProjectPath) { $args += @('-ProjectPath', $ProjectPath) }
-            if ($DryRun) { $args += '-DryRun' }
-            & (Join-Path $RepoRoot 'tools/session-absorb.ps1') @args
+            $childArgs = @{ Note = $Note; Kind = $Kind }
+            if ($ProjectPath) { $childArgs.ProjectPath = $ProjectPath }
+            if ($DryRun) { $childArgs.DryRun = $true }
+            & (Join-Path $RepoRoot 'tools/session-absorb.ps1') @childArgs
         }
         'digest' {
             if ([string]::IsNullOrWhiteSpace($Summary)) { throw 'Summary is required for digest.' }
-            $args = @('-Summary', $Summary, '-Outcome', $Outcome)
-            if ($Validation) { $args += @('-Validation', $Validation) }
-            if ($Risks) { $args += @('-Risks', $Risks) }
-            if ($Next) { $args += @('-Next', $Next) }
-            if ($ProjectPath) { $args += @('-ProjectPath', $ProjectPath) }
-            if ($DryRun) { $args += '-DryRun' }
-            & (Join-Path $RepoRoot 'tools/session-digest.ps1') @args
+            $childArgs = @{ Summary = $Summary; Outcome = $Outcome }
+            if ($Validation) { $childArgs.Validation = $Validation }
+            if ($Risks) { $childArgs.Risks = $Risks }
+            if ($Next) { $childArgs.Next = $Next }
+            if ($ProjectPath) { $childArgs.ProjectPath = $ProjectPath }
+            if ($DryRun) { $childArgs.DryRun = $true }
+            & (Join-Path $RepoRoot 'tools/session-digest.ps1') @childArgs
         }
         'update' {
             Require-ProjectPath
-            $args = @('-ProjectPath', $ProjectPath)
-            if ($DryRun) { $args += '-DryRun' }
-            & (Join-Path $RepoRoot 'tools/os-update-project.ps1') @args
+            $childArgs = @{ ProjectPath = $ProjectPath }
+            if ($DryRun) { $childArgs.DryRun = $true }
+            & (Join-Path $RepoRoot 'tools/os-update-project.ps1') @childArgs
         }
         'bootstrap' {
             Require-ProjectPath
-            $args = @('-ProjectPath', $ProjectPath)
-            if ($Profile) { $args += @('-Profile', $Profile) }
-            if ($DryRun) { $args += '-DryRun' }
-            if ($SkipGitInit) { $args += '-SkipGitInit' }
-            & (Join-Path $RepoRoot 'init-project.ps1') @args
+            $childArgs = @{ ProjectPath = $ProjectPath }
+            if ($Profile) { $childArgs.Profile = $Profile }
+            if ($DryRun) { $childArgs.DryRun = $true }
+            if ($SkipGitInit) { $childArgs.SkipGitInit = $true }
+            & (Join-Path $RepoRoot 'init-project.ps1') @childArgs
         }
     }
 } catch {
-    throw (Redact-SensitiveText -Text $_.Exception.Message -MaxLength 240)
+    $safe = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 240
+    Write-Error $safe -ErrorAction Continue
+    if ($Command -eq 'validate') {
+        Write-Host 'Run isolated checks:'
+        Write-Host '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
+        Write-Host '  pwsh ./tools/os-doctor.ps1 -Json -SkipBashSyntax'
+    }
+    exit 1
 }
