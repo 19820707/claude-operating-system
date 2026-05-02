@@ -9,6 +9,15 @@
     "manifests": {
       "type": "object",
       "required": ["bootstrap", "docs", "capabilities", "workflow"],
+      "properties": {
+        "bootstrap": { "type": "string", "minLength": 1 },
+        "docs": { "type": "string", "minLength": 1 },
+        "capabilities": { "type": "string", "minLength": 1 },
+        "workflow": { "type": "string", "minLength": 1 },
+        "runtimeProfiles": { "type": "string", "minLength": 1, "description": "runtime-profiles.json path" },
+        "sessionMemory": { "type": "string", "minLength": 1, "description": "session-memory-manifest.json path" },
+        "gitRecoveryPolicy": { "type": "string", "minLength": 1, "description": "Human Git recovery policy (markdown)" }
+      },
       "additionalProperties": { "type": "string", "minLength": 1 }
     },
     "entrypoints": {

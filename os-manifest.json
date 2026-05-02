@@ -14,7 +14,8 @@
     "capabilities": "os-capabilities.json",
     "workflow": "workflow-manifest.json",
     "runtimeProfiles": "runtime-profiles.json",
-    "sessionMemory": "session-memory-manifest.json"
+    "sessionMemory": "session-memory-manifest.json",
+    "gitRecoveryPolicy": "GIT-RECOVERY.md"
   },
   "entrypoints": {
     "runtime": "tools/os-runtime.ps1",

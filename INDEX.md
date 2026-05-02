@@ -10,7 +10,7 @@ Navigation map. Every file, its purpose, and when to use it.
 |-------------|-------|
 | Check full OS health | `pwsh ./tools/verify-os-health.ps1` |
 | Check Git workspace hygiene (read-only) | `pwsh ./tools/verify-git-hygiene.ps1` |
-| Recover from fetch/rebase/nested clone issues | `GIT-RECOVERY.md` |
+| Recover from fetch/rebase/nested clone issues | `GIT-RECOVERY.md` (also `docs/GIT-RECOVERY.md`) |
 | Start a new session | `templates/commands/session-start.md` |
 | Close a phase | `templates/commands/phase-close.md` |
 | Classify a task | `templates/commands/task-classify.md` |
