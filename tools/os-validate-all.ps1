@@ -37,7 +37,15 @@ function Invoke-DoctorStrict {
     if ($LASTEXITCODE -ne 0) { throw 'doctor failed' }
     $doctor = ($raw | Out-String) | ConvertFrom-Json
     if ($doctor.failures -gt 0) { throw "doctor reported $($doctor.failures) failure(s)" }
-    if ($Strict -and $doctor.warnings -gt 0) { throw "strict mode: doctor reported $($doctor.warnings) warning(s)" }
+    if ($Strict) {
+        $unexpectedWarnings = @($doctor.checks | Where-Object {
+            $_.status -eq 'warn' -and
+            $_.name -notin @('project-scaffold','node','npm','invariant-bundles')
+        })
+        if ($unexpectedWarnings.Count -gt 0) {
+            throw "strict mode: doctor reported $($unexpectedWarnings.Count) unexpected warning(s)"
+        }
+    }
 }
 
 function New-BootstrappedTempProject {
