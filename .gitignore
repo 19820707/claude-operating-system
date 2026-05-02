@@ -1,4 +1,7 @@
 # Never commit
+# Nested copy/clone of this repo at workspace root (common on Windows); do not track.
+/claude-operating-system/
+
 .env
 .env.*
 *.local
