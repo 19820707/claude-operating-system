@@ -28,8 +28,9 @@ Also use **session-absorb** during work when you learn something durable:
 ## Git and safety (hard negatives)
 
 - Do **not** use `git add .`, `git push --force`, or `git reset --hard` without explicit human direction.
-- Do **not** run `git stash pop` without reviewing the stash diff first.
+- Do **not** run `git stash pop` automatically — review `git stash show` first; never apply stash without human review of the diff.
 - Do **not** delete backups or whole directories without human review.
+- Do **not** expose secrets, PII, raw stack traces, or raw log dumps in chat, commits, or session files.
 
 ## human approval required
 

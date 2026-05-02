@@ -121,6 +121,8 @@ Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 
     -Why 'AGENTS.md must forbid git reset --hard'
 Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 'git stash pop' `
     -Why 'AGENTS.md must mention git stash pop caution'
+Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 'PII' `
+    -Why 'AGENTS.md must warn on PII / sensitive output'
 
 foreach ($tok in @('session-prime', 'session-absorb', 'session-digest')) {
     Require-ContainsLiteral -RelativePath 'templates/adapters/agent-handoff.md' -Substring $tok `

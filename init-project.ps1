@@ -1,5 +1,6 @@
 # init-project.ps1 — Bootstrap a project with full .claude/ tree (Windows)
 #   powershell -ExecutionPolicy Bypass -File .\init-project.ps1 -ProjectPath "C:\path\to\repo" [-Profile node-ts-service|react-vite-app] [-DryRun] [-Force] [-SkipGitInit]
+#   -Force replaces CLAUDE.md and AGENTS.md from templates when they already exist (managed .cursor/.agent adapter files are always refreshed from templates).
 
 param(
     [Parameter(Mandatory = $true)]
@@ -158,6 +159,19 @@ function Copy-ClaudeMd {
     }
     if ((Test-Path -LiteralPath $To) -and $Force) {
         Write-Host '  (force) overwriting CLAUDE.md'
+    }
+    Copy-FileAlways -From $From -To $To
+}
+
+# Invariant: AGENTS.md is project-facing; never overwrite unless operator passes -Force (same contract as CLAUDE.md).
+function Copy-AgentsMd {
+    param([string]$From, [string]$To)
+    if ((Test-Path -LiteralPath $To) -and -not $Force) {
+        Write-Host "  (skip) AGENTS.md exists (use -Force): $To"
+        return
+    }
+    if ((Test-Path -LiteralPath $To) -and $Force) {
+        Write-Host '  (force) overwriting AGENTS.md from OS template'
     }
     Copy-FileAlways -From $From -To $To
 }
@@ -401,7 +415,7 @@ $adaptersSrc = Join-Path $Source 'templates\adapters'
 if (-not (Test-Path -LiteralPath $adaptersSrc)) {
     throw "Missing templates\adapters (OS repo incomplete): $adaptersSrc"
 }
-Copy-IfMissing -From (Join-Path $adaptersSrc 'AGENTS.md') -To (Join-Path $ProjectRoot 'AGENTS.md') -Label 'AGENTS.md'
+Copy-AgentsMd -From (Join-Path $adaptersSrc 'AGENTS.md') -To (Join-Path $ProjectRoot 'AGENTS.md')
 Ensure-Dir (Join-Path $ProjectRoot '.cursor\rules')
 Copy-FileAlways -From (Join-Path $adaptersSrc 'cursor-claude-os-runtime.mdc') -To (Join-Path $ProjectRoot '.cursor\rules\claude-os-runtime.mdc')
 Ensure-Dir (Join-Path $ProjectRoot '.agent')

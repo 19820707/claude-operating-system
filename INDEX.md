@@ -269,7 +269,7 @@ Promoted operational patterns from real project evidence. Each entry: evidence â
 
 ## Multi-agent adapters
 
-Thin adapters for **Claude Code**, **Cursor**, and **Codex / generic agents** against the **same** operational runtime **`.claude/`**. Templates live under **`templates/adapters/`**; **`init-project.ps1`** installs them into a new project (**`AGENTS.md`** only if missing); **`tools/os-update-project.ps1`** refreshes managed files without overwriting an existing **`AGENTS.md`**.
+Thin adapters for **Claude Code**, **Cursor**, and **Codex / generic agents** against the **same** operational runtime **`.claude/`**. Templates live under **`templates/adapters/`**; **`init-project.ps1`** installs them into a new project (**`AGENTS.md`** and **`CLAUDE.md`** are skipped when already present â€” use **`-Force`** to replace from templates); **`tools/os-update-project.ps1`** refreshes managed files without overwriting an existing **`AGENTS.md`**.
 
 | Artifact | Role |
 |----------|------|
