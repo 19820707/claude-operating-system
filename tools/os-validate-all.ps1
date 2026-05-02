@@ -5,7 +5,8 @@
 
 param(
     [switch]$Strict,
-    [switch]$SkipBashSyntax
+    [switch]$SkipBashSyntax,
+    [switch]$RequireBash
 )
 
 $ErrorActionPreference = 'Stop'
@@ -13,6 +14,9 @@ $RepoRoot = Split-Path $PSScriptRoot -Parent
 $failures = @()
 
 . (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
+
+$BashAvailable = [bool](Get-Command bash -ErrorAction SilentlyContinue)
+$EffectiveSkipBashSyntax = [bool]($SkipBashSyntax -or (-not $BashAvailable -and -not $RequireBash))
 
 function Invoke-Validation {
     param(
@@ -34,14 +38,14 @@ function Invoke-Validation {
 
 function Invoke-DoctorStrict {
     $doctorArgs = @('-Json')
-    if ($SkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
+    if ($EffectiveSkipBashSyntax) { $doctorArgs += '-SkipBashSyntax' }
     $raw = & (Join-Path $RepoRoot 'tools/os-doctor.ps1') @doctorArgs
     if ($LASTEXITCODE -ne 0) { throw 'doctor failed' }
     $doctor = ($raw | Out-String) | ConvertFrom-Json
     if ($doctor.failures -gt 0) { throw "doctor reported $($doctor.failures) failure(s)" }
     if ($Strict) {
         $allowedWarnings = @('project-scaffold','node','npm','invariant-bundles')
-        if ($SkipBashSyntax) { $allowedWarnings += 'bash' }
+        if ($EffectiveSkipBashSyntax) { $allowedWarnings += 'bash' }
         $unexpectedWarnings = @($doctor.checks | Where-Object {
             $_.status -eq 'warn' -and $_.name -notin $allowedWarnings
         })
@@ -120,10 +124,11 @@ function Test-SessionMemoryCycle {
 Write-Host 'claude-operating-system validate-all'
 Write-Host "Repo  : $RepoRoot"
 Write-Host "Strict: $([bool]$Strict)"
+Write-Host "Bash  : $(if ($BashAvailable) { 'available' } elseif ($EffectiveSkipBashSyntax) { 'not found; syntax check auto-skipped' } else { 'not found; required' })"
 Write-Host ''
 
 Invoke-Validation -Name 'health' -Script {
-    if ($SkipBashSyntax) {
+    if ($EffectiveSkipBashSyntax) {
         & (Join-Path $RepoRoot 'tools/verify-os-health.ps1') -SkipBashSyntax
     } else {
         & (Join-Path $RepoRoot 'tools/verify-os-health.ps1')
