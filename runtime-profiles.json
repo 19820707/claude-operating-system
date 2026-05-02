@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "description": "Claude OS Runtime profiles inspired by Mycelium tool profiles. Profiles reduce context and command surface without changing runtime behavior.",
+  "profiles": [
+    {
+      "id": "core",
+      "purpose": "Small-context operation: only the safest, cheapest routing and status tools.",
+      "commands": ["help", "doctor", "route", "docs", "workflow"],
+      "default": true
+    },
+    {
+      "id": "ops",
+      "purpose": "Operational project work: health, routing, docs, workflow, bootstrap and update.",
+      "commands": ["help", "health", "doctor", "route", "docs", "workflow", "bootstrap", "update"]
+    },
+    {
+      "id": "strict",
+      "purpose": "Release-grade validation profile for CI and human-gated changes.",
+      "commands": ["help", "health", "doctor", "validate", "route", "docs", "workflow"]
+    },
+    {
+      "id": "full",
+      "purpose": "Full runtime surface for maintainers.",
+      "commands": ["help", "health", "doctor", "validate", "route", "docs", "workflow", "bootstrap", "update"]
+    }
+  ]
+}
