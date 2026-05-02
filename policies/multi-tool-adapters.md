@@ -79,7 +79,7 @@ Prefer **thin** root files that **point** into `.claude/policies/` and global in
 
 ## Bootstrap note (this repository)
 
-Project templates today reference a **neutral multi-agent contract** under **`.agents/OPERATING_CONTRACT.md`** in some command headers and `templates/project-CLAUDE.md`. That folder plays the same **adapter / neutral contract** role as **`.agent/`** in the model above; renaming or converging paths is a **separate, explicit migration** (manifest + `init-project` + existing repos), not implied by this policy alone.
+Project templates today reference a **neutral multi-agent contract** under **`.agents/OPERATING_CONTRACT.md`** in some command headers and `templates/project-CLAUDE.md`. **`init-project.ps1` / `os-update-project.ps1`** install a **thin pointer** at that path that defers to **`.agent/operating-contract.md`** (canonical). Treat both as the same adapter layer — **not** a second runtime under `.claude/`.
 
 ---
 

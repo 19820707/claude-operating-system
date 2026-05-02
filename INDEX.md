@@ -278,6 +278,7 @@ Thin adapters for **Claude Code**, **Cursor**, and **Codex / generic agents** ag
 | **`.agent/runtime.md`** | Neutral map: what `.claude/` is vs adapters |
 | **`.agent/handoff.md`** | Prime → absorb → digest; update session-state |
 | **`.agent/operating-contract.md`** | local-first, artifact-first, no secrets, git rules, validate before close |
+| **`.agents/OPERATING_CONTRACT.md`** | Legacy path (some templates): thin pointer → `.agent/operating-contract.md` — not a parallel runtime |
 | **`agent-adapters-manifest.json`** | Declares consumers (`claude-code`, `cursor`, `codex`, `neutral-agent-docs`) |
 | **`schemas/agent-adapters.schema.json`** | JSON Schema for the manifest |
 | **`tools/verify-agent-adapters.ps1`** | Read-only validation (`-Json` for machine output) |
@@ -306,7 +307,7 @@ Policy background: **`policies/multi-tool-adapters.md`**.
 | templates/settings.json | Stable — 4 hooks + permissions |
 | heuristics/ | operational.md + cross-project-evidence.json (MVP) |
 | templates/critical-surfaces/ | 5/9 — auth, migrations, billing, deploy, pii |
-| templates/adapters/ | 5/5 — AGENTS.md, Cursor rule, Codex .agent/ docs |
+| templates/adapters/ | 6/6 — AGENTS.md, Cursor rule, Codex .agent/ docs |
 | templates/task-modes/ | 5/5 — bugfix, architecture, migration, incident-response, release-hardening |
 | INDEX.md | Manifest-aligned navigation map |
 

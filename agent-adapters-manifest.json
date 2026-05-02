@@ -28,11 +28,12 @@
       "entrypoints": [
         ".agent/runtime.md",
         ".agent/handoff.md",
-        ".agent/operating-contract.md"
+        ".agent/operating-contract.md",
+        ".agents/OPERATING_CONTRACT.md"
       ],
       "runtimePath": ".claude/",
       "managed": true,
-      "purpose": "Tool-neutral runtime summary, handoff protocol, and operating contract"
+      "purpose": "Tool-neutral runtime summary, handoff protocol, operating contract, plus legacy .agents/ pointer for template compatibility"
     }
   ]
 }

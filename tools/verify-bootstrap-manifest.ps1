@@ -153,6 +153,7 @@ if (-not $manifest.projectBootstrap) {
             $normalized.StartsWith('.local/') -or
             $normalized.StartsWith('.cursor/') -or
             $normalized.StartsWith('.agent/') -or
+            $normalized.StartsWith('.agents/') -or
             $normalized -eq '.gitignore'
         )
         if (-not $allowed) {

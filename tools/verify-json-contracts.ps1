@@ -88,8 +88,8 @@ if ($os) {
     foreach ($artifact in @($os.managedProjectArtifacts | ForEach-Object { [string]$_ })) {
         Test-SafeRelativePath -Path $artifact -Field 'os-manifest.managedProjectArtifacts'
         $norm = $artifact -replace '\\', '/'
-        if ($norm -notmatch '^(\.claude/|AGENTS\.md|\.cursor/rules/|\.agent/)') {
-            Fail "managed artifact outside allowed surfaces (.claude/, AGENTS.md, .cursor/rules/, .agent/): $artifact"
+        if ($norm -notmatch '^(\.claude/|AGENTS\.md|\.cursor/rules/|\.agent/|\.agents/)') {
+            Fail "managed artifact outside allowed surfaces (.claude/, AGENTS.md, .cursor/rules/, .agent/, .agents/): $artifact"
         }
     }
 }

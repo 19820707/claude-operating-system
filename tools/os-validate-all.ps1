@@ -109,7 +109,8 @@ function Test-GeneratedProjectTools {
                     '.cursor/rules/claude-os-runtime.mdc',
                     '.agent/runtime.md',
                     '.agent/handoff.md',
-                    '.agent/operating-contract.md'
+                    '.agent/operating-contract.md',
+                    '.agents/OPERATING_CONTRACT.md'
                 )) {
                 $p = Join-Path $target $rel
                 if (-not (Test-Path -LiteralPath $p)) {

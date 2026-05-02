@@ -75,6 +75,12 @@ Copy-ManagedFile -From (Join-Path $adaptersSrc 'cursor-claude-os-runtime.mdc') -
 Copy-ManagedFile -From (Join-Path $adaptersSrc 'agent-runtime.md') -To (Join-Path $target '.agent/runtime.md')
 Copy-ManagedFile -From (Join-Path $adaptersSrc 'agent-handoff.md') -To (Join-Path $target '.agent/handoff.md')
 Copy-ManagedFile -From (Join-Path $adaptersSrc 'agent-operating-contract.md') -To (Join-Path $target '.agent/operating-contract.md')
+$agentsLegacyDir = Join-Path $target '.agents'
+if (-not (Test-Path -LiteralPath $agentsLegacyDir)) {
+    if (-not $DryRun) { New-Item -ItemType Directory -Path $agentsLegacyDir -Force | Out-Null }
+    Write-StatusLine -Status 'mkdir' -Name $agentsLegacyDir
+}
+Copy-ManagedFile -From (Join-Path $adaptersSrc 'agents-OPERATING_CONTRACT.md') -To (Join-Path $target '.agents/OPERATING_CONTRACT.md')
 
 $installRecord = [pscustomobject]@{
     managedBy = 'claude-operating-system'
@@ -96,7 +102,8 @@ $installRecord = [pscustomobject]@{
         '.cursor/rules/claude-os-runtime.mdc',
         '.agent/runtime.md',
         '.agent/handoff.md',
-        '.agent/operating-contract.md'
+        '.agent/operating-contract.md',
+        '.agents/OPERATING_CONTRACT.md'
     )
 }
 

@@ -38,7 +38,7 @@
       "minItems": 1,
       "items": {
         "type": "string",
-        "pattern": "^(\\.claude/|AGENTS\\.md|\\.cursor/rules/|\\.agent/)"
+        "pattern": "^(\\.claude/|AGENTS\\.md|\\.cursor/rules/|\\.agent/|\\.agents/)"
       },
       "uniqueItems": true
     },

@@ -72,7 +72,8 @@ foreach ($name in @(
         'cursor-claude-os-runtime.mdc',
         'agent-runtime.md',
         'agent-handoff.md',
-        'agent-operating-contract.md'
+        'agent-operating-contract.md',
+        'agents-OPERATING_CONTRACT.md'
     )) {
     if (-not (Test-Path -LiteralPath (Join-Path $adapterDir $name))) {
         Fail "missing template: templates/adapters/$name"
@@ -134,6 +135,9 @@ Require-ContainsLiteral -RelativePath 'templates/adapters/agent-operating-contra
 Require-ContainsLiteral -RelativePath 'templates/adapters/agent-operating-contract.md' -Substring 'git push --force' `
     -Why 'operating-contract must mention git push --force'
 
+Require-ContainsLiteral -RelativePath 'templates/adapters/agents-OPERATING_CONTRACT.md' -Substring '.agent/operating-contract.md' `
+    -Why 'legacy .agents stub must point at canonical .agent/operating-contract.md'
+
 Require-File 'agent-adapters-manifest.json'
 Require-File 'schemas/agent-adapters.schema.json'
 
@@ -148,7 +152,12 @@ $expectedSingle = @{
 }
 $expectedMulti = @{
     'neutral-agent-docs' = @{
-        paths = @('.agent/runtime.md', '.agent/handoff.md', '.agent/operating-contract.md')
+        paths = @(
+            '.agent/runtime.md',
+            '.agent/handoff.md',
+            '.agent/operating-contract.md',
+            '.agents/OPERATING_CONTRACT.md'
+        )
         path  = '.claude/'
         managed = $true
     }
@@ -225,7 +234,7 @@ $result = [ordered]@{
 if ($Json) {
     $result | ConvertTo-Json -Depth 6 -Compress | Write-Output
 } elseif ($script:AdapterFails.Count -eq 0) {
-    Write-Host 'OK:  templates/adapters (5 files)'
+    Write-Host 'OK:  templates/adapters (6 files)'
     Write-Host 'OK:  agent-adapters-manifest.json (4 adapters)'
     Write-Host ''
     Write-Host 'Agent adapter checks passed.'

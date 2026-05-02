@@ -44,7 +44,8 @@ function Test-OsRepo {
         (Join-Path $Root 'templates\adapters\cursor-claude-os-runtime.mdc'),
         (Join-Path $Root 'templates\adapters\agent-runtime.md'),
         (Join-Path $Root 'templates\adapters\agent-handoff.md'),
-        (Join-Path $Root 'templates\adapters\agent-operating-contract.md')
+        (Join-Path $Root 'templates\adapters\agent-operating-contract.md'),
+        (Join-Path $Root 'templates\adapters\agents-OPERATING_CONTRACT.md')
     )
     foreach ($p in $need) {
         if (-not (Test-Path -LiteralPath $p)) {
@@ -423,6 +424,10 @@ Copy-FileAlways -From (Join-Path $adaptersSrc 'agent-runtime.md') -To (Join-Path
 Copy-FileAlways -From (Join-Path $adaptersSrc 'agent-handoff.md') -To (Join-Path $ProjectRoot '.agent\handoff.md')
 Copy-FileAlways -From (Join-Path $adaptersSrc 'agent-operating-contract.md') -To (Join-Path $ProjectRoot '.agent\operating-contract.md')
 
+# Invariant: legacy `.agents/OPERATING_CONTRACT.md` (plural) is a thin pointer — see policies/multi-tool-adapters.md.
+Ensure-Dir (Join-Path $ProjectRoot '.agents')
+Copy-FileAlways -From (Join-Path $adaptersSrc 'agents-OPERATING_CONTRACT.md') -To (Join-Path $ProjectRoot '.agents\OPERATING_CONTRACT.md')
+
 if ($Profile) {
     $prof = Join-Path $Source "templates\profiles\$Profile.md"
     if (-not (Test-Path -LiteralPath $prof)) { throw "Profile file not found: $prof" }
@@ -457,7 +462,7 @@ Write-Host "Done. Scaffold at: $ProjectRoot"
 Write-Host ''
 Write-Host 'Suggested git commit:'
 Write-Host ("  cd `"" + $ProjectRoot + "`"")
-Write-Host '  git add CLAUDE.md AGENTS.md .claude .cursor .agent .local .gitignore'
+Write-Host '  git add CLAUDE.md AGENTS.md .claude .cursor .agent .agents .local .gitignore'
 Write-Host '  git commit -m "ops: bootstrap Claude operational system"'
 Write-Host ''
 Write-Host 'Next steps:'

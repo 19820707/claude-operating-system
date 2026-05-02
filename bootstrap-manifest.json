@@ -28,7 +28,7 @@
     "heuristics": { "include": "*.md", "minimum": 1 },
     "templates/scripts": { "include": "*.sh", "exact": 38 },
     "templates/invariant-engine/dist": { "include": "*.cjs", "exact": 3 },
-    "templates/adapters": { "include": "*", "exact": 5 }
+    "templates/adapters": { "include": "*", "exact": 6 }
   },
   "projectBootstrap": {
     "scripts": [
@@ -136,7 +136,8 @@
       ".cursor/rules/claude-os-runtime.mdc",
       ".agent/runtime.md",
       ".agent/handoff.md",
-      ".agent/operating-contract.md"
+      ".agent/operating-contract.md",
+      ".agents/OPERATING_CONTRACT.md"
     ]
   }
 }
