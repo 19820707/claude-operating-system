@@ -28,8 +28,18 @@ Do **not** split into three roots of truth (e.g. `.claude/` + `.cursor-os/` + `.
 
 - **`CLAUDE.md`** — how Claude Code should **read and honour** `.claude/` (session order, modes, gates).
 - **`AGENTS.md`** — how agent runtimes should **use** shared contracts without duplicating full policy corpora.
-- **`.cursor/rules/*.mdc`** — Cursor-native rules that **reference** the same session/workflow/checklist paths under `.claude/`.
+- **`.cursor/rules/*.mdc`** — Cursor-native rules that **reference** the same session/workflow/checklist paths under `.claude/` (concrete example: `.cursor/rules/claude-os-runtime.mdc`).
 - **`.agent/`** — optional **neutral** multi-agent docs (contracts, diagrams) that are **not** a second runtime tree.
+
+### Per-tool stacks (how adapters combine)
+
+| Tool | Read / instruct via | Shared runtime |
+|------|----------------------|----------------|
+| **Claude Code** | `CLAUDE.md` + native `.claude/` usage | `.claude/` |
+| **Cursor** | `.cursor/rules/` (e.g. `claude-os-runtime.mdc`) + **`AGENTS.md`** for shared agent context | `.claude/` |
+| **Codex / advanced agents** | **`AGENTS.md`** (thin contract: how to use the OS) + **`.agent/`** (optional neutral docs) | `.claude/` |
+
+`AGENTS.md` can be **shared** across Cursor and Codex because it should stay **thin**: pointers into `.claude/`, not a second policy corpus.
 
 ---
 
