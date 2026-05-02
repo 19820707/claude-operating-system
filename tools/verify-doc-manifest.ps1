@@ -63,7 +63,7 @@ $skills = [int]$manifest.skills.exact
 Require-Text "Canonical count: **$skills/$skills** from ``bootstrap-manifest.json``." "skills section count"
 Require-Text "Commands to copy into ``.claude/commands/`` of each project. Canonical count: **$commands/$commands** from ``bootstrap-manifest.json``." "commands section count"
 Require-Text "Session lifecycle hooks. Copy to ``.claude/scripts/`` — **must remain LF-only**. Canonical count: **$scripts/$scripts** from ``bootstrap-manifest.json``; ``init-project.ps1`` consumes that manifest list directly." "scripts section count"
-Require-Text "| tools/verify-os-health.ps1 | Primary health entrypoint — manifest, skills, docs, syntax, bootstrap, Bash |" "system state health entrypoint"
+Require-Text "| tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, dispatcher |" "system state health entrypoint"
 Require-Text "| source/skills/ | $skills/$skills — manifest verified and bootstrapped to ``.claude/skills/`` |" "system state skills count"
 Require-Text "| templates/commands/ | $commands/$commands — manifest verified |" "system state commands count"
 Require-Text "| templates/scripts/ | $scripts/$scripts — manifest verified; health check runs ``bash -n`` |" "system state scripts count"
