@@ -51,6 +51,6 @@ function Write-StatusLine {
         [string]$Detail = ''
     )
     $line = "  $($Status.ToUpper().PadRight(5)) $Name"
-    if ($Detail) { $line += " — $(Redact-SensitiveText -Text $Detail -MaxLength 180)" }
+    if ($Detail) { $line += " - $(Redact-SensitiveText -Text $Detail -MaxLength 180)" }
     Write-Host $line
 }

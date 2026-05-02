@@ -236,7 +236,7 @@ Write-Host ''
 Write-Host 'Summary:'
 foreach ($r in $Results) {
     $line = "  $($r.status.ToUpper().PadRight(4)) $($r.name) ($($r.latency_ms) ms)"
-    if ($r.note) { $line += " — $(Redact-SensitiveText -Text $r.note -MaxLength 180)" }
+    if ($r.note) { $line += " - $(Redact-SensitiveText -Text $r.note -MaxLength 180)" }
     Write-Host $line
 }
 

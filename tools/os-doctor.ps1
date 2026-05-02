@@ -33,13 +33,34 @@ function Add-Check {
 function Get-CommandVersion {
     param(
         [string]$Command,
-        [string[]]$Args = @('--version')
+        [string[]]$Args = @('--version'),
+        [int]$TimeoutMs = 12000
     )
     $cmd = Get-Command $Command -ErrorAction SilentlyContinue
     if (-not $cmd) { return $null }
+    $path = [string]$cmd.Source
+    if ([string]::IsNullOrWhiteSpace($path)) { $path = $Command }
     try {
-        $output = & $Command @Args 2>$null | Select-Object -First 1
-        if ($output) { return ([string]$output).Trim() }
+        $psi = [System.Diagnostics.ProcessStartInfo]::new()
+        $psi.FileName = $path
+        foreach ($a in $Args) {
+            $psi.ArgumentList.Add($a)
+        }
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.UseShellExecute = $false
+        $psi.CreateNoWindow = $true
+        $p = [System.Diagnostics.Process]::new()
+        $p.StartInfo = $psi
+        [void]$p.Start()
+        if (-not $p.WaitForExit($TimeoutMs)) {
+            try { $p.Kill($true) } catch { }
+            return 'installed'
+        }
+        $out = ($p.StandardOutput.ReadToEnd() -replace "`r`n|`n", ' ').Trim()
+        if ($out) {
+            return ($out -split '\s+')[0].Trim()
+        }
     } catch {
         return 'installed'
     }
@@ -138,7 +159,7 @@ Write-Host "Repo: $RepoRoot"
 Write-Host ''
 foreach ($check in $Checks) {
     $line = "  $($check.status.ToUpper().PadRight(4)) $($check.name)"
-    if ($check.detail) { $line += " — $($check.detail)" }
+    if ($check.detail) { $line += " - $($check.detail)" }
     Write-Host $line
     if ($check.remediation -and $check.status -ne 'ok') {
         Write-Host "       fix: $($check.remediation)"
