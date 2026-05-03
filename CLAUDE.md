@@ -23,7 +23,7 @@ Role: to understand, strengthen, evolve and stabilize systems to a professional 
 Use each capability in the right role with explicit boundaries:
 
 **Claude Code** — strategy, governance, decision
-- Discovery and systemic reading
+- Discovery and systemic reading when the task is broad or unknown
 - Architecture and boundary mapping
 - Risk classification and prioritization
 - Contract design
@@ -54,8 +54,8 @@ Use each capability in the right role with explicit boundaries:
 
 | Mode | Use | Model | Approval |
 |------|-----|-------|----------|
-| **Explore** | Discovery, reading — no edits | Haiku/Sonnet | None |
-| **Fast** | Docs, templates, bootstrap, session-state | Sonnet | Auto-accept permitted |
+| **Explore** | Discovery, reading — no edits; only when scope is broad/unknown | Haiku/Sonnet | None |
+| **Fast** | Docs, templates, bootstrap, session-state, named-file audits | Sonnet | Auto-accept permitted |
 | **Build** | Implementation, tests, wiring, refactor | Sonnet | Manual/semi-manual |
 | **Review** | Architecture, risk mapping, go/no-go | Opus | Manual — propose first |
 | **Critical** | Auth, authz, billing, publish, security | **Opus mandatory** | Manual always |
@@ -118,25 +118,35 @@ Operate as a cumulative learning system, not static execution:
 
 ---
 
-## Model Selection
+## Model Selection and Delegation Budget
 
-Select the minimum sufficient model. Use the Agent tool to dispatch each task to the right model — do not run everything in the main session model.
+Select the minimum sufficient model and the minimum sufficient delegation pattern. Delegation is not free: sub-agents spend context and must be justified by scope.
 
 | Model | Use | Agent dispatch |
 |-------|-----|---------------|
-| **Haiku** | discovery, grep, search, file reads, triagem, context prep | `Agent(model:"haiku")` |
-| **Sonnet** | implementation, tests, refactors, observability, docs, validation | `Agent(model:"sonnet")` or main session |
-| **Opus** | architecture, auth/authz, billing, publish gates, entitlement, sensitive migrations, incidents, irreversible decisions | `Agent(model:"opus")` — mandatory |
+| **Haiku** | bounded discovery, grep, search, file reads, triage, context prep | only when discovery is allowed |
+| **Sonnet** | implementation, tests, refactors, observability, docs, validation | main session or scoped agent |
+| **Opus** | architecture, auth/authz, billing, publish gates, entitlement, sensitive migrations, incidents, irreversible decisions | mandatory for critical decisions |
 
-**Rule: Haiku discovers → Sonnet executes → Opus decides.**
+**Rule: Haiku discovers → Sonnet executes → Opus decides** applies only after scope classification permits delegation.
 
-Dispatch discipline:
-- Run **parallel Haiku subagents** for independent file reads and searches — never use Sonnet/Opus for pure discovery
-- Run **Sonnet subagents** for scoped implementation where design is already settled
-- Run **Opus subagents** for any task touching critical surfaces (auth, CSRF, billing, SW, migrations, security headers)
-- Main session model handles **orchestration only** — classify, dispatch, synthesize results
-- Never run Opus on work Sonnet can do (wastes token budget)
-- Never run Sonnet on Opus-mandatory surfaces (insufficient reasoning depth for invariant detection)
+### Delegation gates
+
+Do **not** use `Explore` / sub-agents when:
+- the user names a file, short file set, commit, failing test, or concrete diff;
+- the task is a surgical patch, small audit, or classification of existing changes;
+- the repository was already discovered in the current phase;
+- path-scoped reads and targeted tests can answer the question.
+
+Use the main session with path-scoped reads first. If scope expansion becomes necessary, state the blocker and the smallest expansion.
+
+Sub-agents are allowed when:
+- the user explicitly asks for broad/repo-wide audit;
+- scope is unknown after a narrow first pass;
+- independent subsystems must be inspected in parallel;
+- incident, architecture, security, migration, or release review genuinely requires wider evidence.
+
+When using sub-agents, state: **reason**, **maximum scope**, **stop condition**, and **expected artifact**. Never dispatch open-ended exploration.
 
 ---
 
@@ -181,6 +191,7 @@ G. Close: files changed + diff summary + checks + result + residual risk + rollb
 ### Context economy
 - Define minimum files before reading
 - No full-repo reads without concrete hypothesis
+- No `Explore` / sub-agents for named-file or small-diff tasks unless explicitly justified
 - Extract only signal from logs: error + file + line + failed contract + impact
 - If response can be 5x shorter without loss of precision → choose short
 - If session context grows too large → compress to technical summary, preserve objective/decisions/risks/next steps
@@ -204,7 +215,7 @@ Every meaningful change follows this sequence:
 7. Documentation
 8. Rollback readiness
 
-Never jump to implementation without establishing context.
+Never jump to implementation without establishing context. For surgical tasks, discovery means target files and direct dependencies only.
 
 ---
 
@@ -253,7 +264,7 @@ After changes:
 - removal of validations, safeguards, logs or error handling
 
 ### Can autonomously
-- repository analysis / architecture mapping
+- repository analysis / architecture mapping when requested or required by unknown scope
 - local hardening / safe refactors
 - test and validation improvements
 - documentation and observability improvements
