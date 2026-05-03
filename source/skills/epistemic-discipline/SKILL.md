@@ -13,6 +13,7 @@ Use this skill when the task requires separating what is known from what is infe
 ## Operating contract
 
 - Classify important claims as KNOWN, INFERRED, ASSUMED, DISPUTED, or UNKNOWN.
+- **Structural confidence (graphify ↔ OS):** see **`ARCHITECTURE.md`** section *Session pipeline (graphify-aligned stance)* for `EXTRACTED`/`INFERRED`/`AMBIGUOUS` mapping and session-table indexing.
 - Do not act on assumptions as if they were facts.
 - Promote assumptions to known facts only with evidence.
 - Block high-risk action when required unknowns remain unresolved.

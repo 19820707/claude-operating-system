@@ -63,7 +63,14 @@ def check_row(r: dict) -> tuple[str, str]:
         ev = r.get("evidence") or []
         if not isinstance(ev, list):
             ev = []
-        if conf == "LOW" and len(ev) < 2:
+        weak_band = conf in (
+            "LOW",
+            "AMBIGUOUS",
+            "UNKNOWN",
+            "DISPUTED",
+            "ASSUMED",
+        )
+        if weak_band and len(ev) < 2:
             return "WEAK", "low-confidence risk acceptance with insufficient evidence"
         return "COMPLIANT", ""
 

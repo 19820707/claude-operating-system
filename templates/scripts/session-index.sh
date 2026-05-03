@@ -107,6 +107,9 @@ def parse_decisions(md: str) -> list[dict]:
         did = parts[1]
         if not re.match(r"D-\d+", did):
             continue
+        conf = ""
+        if len(parts) > 6 and parts[6]:
+            conf = parts[6].upper()
         rows.append(
             {
                 "id": did,
@@ -114,6 +117,7 @@ def parse_decisions(md: str) -> list[dict]:
                 "files": parts[3] if len(parts) > 3 else "",
                 "commit": parts[4].split()[0] if len(parts) > 4 else "",
                 "risk": parts[5] if len(parts) > 5 else "",
+                "confidence": conf,
             }
         )
     return rows
@@ -162,7 +166,9 @@ def query(idx: dict, module: str):
         txt = rec.get("text", "")
         when = rec.get("session_id", "")
         commit = rec.get("commit", "")
-        print(f"  {cid} — {txt} ({when}, commit {commit})")
+        conf = rec.get("confidence", "")
+        cs = f" [{conf}]" if conf else ""
+        print(f"  {cid} — {txt} ({when}, commit {commit}){cs}")
     if not seen:
         print("  (none recorded)")
     risks = idx.get("open_risks") or []
@@ -251,6 +257,8 @@ def main():
                 "commit": d.get("commit", ""),
                 "session_id": sid,
             }
+            if d.get("confidence"):
+                rec["confidence"] = d["confidence"]
             if not any(
                 x.get("id") == rec["id"] and x.get("session_id") == sid for x in lst
             ):

@@ -23,6 +23,7 @@ bash .claude/scripts/salience-score.sh --digest
 
 <!-- CAMADA 0 — CONSTRAINTS ABSOLUTOS (máxima saliência: primeiro no teu resumo) -->
 - Invariantes **VIOLATED** / **STALE** relevantes (de `invariant-report` / digest / preflight).
+- Decisões na tabela `session-state` com **Confiança** `AMBIGUOUS` / `UNKNOWN` / `ASSUMED` / `DISPUTED` (sinal `session_decision_low_confidence` no `salience-score.sh --digest`).
 - Dívida epistémica (**ASSUMED** HIGH/CRITICAL, **UNKNOWN**, **DISPUTED**) se existir.
 - Decisões **approval_gate** ou gates humanos pendentes; leases **WRITE** activos; violações de **policy-compliance** se houver.
 

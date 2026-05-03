@@ -17,7 +17,7 @@ Usage:
 
 Kinds (fixed rubric): violated_invariant assumption_debt_high human_gate_pending
   policy_non_compliant critical_lease_active disputed_fact stale_invariant
-  decision_affecting_module heuristic_surface historical_context
+  session_decision_low_confidence decision_affecting_module heuristic_surface historical_context
 USAGE
 }
 
@@ -30,6 +30,7 @@ score_for_kind() {
     critical_lease_active) echo 80 ;;
     disputed_fact) echo 75 ;;
     stale_invariant) echo 60 ;;
+    session_decision_low_confidence) echo 73 ;;
     decision_affecting_module) echo 50 ;;
     heuristic_surface) echo 40 ;;
     historical_context) echo 20 ;;
@@ -50,6 +51,7 @@ if [[ "${1:-}" == "--list-kinds" ]]; then
   echo "critical_lease_active=80"
   echo "disputed_fact=75"
   echo "stale_invariant=60"
+  echo "session_decision_low_confidence=73"
   echo "decision_affecting_module=50"
   echo "heuristic_surface=40"
   echo "historical_context=20"
@@ -180,6 +182,29 @@ if isinstance(ag, dict):
             rows.append((80, "critical_lease_active", f"LEASE {L.get('id','?')} WRITE on {mod} (intent: {str(L.get('intent',''))[:80]})"))
         elif crit_pat.search(mod) and typ in ("READ", "WRITE", "EXCLUSIVE"):
             rows.append((78, "critical_lease_active", f"LEASE {L.get('id','?')} {typ} on critical path {mod}"))
+
+idxp = claude / "session-index.json"
+idx = load_json(idxp)
+if isinstance(idx, dict):
+    sessions = idx.get("sessions") or []
+    if sessions and isinstance(sessions[-1], dict):
+        decs = sessions[-1].get("decisions") or []
+        weak_labels = frozenset({"AMBIGUOUS", "UNKNOWN", "ASSUMED", "DISPUTED"})
+        weak_ids = []
+        for d in decs:
+            if not isinstance(d, dict):
+                continue
+            c = str(d.get("confidence", "")).strip().upper()
+            if c in weak_labels:
+                weak_ids.append(str(d.get("id", "?")))
+        if weak_ids:
+            rows.append(
+                (
+                    73,
+                    "session_decision_low_confidence",
+                    f"SESSION TABLE: review decisions {', '.join(weak_ids[:8])}",
+                )
+            )
 
 logp = claude / "decision-log.jsonl"
 if logp.is_file():

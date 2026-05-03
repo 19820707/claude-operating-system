@@ -51,11 +51,12 @@
 
 ## Decisões tomadas
 
-| ID | Decisão | Ficheiros | Commit | Risco associado |
-|----|---------|-----------|--------|-----------------|
-| | | | | |
+| ID | Decisão | Ficheiros | Commit | Risco associado | Confiança (opcional) |
+|----|---------|-----------|--------|-----------------|----------------------|
+| | | | | | |
 
 <!-- IDs D-NNN: propagar o mesmo ID nas mensagens de commit para causal-trace.sh e post-mortems. -->
+<!-- Confiança: EXTRACTED | INFERRED | AMBIGUOUS (graphify) ou KNOWN | INFERRED | ASSUMED | DISPUTED | UNKNOWN (epistémico). Indexado em session-index.json — ver ARCHITECTURE.md. -->
 
 ---
 

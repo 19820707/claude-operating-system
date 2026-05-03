@@ -15,6 +15,17 @@ import sys
 from pathlib import Path
 
 REQUIRED = {"id", "ts", "type", "trigger", "policy_applied", "decision"}
+CONFIDENCE_OK = frozenset(
+    {
+        "EXTRACTED",
+        "INFERRED",
+        "AMBIGUOUS",
+        "KNOWN",
+        "ASSUMED",
+        "DISPUTED",
+        "UNKNOWN",
+    }
+)
 LOG = Path(".claude/decision-log.jsonl")
 
 
@@ -38,6 +49,19 @@ def main():
     if miss:
         print(f"  missing required keys: {sorted(miss)}")
         return
+    if "confidence" in obj and obj["confidence"] is not None:
+        raw = str(obj["confidence"]).strip()
+        if not raw:
+            del obj["confidence"]
+        else:
+            up = raw.upper()
+            if up not in CONFIDENCE_OK:
+                print(
+                    "  invalid confidence — use one of: "
+                    + ", ".join(sorted(CONFIDENCE_OK))
+                )
+                return
+            obj["confidence"] = up
     LOG.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
     with LOG.open("a", encoding="utf-8") as f:

@@ -48,3 +48,11 @@ pwsh ./tools/os-runtime.ps1 workflow -Phase verify
 - User/project-owned state is not overwritten by `os-update-project.ps1`.
 - Critical surfaces require human approval.
 - User-facing output must not expose secrets, PII, stack traces, or raw generated reports.
+
+## Session pipeline (graphify-aligned stance)
+
+[graphify](https://github.com/safishamsi/graphify) documents a staged pipeline (`detect` → … → `export`) and **validate-before-consume** JSON. **Claude OS Runtime** maps that to **prime → absorb → execute → verify → export**: minimal context load (`session-prime`, policies), append-only capture (`session-absorb`), gated execution (`/task-classify`, skills), machine checks (`verify-json-contracts.ps1`, `os-validate-all.ps1`, optional **Invariants** via `templates/invariants/` + `invariant-verify.sh`), then durable handoff (`session-digest`, `decision-log.jsonl`, `session-index.sh`). Orchestration pointers remain in **`os-manifest.json`**; **`init-project.ps1`** materialises the per-project `.claude/` tree.
+
+### Confidence and salience
+
+Optional **Confiança** column on decision rows in `templates/session-state.md` is indexed into `.claude/session-index.json` by `session-index.sh`. Governance JSONL may set `confidence` (enum in `templates/local/decision-log.schema.json`); `decision-append.sh` rejects unknown tokens. **`decision-audit.sh`** keeps CLI `HIGH|MEDIUM|LOW` and maps to `KNOWN|INFERRED|AMBIGUOUS` on write. `salience-score.sh --digest` emits **`session_decision_low_confidence`** (score 73) when the latest indexed session lists `AMBIGUOUS`, `UNKNOWN`, `ASSUMED`, or `DISPUTED` on table decisions — feed Layer 0 in `/session-start`.

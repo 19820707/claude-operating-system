@@ -16,6 +16,13 @@
 - Security and release checklists installed into project scaffolds.
 - Cross-platform CI validation on Ubuntu and Windows.
 
+### Changed (governance + docs)
+
+- Documented graphify-aligned **session pipeline** (prime → export) in `ARCHITECTURE.md` / `README.md` / `INDEX.md`.
+- Optional **Confiança** column on `session-state` decisions; `session-index.sh` indexes it; `salience-score.sh --digest` surfaces `session_decision_low_confidence`.
+- Canonical `confidence` enum on `decision-log.schema.json`; validation in `decision-append.sh`; `decision-audit.sh` maps CLI HIGH|MEDIUM|LOW → KNOWN|INFERRED|AMBIGUOUS; `policy-compliance.sh` treats weak tokens like legacy LOW for evidence checks.
+- `verify-json-contracts.ps1` validates `templates/local/decision-log.schema.json`.
+
 ### Runtime contract
 
 Claude OS Runtime v1 is local-first, deterministic, manifest-governed, and human-gated for critical surfaces.

@@ -13,6 +13,7 @@ TMP="${REPO_ROOT}/.claude/session-state.tmp"
 
 usage() {
   echo "usage: decision-audit.sh --type <type> --trigger <text> --policy <ref> --evidence <text> --decision <text> --confidence <HIGH|MEDIUM|LOW> --overridable <true|false>" >&2
+  echo "  (CLI HIGH|MEDIUM|LOW maps to JSON confidence KNOWN|INFERRED|AMBIGUOUS — decision-log.schema.json)" >&2
   echo "  evidence: pipe-separated facts in one string (e.g. 'a|b')" >&2
   echo "  optional for scope_boundary: --scope-expansion-requested true|false" >&2
   exit 0
@@ -83,7 +84,8 @@ if not policy:
     err.append("missing --policy")
 if not decision:
     err.append("missing --decision")
-if confidence.upper() not in ("HIGH", "MEDIUM", "LOW"):
+cu0 = confidence.upper()
+if cu0 not in ("HIGH", "MEDIUM", "LOW"):
     err.append("--confidence must be HIGH|MEDIUM|LOW")
 ol = overridable_s.lower()
 if ol not in ("true", "false"):
@@ -139,6 +141,7 @@ def next_id_fixed() -> str:
 
 rid = next_id_fixed()  # sequential per UTC calendar day
 ts = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+_conf_map = {"HIGH": "KNOWN", "MEDIUM": "INFERRED", "LOW": "AMBIGUOUS"}
 row = {
     "id": rid,
     "ts": ts,
@@ -148,7 +151,7 @@ row = {
     "policy_applied": policy,
     "evidence": evidence,
     "decision": decision,
-    "confidence": confidence.upper(),
+    "confidence": _conf_map[cu0],
     "overridable": ol == "true",
 }
 if typ == "scope_boundary":

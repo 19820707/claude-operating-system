@@ -96,5 +96,27 @@ if ($os) {
 
 if ($failed) { throw 'JSON contract verification failed.' }
 
+$decisionSchemaPath = Join-Path $RepoRoot 'templates/local/decision-log.schema.json'
+if (-not (Test-Path -LiteralPath $decisionSchemaPath)) {
+    Fail 'missing templates/local/decision-log.schema.json'
+}
+else {
+    try {
+        $ds = Get-Content -LiteralPath $decisionSchemaPath -Raw | ConvertFrom-Json
+        if (-not ($ds.PSObject.Properties.Name -contains '$schema')) {
+            Fail 'templates/local/decision-log.schema.json missing `$schema'
+        }
+        if (-not ($ds.PSObject.Properties.Name -contains 'properties')) {
+            Fail 'templates/local/decision-log.schema.json missing properties'
+        }
+        Write-Host 'OK:  templates/local/decision-log.schema.json (decision log contract)'
+    }
+    catch {
+        Fail "invalid JSON: templates/local/decision-log.schema.json — $($_.Exception.Message)"
+    }
+}
+
+if ($failed) { throw 'JSON contract verification failed.' }
+
 Write-Host ''
 Write-Host 'JSON contract checks passed.'

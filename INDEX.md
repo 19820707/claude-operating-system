@@ -28,6 +28,7 @@ Navigation map. Every file, its purpose, and when to use it.
 | Refresh OS into an **app** repo (never mix app work inside the OS clone) | `cd` to **claude-operating-system** clone → `pwsh ./tools/os-runtime.ps1 update -ProjectPath <path-to-app>` |
 | Check production safety rules | `policies/production-safety.md` |
 | Understand global mandate | `CLAUDE.md` |
+| Pipeline stages, confidence tokens, validation boundaries | `ARCHITECTURE.md` |
 
 ---
 
@@ -37,6 +38,7 @@ Navigation map. Every file, its purpose, and when to use it.
 |------|---------|-------------|
 | `CLAUDE.md` | Global engineering policy — mandate, session continuity, model selection, discipline | Auto-loaded by Claude Code every session |
 | `README.md` | Architecture overview + restore/bootstrap/update procedures | New machine, after format, onboarding |
+| `ARCHITECTURE.md` | Claude OS Runtime layers + session pipeline + confidence / salience integration | Contributors, CI design, release contract |
 | `INDEX.md` | This file — navigation map | Whenever you need to find something |
 | `install.ps1` | Copies global files to `~/.claude/` on Windows; writes `os-install.json` provenance | New Windows machine, after format |
 | `init-project.ps1` | Scaffolds `-ProjectPath` (mandatory), optional `-Profile`, manifest-driven validation | New app/repo on Windows |
@@ -158,7 +160,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 | `risk-surface-scan.sh` | Walk do repo + padrões vs `CLAUDE.md` Critical Surfaces → `.claude/risk-surfaces.json` | `preflight` (após TS budget) |
 | `module-complexity.sh` | Score git (90d) por ficheiro; `--scan` + `.claude/complexity-map.json` | `/task-classify` |
 | `causal-trace.sh` | `--file` / `--commit` / `--incident` vs `session-index.json` | post-mortem |
-| `session-index.sh` | Parse `session-state.md` → `session-index.json`; `--query <módulo>` | `/phase-close` |
+| `session-index.sh` | Parse `session-state.md` → `session-index.json` (coluna opcional **Confiança**); `--query <módulo>` | `/phase-close` |
 | `cross-project-sync.sh` | `--contribute` / `--inherit` / `--report` vs OS `heuristics/cross-project-evidence.json` | `/phase-close` + init (doc) |
 | `living-arch-graph.sh` | Grafo de imports real (`server/`, `client/`, `shared/`, `src/`) → `.claude/architecture-graph.json`; `--blast-radius <ficheiro>`; violações vs `.claude/architecture-boundaries.json` | `preflight` + `/task-classify` |
 | `invariant-verify.sh` | Arranca motor empacotado **TypeScript Compiler API** → `.claude/invariant-report.json`; specs `.claude/invariants/*.json` | manual ou `INVARIANT_VERIFY=1` no preflight |

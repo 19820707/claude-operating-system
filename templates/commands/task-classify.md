@@ -141,11 +141,11 @@ bash .claude/scripts/autonomous-learning-loop.sh
 Regista a decisão **antes** de actuar (append-only `.claude/decision-log.jsonl`) e audita com políticas **codificáveis** no script (não substitui revisão humana).
 
 ```bash
-echo '{"id":"D-2026-05-01-001","ts":"2026-05-01T12:00:00Z","session":"main","type":"model_selection","trigger":"server/auth/index.ts","policy_applied":"model-selection.md","evidence":["AUTH"],"alternatives_considered":["Sonnet"],"decision":"Opus","confidence":"HIGH","overridable":false}' | bash .claude/scripts/decision-append.sh
+echo '{"id":"D-2026-05-01-001","ts":"2026-05-01T12:00:00Z","session":"main","type":"model_selection","trigger":"server/auth/index.ts","policy_applied":"model-selection.md","evidence":["AUTH"],"alternatives_considered":["Sonnet"],"decision":"Opus","confidence":"INFERRED","overridable":false}' | bash .claude/scripts/decision-append.sh
 bash .claude/scripts/policy-compliance-audit.sh
 ```
 
-- Schema: `.claude/decision-log.schema.json`. Auditor: **`[OS-AUDIT]`**, taxa de compliance; se ≥10 decisões auditadas e taxa **&lt;85%** → **DRIFT WARNING**. Pré-flight: `POLICY_AUDIT=1`.
+- Schema: `.claude/decision-log.schema.json`. Campo opcional **`confidence`**: `EXTRACTED` / `INFERRED` / `AMBIGUOUS` (graphify) ou `KNOWN` / `ASSUMED` / `DISPUTED` / `UNKNOWN` (epistémico) — `decision-append.sh` rejeita tokens fora da lista. Auditor: **`[OS-AUDIT]`**, taxa de compliance; se ≥10 decisões auditadas e taxa **&lt;85%** → **DRIFT WARNING**. Pré-flight: `POLICY_AUDIT=1`.
 
 ## Governance II — Context topology (grafo + orçamento)
 

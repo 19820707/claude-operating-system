@@ -27,7 +27,19 @@
     "evidence": { "type": "array", "items": { "type": "string" } },
     "alternatives_considered": { "type": "array", "items": { "type": "string" } },
     "decision": { "type": "string" },
-    "confidence": { "type": "string" },
+    "confidence": {
+      "type": "string",
+      "description": "Optional: graphify structural (EXTRACTED, INFERRED, AMBIGUOUS) or epistemic (KNOWN, ASSUMED, DISPUTED, UNKNOWN). decision-append.sh rejects unknown tokens.",
+      "enum": [
+        "EXTRACTED",
+        "INFERRED",
+        "AMBIGUOUS",
+        "KNOWN",
+        "ASSUMED",
+        "DISPUTED",
+        "UNKNOWN"
+      ]
+    },
     "overridable": { "type": "boolean" },
     "scope_expansion_requested": { "type": "boolean" },
     "epistemic_fact_keys": {

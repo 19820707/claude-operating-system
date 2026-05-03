@@ -37,6 +37,8 @@ claude-operating-system/          ← this repo (global source of truth)
 
 **Key principle:** `~/.claude/` is disposable. Everything important lives either here (global) or inside project repos.
 
+**Session pipeline (economy + validation):** work follows **prime → absorb → execute → verify → export** — explicit stages, JSON/schema checks before trust, incremental indexes (`session-index.json`). Same engineering stance as [graphify](https://github.com/safishamsi/graphify) (staged pipeline, validate-before-consume). Details: **[ARCHITECTURE.md](ARCHITECTURE.md)** (graphify-aligned section + **Claude OS Runtime** contract).
+
 ### Multi-tool projects (Claude Code, Cursor, Codex)
 
 Use **one operational tree per project** (`.claude/`) and **thin tool adapters** at the repo root (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, optional `.agent/`). Avoid parallel “OS” directories or three full copies of the same policies — see [policies/multi-tool-adapters.md](policies/multi-tool-adapters.md). The adapter map in this repo is **`agent-adapters-manifest.json`** (schema **`schemas/agent-adapters.schema.json`**); validate with **`pwsh ./tools/verify-agent-adapters.ps1`**.
