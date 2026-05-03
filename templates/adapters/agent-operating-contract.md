@@ -6,6 +6,19 @@
 - **artifact-first** — commit deliberate artifacts; stage paths explicitly after review.
 - **deterministic validation** — use repo checklists and `pwsh`/scripted gates where provided.
 - **human-gated critical surfaces** — auth, security, CI, release, filesystem, permissions, production, payments.
+- **token-proportional execution** — read and validate only what the task requires.
+
+## Token economy
+
+Named-file or small-scope tasks must use surgical mode:
+
+- no broad repository discovery by default;
+- no sub-agents / wide scans unless justified;
+- read target files, direct imports, direct tests, and immediate contracts first;
+- use path-scoped diffs and targeted tests;
+- keep reports compact and evidence-backed.
+
+Broad discovery is reserved for explicit repo-wide audit, architecture/security review, unknown incident scope, or user-approved exploration.
 
 ## Safety
 
