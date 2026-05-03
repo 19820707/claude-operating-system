@@ -2,7 +2,7 @@
 name: production-safety
 description: "Use when a task touches production, auth, billing, PII, migrations, deployment, permissions, secrets, or rollback posture."
 category: safety
-version: 1.0.0
+version: 1.1.0
 user-invocable: true
 ---
 
@@ -17,14 +17,29 @@ Use this skill for any high-risk operational change. It converts safety policy i
 - Always define rollback before execution.
 - Prefer read-only inspection before mutation.
 - Do not expose PII, secrets, tokens, stack traces, or raw internal JSON in user-facing output.
+- Never turn degraded, skipped, partial, or fallback behavior into success language.
+
+## No-false-green contract
+
+Report status precisely:
+
+- `pass` means the required check actually ran and passed.
+- `warn` remains warning, not success.
+- `skip` remains skipped, not pass.
+- fallback/demo/local behavior is degraded unless explicitly intended.
+- partial validation is partial, not validated.
+- unknown evidence is unknown, not assumed OK.
+
+Invariant: **fallback != healthy; skipped != passed; warning != success**.
 
 ## Required checks
 
 1. Identify the critical surface.
 2. Identify blast radius and rollback path.
 3. Confirm whether human approval is required.
-4. Add or update regression coverage when behavior changes.
-5. Report residual risk explicitly.
+4. Separate pass / warn / fail / skip / blocked outcomes.
+5. Add or update regression coverage when behavior changes.
+6. Report residual risk explicitly.
 
 ## Invariants
 
@@ -32,3 +47,4 @@ Use this skill for any high-risk operational change. It converts safety policy i
 - Rollback must be known before deployment or destructive change.
 - Sensitive output is summarized, not dumped.
 - Safety gates take precedence over speed.
+- Degraded runtime state must be visible to humans.
