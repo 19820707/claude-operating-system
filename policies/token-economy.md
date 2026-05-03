@@ -49,6 +49,23 @@ Invariant: **named-file task → named-file reads first**.
 
 ---
 
+## Task execution budgets
+
+Budgets are guardrails, not excuses to skip evidence. Exceeding a budget requires a short justification and the smallest scope expansion.
+
+| Task type | Default read budget | Default command budget | Output budget | Sub-agent budget |
+|-----------|---------------------|------------------------|---------------|------------------|
+| Named-file patch | target file + direct imports/tests | ≤ 5 commands | ≤ 40 lines | 0 |
+| Small diff audit | changed files only | ≤ 6 commands | ≤ 50 lines | 0 |
+| Failing test triage | failing test + direct code path | ≤ 8 commands | ≤ 60 lines | 0 by default |
+| Dependency/hook fix | package manifest + config + lock diff | ≤ 8 commands | ≤ 60 lines | 0 |
+| Repo-wide audit | scoped dirs from plan | explicit plan | compact report | allowed with stop condition |
+| Incident/critical review | evidence-driven | explicit plan | executive + evidence | allowed with Opus gate |
+
+Hard rule: **sub-agent budget is zero for named-file and small-diff tasks unless the user explicitly approves wider exploration**.
+
+---
+
 ## Broad discovery allowance
 
 Broad discovery or sub-agent exploration is allowed only when one or more apply:
@@ -65,6 +82,7 @@ When broad discovery is used, the agent must state:
 - why surgical mode is insufficient;
 - the maximum directories/files to inspect;
 - the stop condition;
+- the token/output budget;
 - a compact summary instead of raw dumps.
 
 ---
