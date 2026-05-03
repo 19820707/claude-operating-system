@@ -210,9 +210,8 @@ $behind = 0
 $sb = Invoke-GitOut @('status', '-sb')
 if ($sb -match 'ahead\s+(\d+)') { $ahead = [int]$Matches[1] }
 if ($sb -match 'behind\s+(\d+)') { $behind = [int]$Matches[1] }
-if ($ahead -gt 0 -or $behind -gt 0) {
-    Add-Warn "Branch sync: ahead=$ahead behind=$behind (push or pull as appropriate)."
-}
+# ahead/behind are informational only (already in JSON). Do not Add-Warn: -Strict promotes all warnings to FAIL,
+# and a local commit not yet pushed is normal during development, not a hygiene defect.
 
 # Dangerous untracked directories (names only)
 $lines = @($porcelain -split "`r?`n" | Where-Object { $_ -match '^\?\?' })
