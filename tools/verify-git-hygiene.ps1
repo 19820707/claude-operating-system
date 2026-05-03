@@ -97,7 +97,14 @@ if (Test-Path -LiteralPath $nestedCloneDir) {
     }
 }
 
-# Nested .git directories (exclude root). Bounded depth; skip node_modules; skip scanning *inside* known nested clone tree (folder rule covers it).
+# Optional upstream comparison clone (gitignored): policies/deprecation.md — nested .git here is expected.
+$externReferenceDir = Join-Path $RepoRoot 'extern-reference'
+$externReferenceFull = $null
+if (Test-Path -LiteralPath $externReferenceDir) {
+    $externReferenceFull = [System.IO.Path]::GetFullPath($externReferenceDir).TrimEnd('\', '/')
+}
+
+# Nested .git directories (exclude root). Bounded depth; skip node_modules; skip under known nested trees (optional clones).
 $expectedRootGitFull = [System.IO.Path]::GetFullPath($rootGit).TrimEnd('\', '/')
 $rawNested = @()
 try {
@@ -116,6 +123,13 @@ $nestedGits = @(foreach ($item in $rawNested) {
         $prefA = $nestedCloneFull + '\'
         $prefB = $nestedCloneFull + '/'
         if ($p.StartsWith($prefA, [StringComparison]::OrdinalIgnoreCase) -or $p.StartsWith($prefB, [StringComparison]::OrdinalIgnoreCase)) {
+            continue
+        }
+    }
+    if ($null -ne $externReferenceFull) {
+        $prefE1 = $externReferenceFull + '\'
+        $prefE2 = $externReferenceFull + '/'
+        if ($p.StartsWith($prefE1, [StringComparison]::OrdinalIgnoreCase) -or $p.StartsWith($prefE2, [StringComparison]::OrdinalIgnoreCase)) {
             continue
         }
     }
@@ -252,5 +266,8 @@ if ($Json) {
 }
 
 if ($script:HygieneFails.Count -gt 0) {
+    if ($Json) {
+        exit 1
+    }
     throw "Git hygiene failed: $($script:HygieneFails.Count) issue(s)."
 }

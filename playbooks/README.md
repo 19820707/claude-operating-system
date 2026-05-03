@@ -13,6 +13,7 @@ Playbooks whose **`requiresApprovalFor`** includes any of **Release**, **Product
 | Migration | high | [migration.md](migration.md) |
 | Bootstrap project | medium | [bootstrap-project.md](bootstrap-project.md) |
 | Docs contract audit | medium | [docs-contract-audit.md](docs-contract-audit.md) |
+| Autonomous repair (bounded) | medium | [autonomous-repair.md](autonomous-repair.md) |
 | Adapter drift repair | high | [adapter-drift-repair.md](adapter-drift-repair.md) |
 
 ## Validation

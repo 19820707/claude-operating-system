@@ -35,6 +35,8 @@ Navigation map. Every file, its purpose, and when to use it.
 | Check production safety rules | `policies/production-safety.md` |
 | Understand global mandate | `CLAUDE.md` |
 | Pipeline stages, confidence tokens, validation boundaries | `ARCHITECTURE.md` |
+| O que o Claude OS **não** é (CI/CD, Actions, revisão, SaaS, produção, supervisão) — PT | `docs/POSICIONAMENTO-NAO-E.md` |
+| Fluxo §2–§11, competências §14–§17 (maturidade, resultado, autonomia) — PT | `docs/CAPACIDADES-OPERACIONAIS.md` |
 
 ---
 
@@ -71,7 +73,7 @@ Navigation map. Every file, its purpose, and when to use it.
 ## source/skills/
 
 Canonical skill layer. `source/skills` is source of truth; `init-project.ps1` installs it into `.claude/skills/`.
-Canonical count: **26/26** from `bootstrap-manifest.json`.
+Canonical count: **27/27** from `bootstrap-manifest.json`.
 
 | Skill | Category | Purpose |
 |-------|----------|---------|
@@ -313,7 +315,7 @@ Policy background: **`policies/multi-tool-adapters.md`**.
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
 | bootstrap-manifest.json | Source of truth for repo counts, skills, bootstrap scripts, and critical paths |
 | tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, agent-adapters, dispatcher |
-| source/skills/ | 26/26 — manifest verified and bootstrapped to `.claude/skills/` |
+| source/skills/ | 27/27 — manifest verified and bootstrapped to `.claude/skills/` |
 | policies/ | 8/8 — complete |
 | prompts/ | 7/7 — complete |
 | templates/commands/ | 18/18 — manifest verified |

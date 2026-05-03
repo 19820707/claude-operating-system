@@ -22,6 +22,7 @@ $script:ExtraValidatorIds = [string[]]@(
     'run-contract-tests',
     'evaluate-quality-gate',
     'os-doctor',
+    'os-autopilot',
     'os-validate',
     'os-validate-all'
 )

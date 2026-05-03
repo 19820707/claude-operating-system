@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "description": "Canonical counts and project bootstrap lists for CI drift detection. Update when adding/removing template files.",
   "skills": {
-    "exact": 26,
+    "exact": 27,
     "categories": [
       "governance",
       "safety",
@@ -17,7 +17,7 @@
     "criticalSurfaces": 5
   },
   "repoIntegrity": {
-    "source/skills": { "include": "SKILL.md", "exact": 26, "recursive": true },
+    "source/skills": { "include": "SKILL.md", "exact": 27, "recursive": true },
     "templates/checklists": { "include": "*.md", "exact": 2 },
     "templates/commands": { "include": "*.md", "exact": 18 },
     "templates/agents": { "include": "*.md", "exact": 5 },
@@ -91,6 +91,7 @@
       ".claude/scripts/session-digest.ps1",
       ".claude/commands/session-start.md",
       ".claude/skills/adapter-drift/SKILL.md",
+      ".claude/skills/autonomous-runtime/SKILL.md",
       ".claude/skills/approval-ledger/SKILL.md",
       ".claude/skills/bootstrap-auditor/SKILL.md",
       ".claude/skills/bootstrap-governance/SKILL.md",

@@ -26,7 +26,8 @@
     "compatibility": "compatibility-manifest.json",
     "lifecycle": "lifecycle-manifest.json",
     "distribution": "distribution-manifest.json",
-    "upgradeManifest": "upgrade-manifest.json"
+    "upgradeManifest": "upgrade-manifest.json",
+    "autonomyPolicy": "policies/autonomy-policy.json"
   },
   "entrypoints": {
     "runtime": "tools/os-runtime.ps1",

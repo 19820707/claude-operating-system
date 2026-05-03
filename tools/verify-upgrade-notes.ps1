@@ -33,6 +33,7 @@ $canonicalWatched = @(
     'os-capabilities.json',
     'os-manifest.json',
     'playbook-manifest.json',
+    'policies/autonomy-policy.json',
     'recipe-manifest.json',
     'runtime-budget.json',
     'script-manifest.json',

@@ -3,7 +3,9 @@
 Source of truth for global Claude Code operational infrastructure.
 Persistent, versionable, restorable across machines and projects.
 
-**Navigation:** see [INDEX.md](INDEX.md) for a full map of every file and when to use it. Quick paths: **[docs/QUICKSTART.md](docs/QUICKSTART.md)**, **[docs/VALIDATION.md](docs/VALIDATION.md)**, **[docs/RELEASE-READINESS.md](docs/RELEASE-READINESS.md)**, **[docs/SKILLS.md](docs/SKILLS.md)** (skills), **[playbooks/README.md](playbooks/README.md)** (playbooks), **[recipes/README.md](recipes/README.md)** (command recipes + `recipe-manifest.json`).
+Claude OS is **operational governance for agents over the repo** (contracts, validation, context, capabilities, auditability)—**not** a replacement for CI/CD, Actions, or human release gates. It sits between tool-native agents and formal delivery systems to **improve inputs** upstream of them. See [ARCHITECTURE.md — Operational positioning](ARCHITECTURE.md#operational-positioning), [What Claude OS is not](ARCHITECTURE.md#what-claude-os-is-not) (English), [docs/POSICIONAMENTO-NAO-E.md](docs/POSICIONAMENTO-NAO-E.md) (PT), and [docs/CAPACIDADES-OPERACIONAIS.md](docs/CAPACIDADES-OPERACIONAIS.md) (PT — fluxo §2–§11; competências §14; maturidade §15; resultado §16; autonomia A0–A4 §17).
+
+**Navigation:** see [INDEX.md](INDEX.md) for a full map of every file and when to use it. Quick paths: **[docs/QUICKSTART.md](docs/QUICKSTART.md)**, **[docs/VALIDATION.md](docs/VALIDATION.md)**, **[docs/AUTONOMY.md](docs/AUTONOMY.md)** (autonomy / `os-autopilot`), **[docs/RELEASE-READINESS.md](docs/RELEASE-READINESS.md)**, **[docs/SKILLS.md](docs/SKILLS.md)** (skills), **[playbooks/README.md](playbooks/README.md)** (playbooks), **[recipes/README.md](recipes/README.md)** (command recipes + `recipe-manifest.json`).
 
 ---
 

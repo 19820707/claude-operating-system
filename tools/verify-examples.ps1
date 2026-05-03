@@ -208,6 +208,7 @@ $examplePairs = @(
     @{ relExample = 'examples/validation/verify-runtime-budget-warn.json'; relSchema = 'schemas/os-validator-envelope.schema.json' }
     @{ relExample = 'examples/validation/verify-os-health-ok.json'; relSchema = 'schemas/os-health-envelope.schema.json' }
     @{ relExample = 'examples/validation/runtime-budget-minimal-example.json'; relSchema = 'schemas/runtime-budget.schema.json' }
+    @{ relExample = 'examples/validation/autonomy-policy-minimal-example.json'; relSchema = 'schemas/autonomy-policy.schema.json' }
     @{ relExample = 'examples/skills/skills-manifest-minimal-example.json'; relSchema = 'schemas/skills-manifest.schema.json' }
     @{ relExample = 'examples/playbooks/playbook-manifest-minimal-example.json'; relSchema = 'schemas/playbook-manifest.schema.json' }
     @{ relExample = 'examples/project-bootstrap/bootstrap-manifest-minimal-example.json'; relSchema = 'schemas/bootstrap-manifest.schema.json' }

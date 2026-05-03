@@ -45,6 +45,14 @@
         },
         {
           "kind": "tool",
+          "id": "verify-autonomy-policy"
+        },
+        {
+          "kind": "tool",
+          "id": "os-autopilot"
+        },
+        {
+          "kind": "tool",
           "id": "verify-context-economy"
         },
         {
@@ -360,6 +368,10 @@
         },
         {
           "kind": "skill",
+          "id": "autonomous-runtime"
+        },
+        {
+          "kind": "skill",
           "id": "bootstrap-auditor"
         },
         {
@@ -420,6 +432,10 @@
         },
         {
           "kind": "playbook",
+          "id": "autonomous-repair"
+        },
+        {
+          "kind": "playbook",
           "id": "bootstrap-project"
         },
         {
@@ -437,6 +453,10 @@
         {
           "kind": "playbook",
           "id": "release"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/autonomy.md"
         },
         {
           "kind": "policy",
@@ -477,6 +497,10 @@
         {
           "kind": "policy",
           "path": "policies/token-economy.md"
+        },
+        {
+          "kind": "manifest",
+          "path": "policies/autonomy-policy.json"
         },
         {
           "kind": "manifest",

@@ -72,6 +72,14 @@
                                          }
                        },
                        {
+                           "id":  "os-autopilot",
+                           "overrides":  {
+                                             "bash-on-path":  "best-effort",
+                                             "git-bash":  "best-effort",
+                                             "wsl":  "best-effort"
+                                         }
+                       },
+                       {
                            "id":  "os-validate",
                            "overrides":  {
                                              "bash-on-path":  "best-effort",
@@ -98,6 +106,9 @@
                        },
                        {
                            "id":  "verify-agent-adapters"
+                       },
+                       {
+                           "id":  "verify-autonomy-policy"
                        },
                        {
                            "id":  "append-approval-log"

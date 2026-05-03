@@ -987,6 +987,41 @@
                       "safeToRunInCI":  true
                   },
                   {
+                      "path":  "tools/verify-autonomy-policy.ps1",
+                      "id":  "verify-autonomy-policy",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/os-autopilot.ps1",
+                      "id":  "os-autopilot",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "logs/validation-history.jsonl"
+                                 ],
+                      "writeRisk":  "low",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "logs/validation-history.jsonl"
+                                                                  ],
+                                        "rollbackNote":  "Optional JSONL append via -WriteEvidence; remove line(s) or restore logs/validation-history.jsonl from backup."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
                       "path":  "tools/verify-script-manifest.ps1",
                       "id":  "verify-script-manifest",
                       "maturity":  "stable",

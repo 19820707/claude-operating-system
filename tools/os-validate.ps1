@@ -77,6 +77,7 @@ function Run-JsonTool {
 }
 
 foreach ($pair in @(
+        @{ rel = 'tools/verify-autonomy-policy.ps1'; name = 'verify-autonomy-policy' }
         @{ rel = 'tools/verify-runtime-budget.ps1'; name = 'verify-runtime-budget' }
         @{ rel = 'tools/verify-context-economy.ps1'; name = 'verify-context-economy' }
         @{ rel = 'tools/verify-compatibility.ps1'; name = 'verify-compatibility' }

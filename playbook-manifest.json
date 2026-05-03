@@ -49,6 +49,15 @@
       "relatedSkills": ["doc-contract-audit"]
     },
     {
+      "id": "autonomous-repair",
+      "name": "Autonomous repair (bounded)",
+      "path": "playbooks/autonomous-repair.md",
+      "riskLevel": "medium",
+      "summary": "Validation-first bounded repair with rollback/diff discipline; escalate to steward approvals on risk transitions.",
+      "requiresApprovalFor": [],
+      "relatedSkills": ["autonomous-runtime", "runtime-economy", "doc-contract-audit"]
+    },
+    {
       "id": "adapter-drift-repair",
       "name": "Adapter drift repair",
       "path": "playbooks/adapter-drift-repair.md",

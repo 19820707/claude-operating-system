@@ -62,6 +62,7 @@ $manifestPairs = @{
     'workflow-manifest.json' = 'schemas/workflow-manifest.schema.json'
     'agent-adapters-manifest.json' = 'schemas/agent-adapters.schema.json'
     'runtime-budget.json' = 'schemas/runtime-budget.schema.json'
+    'policies/autonomy-policy.json' = 'schemas/autonomy-policy.schema.json'
     'context-budget.json' = 'schemas/context-budget.schema.json'
     'script-manifest.json' = 'schemas/script-manifest.schema.json'
     'playbook-manifest.json' = 'schemas/playbook-manifest.schema.json'

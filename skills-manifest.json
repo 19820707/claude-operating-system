@@ -479,6 +479,56 @@
                                  ]
                    },
                    {
+                       "id":  "autonomous-runtime",
+                       "name":  "Autonomous runtime",
+                       "path":  "source/skills/autonomous-runtime/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "A3 bounded autonomy: autopilot orchestration, dry-run, validation loops, evidence; blocks steward transitions without human approval.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/autonomous-runtime/SKILL.md",
+                                                ".cursor/skills/autonomous-runtime/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  360,
+                                             "maxBytes":  48000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/autonomy.md",
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/autonomous-runtime.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/autonomous-runtime.test.json"
+                                 ]
+                   },
+                   {
                        "id":  "doc-contract-audit",
                        "name":  "Doc Contract Audit",
                        "path":  "source/skills/doc-contract-audit/SKILL.md",

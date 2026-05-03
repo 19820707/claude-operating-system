@@ -19,6 +19,19 @@ Playbooks that declare **none** of the above (for example **bootstrap-project** 
 
 **Normal local validation** — `pwsh ./tools/os-validate.ps1` (any profile), `pwsh ./tools/verify-os-health.ps1`, recipe checks, and similar — **does not** read or require rows in `logs/approval-log.jsonl`.
 
+## Before requesting approval (pre-flight)
+
+Before a human signs off or before you append a ledger row, make the following explicit in the playbook body, ticket, or session summary (Portuguese operational framing: [`docs/CAPACIDADES-OPERACIONAIS.md`](CAPACIDADES-OPERACIONAIS.md) §11):
+
+| Topic | Ledger / repo mapping |
+|-------|------------------------|
+| **Scope** | `-Scope` → `scope` |
+| **Risk** | `-RiskLevel` → `riskLevel`; prose may extend `-Operation` |
+| **Execution plan** | `-CommandOrActionApproved` → `commandOrActionApproved` |
+| **Rollback plan** | `-RollbackPlanReference` → `rollbackPlanReference` |
+| **Prior validation & evidence** | `-RelatedValidationEvidence` → `relatedValidationEvidence` (≥1 pointer: JSON envelope path, CI URL, commit SHA, redacted transcript) |
+| **Expected impact, known issues, residual risk** | Not separate schema fields—capture in playbook text, ticket, or summarize inside `scope` / `operation` as needed |
+
 ## Ledger file
 
 - **Path:** `logs/approval-log.jsonl` (directory is gitignored; ledger stays local or is copied to your evidence store).

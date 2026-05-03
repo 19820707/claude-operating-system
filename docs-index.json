@@ -17,6 +17,20 @@
       "tags": ["navigation", "docs", "index"]
     },
     {
+      "id": "docs/posicionamento-nao-e",
+      "path": "docs/POSICIONAMENTO-NAO-E.md",
+      "title": "O que o Claude OS não deve ser",
+      "purpose": "Limites explícitos em português: não CI/CD completo, não substituto de GitHub Actions ou revisão humana, não SaaS, não produção autónoma, não agentes sem supervisão em mudanças críticas.",
+      "tags": ["governance", "positioning", "portuguese", "non-goals", "ci"]
+    },
+    {
+      "id": "docs/capacidades-operacionais",
+      "path": "docs/CAPACIDADES-OPERACIONAIS.md",
+      "title": "Capacidades operacionais desejadas",
+      "purpose": "Fluxo §2–§11; competências §14; maturidade §15; resultado §16; autonomia A0–A4 e meta 95/5 §17 (executor vs aprovador, sem A4 em steward).",
+      "tags": ["governance", "portuguese", "onboarding", "init", "runtime"]
+    },
+    {
       "id": "root/health",
       "path": "tools/verify-os-health.ps1",
       "title": "Aggregate OS Health",
@@ -163,6 +177,13 @@
       "title": "Validation Profiles and Status Taxonomy",
       "purpose": "Profiles (quick/standard/strict), JSON envelopes, false-green avoidance, and release gates.",
       "tags": ["validation", "profiles", "json", "release", "governance"]
+    },
+    {
+      "id": "docs/autonomy",
+      "path": "docs/AUTONOMY.md",
+      "title": "Autonomy layer",
+      "purpose": "A0–A4 model, allowed vs steward-gated actions, os-autopilot, verify-autonomy-policy, repair loop, evidence, false-green rules.",
+      "tags": ["governance", "autonomy", "validation", "agents", "safety"]
     },
     {
       "id": "docs/compatibility",

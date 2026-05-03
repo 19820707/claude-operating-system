@@ -66,6 +66,7 @@ try {
         @{ j = 'workflow-manifest.json'; s = 'schemas/workflow-manifest.schema.json' }
         @{ j = 'agent-adapters-manifest.json'; s = 'schemas/agent-adapters.schema.json' }
         @{ j = 'runtime-budget.json'; s = 'schemas/runtime-budget.schema.json' }
+        @{ j = 'policies/autonomy-policy.json'; s = 'schemas/autonomy-policy.schema.json' }
         @{ j = 'context-budget.json'; s = 'schemas/context-budget.schema.json' }
         @{ j = 'script-manifest.json'; s = 'schemas/script-manifest.schema.json' }
         @{ j = 'skills-manifest.json'; s = 'schemas/skills-manifest.schema.json' }

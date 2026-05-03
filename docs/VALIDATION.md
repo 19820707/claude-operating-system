@@ -52,6 +52,8 @@ With `-Json`, new verifiers emit a shared shape (see `tools/lib/validation-envel
 
 **False green** means reporting success when some checks were skipped, warned, or unknown. Claude OS avoids counting **skip** or **warn** as **ok** for strict release gates. CI Ubuntu requires Bash for strict validation so shell syntax is not silently waived.
 
+Operational framing (Portuguese, full taxonomy and local vs strict): [`docs/CAPACIDADES-OPERACIONAIS.md`](CAPACIDADES-OPERACIONAIS.md) — §10.
+
 ## Validation history (opt-in)
 
 Append-only JSONL: `logs/validation-history.jsonl` (directory gitignored). Pass `-WriteHistory` to `init-os-runtime`, `verify-os-health`, `os-validate`, or `os-validate-all`. Records must not contain secrets or raw environment dumps.
