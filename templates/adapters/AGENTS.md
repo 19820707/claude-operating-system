@@ -11,6 +11,19 @@ Read, in order:
 3. **`.claude/workflow-manifest.json`** — phase gates for this repo.
 4. **`.claude/os-capabilities.json`** — capability routing and automation boundaries.
 
+## Token economy / surgical mode
+
+If the task names a file, a small file set, a commit, a failing test, or a concrete diff, use **surgical mode**:
+
+- Do **not** run broad repository discovery.
+- Do **not** use `Explore` / sub-agents unless the user explicitly asks or the scoped pass proves it is required.
+- Read only target files, direct imports, direct tests, and immediate contracts.
+- Prefer `git diff -- <paths>` over global `git diff`.
+- Prefer targeted tests over full suites.
+- Keep summaries short: decision, files, tests, risk, next step.
+
+Broad discovery is reserved for explicit architecture/security/repo-wide audits, unknown incident scope, or user-approved exploration.
+
 ## Commands to prefer (installed under `.claude/scripts/`)
 
 - **Prime (bounded context):**
