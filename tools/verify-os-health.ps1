@@ -292,8 +292,9 @@ Invoke-HealthStep -Name 'approval-log' -Script {
     if ($LASTEXITCODE -ne 0) { throw 'verify-approval-log failed' }
 }
 Invoke-HealthStep -Name 'script-manifest' -Script {
-    $smArgs = @()
-    if ($Strict) { $smArgs += '-Strict' }
+    # Hashtable splat — array splat would pass '-Strict' positionally and break verify-script-manifest.ps1.
+    $smArgs = @{}
+    if ($Strict) { $smArgs['Strict'] = $true }
     & (Join-Path $RepoRoot 'tools/verify-script-manifest.ps1') @smArgs
 }
 Invoke-HealthStep -Name 'components' -Script {
