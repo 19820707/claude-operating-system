@@ -15,7 +15,8 @@ Read, in order:
 1. **`CLAUDE.md`** — project-level policy and how Claude Code expects work to run.
 2. **`.claude/session-state.md`** — branch, decisions, risks, next steps (do not assume chat history).
 3. **`.claude/workflow-manifest.json`** — phase gates for this repo.
-4. **`.claude/os-capabilities.json`** — capability routing and automation boundaries.
+4. **`.claude/os-capabilities.json`** — capability routing and automation boundaries (`os.*` registry).
+5. **`.claude/capability-manifest.json`** — intent routes (`route.*`): operating mode, approvals, skills, playbooks, validators, evidence, forbidden shortcuts.
 
 Then classify the task:
 

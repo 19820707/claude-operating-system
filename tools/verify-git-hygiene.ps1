@@ -5,7 +5,8 @@
 
 param(
     [switch]$Json,
-    [switch]$Strict
+    [switch]$Strict,
+    [switch]$WarnIfNoGit
 )
 
 $ErrorActionPreference = 'Stop'
@@ -30,7 +31,8 @@ function Invoke-GitOut {
     Push-Location $RepoRoot
     try {
         return (& git @GitArguments 2>$null | Out-String).Trim()
-    } finally {
+    }
+    finally {
         Pop-Location
     }
 }
@@ -41,13 +43,41 @@ function Invoke-GitOk {
     try {
         & git @GitArguments 2>$null | Out-Null
         return ($LASTEXITCODE -eq 0)
-    } finally {
+    }
+    finally {
         Pop-Location
     }
 }
 
 $rootGit = Join-Path $RepoRoot '.git'
 if (-not (Test-Path -LiteralPath $rootGit)) {
+    if ($WarnIfNoGit) {
+        Add-Warn 'No .git at repository root (not a Git checkout).'
+        $checkList = [System.Collections.Generic.List[object]]::new()
+        [void]$checkList.Add([ordered]@{ name = 'hygiene_warn_0'; status = 'warn'; latencyMs = 0; detail = $script:HygieneWarns[0] })
+        $result = [ordered]@{
+            repoRoot      = $RepoRoot
+            branch        = ''
+            ahead         = 0
+            behind        = 0
+            dirty         = $false
+            strict        = [bool]$Strict
+            failures      = @()
+            warnings      = @($script:HygieneWarns)
+            failureCount  = 0
+            warningCount  = [int]$script:HygieneWarns.Count
+            checks        = @($checkList)
+            status        = 'warn'
+        }
+        if ($Json) {
+            $result | ConvertTo-Json -Depth 6 -Compress | Write-Output
+        }
+        else {
+            Write-Host 'verify-git-hygiene'
+            Write-StatusLine -Status 'warn' -Name 'git-hygiene' -Detail 'no .git (WarnIfNoGit)'
+        }
+        exit 0
+    }
     Add-Fail 'No .git at repository root (not a Git checkout).'
 }
 
@@ -69,28 +99,28 @@ if (Test-Path -LiteralPath $nestedCloneDir) {
 
 # Nested .git directories (exclude root). Bounded depth; skip node_modules; skip scanning *inside* known nested clone tree (folder rule covers it).
 $expectedRootGitFull = [System.IO.Path]::GetFullPath($rootGit).TrimEnd('\', '/')
-$rawNested = @(
-    try {
+$rawNested = @()
+try {
+    $rawNested = @(
         Get-ChildItem -LiteralPath $RepoRoot -Force -Depth 14 -Recurse -Directory -Filter '.git' -ErrorAction SilentlyContinue
-    } catch {
-        @()
-    }
-)
-$nestedGits = @(
-    foreach ($item in $rawNested) {
-        $p = $item.FullName.TrimEnd('\', '/')
-        if ($p.Equals($expectedRootGitFull, [StringComparison]::OrdinalIgnoreCase)) { continue }
-        if ($item.FullName -match '[\\/]node_modules[\\/]') { continue }
-        if ($null -ne $nestedCloneFull) {
-            $prefA = $nestedCloneFull + '\'
-            $prefB = $nestedCloneFull + '/'
-            if ($p.StartsWith($prefA, [StringComparison]::OrdinalIgnoreCase) -or $p.StartsWith($prefB, [StringComparison]::OrdinalIgnoreCase)) {
-                continue
-            }
+    )
+}
+catch {
+    $rawNested = @()
+}
+$nestedGits = @(foreach ($item in $rawNested) {
+    $p = $item.FullName.TrimEnd('\', '/')
+    if ($p.Equals($expectedRootGitFull, [StringComparison]::OrdinalIgnoreCase)) { continue }
+    if ($item.FullName -match '[\\/]node_modules[\\/]') { continue }
+    if ($null -ne $nestedCloneFull) {
+        $prefA = $nestedCloneFull + '\'
+        $prefB = $nestedCloneFull + '/'
+        if ($p.StartsWith($prefA, [StringComparison]::OrdinalIgnoreCase) -or $p.StartsWith($prefB, [StringComparison]::OrdinalIgnoreCase)) {
+            continue
         }
-        $item
     }
-)
+    $item
+})
 foreach ($g in $nestedGits) {
     $rel = try {
         $full = $g.FullName

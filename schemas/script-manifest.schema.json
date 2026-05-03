@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-script-manifest",
+  "title": "Claude OS script maturity manifest",
+  "type": "object",
+  "required": ["schemaVersion", "tools", "templateShell"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "id", "maturity", "defaultEnabled", "requires", "exitPolicy", "safeToRunInCI"],
+        "properties": {
+          "path": { "type": "string", "minLength": 3 },
+          "id": { "type": "string", "minLength": 1 },
+          "maturity": { "type": "string", "enum": ["stable", "experimental", "internal", "deprecated"] },
+          "defaultEnabled": { "type": "boolean" },
+          "requires": { "type": "array", "items": { "type": "string" } },
+          "writes": { "type": "array", "items": { "type": "string" } },
+          "writeRisk": {
+            "type": "string",
+            "enum": ["none", "low", "medium", "high"],
+            "description": "Mutating-tool risk tier; verify-script-manifest -Strict requires dry-run/WhatIf family when high."
+          },
+          "safeApply": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "generatedWriteTargets": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "rollbackNote": { "type": "string", "minLength": 1 }
+            }
+          },
+          "exitPolicy": { "type": "string", "enum": ["fail", "warn-only", "informational"] },
+          "safeToRunInCI": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "shellScripts": {
+      "type": "array",
+      "description": "templates/scripts/*.sh maturity metadata (must cover all shell files on disk)",
+      "items": {
+        "type": "object",
+        "required": ["path", "id", "maturity", "defaultEnabled", "requires", "exitPolicy", "safeToRunInCI"],
+        "properties": {
+          "path": { "type": "string", "minLength": 8 },
+          "id": { "type": "string", "minLength": 1 },
+          "maturity": { "type": "string", "enum": ["stable", "experimental", "internal", "deprecated"] },
+          "defaultEnabled": { "type": "boolean" },
+          "requires": { "type": "array", "items": { "type": "string" } },
+          "writes": { "type": "array", "items": { "type": "string" } },
+          "exitPolicy": { "type": "string", "enum": ["fail", "warn-only", "informational"] },
+          "safeToRunInCI": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "templateShell": {
+      "type": "object",
+      "required": ["directory", "countSource", "maturity"],
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

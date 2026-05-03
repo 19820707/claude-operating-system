@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "production-safety-release-gate",
+  "skillId": "production-safety",
+  "routeId": "route.release",
+  "scenario": "Preparing a production-bound release; the release gate route must keep production-safety approvals and strict validators attached.",
+  "inputSummary": "Work classified as release/ship; capability router selects route.release; production-safety is a relevant skill.",
+  "expectedOperatingMode": "release-gate",
+  "expectedRequiredApprovals": ["maintainer", "Release", "Production"],
+  "expectedValidators": [
+    "os-validate.ps1",
+    "verify-os-health.ps1",
+    "verify-bootstrap-manifest.ps1",
+    "verify-playbooks.ps1"
+  ],
+  "forbiddenActions": [
+    "quick profile alone",
+    "verify-examples",
+    "verify-playbooks -Strict fails"
+  ],
+  "expectedRefusalOrAbortConditions": [
+    "quick profile",
+    "release-ready",
+    "waiver"
+  ],
+  "expectedSkillRiskLevel": "critical",
+  "expectedRouteRiskLevel": "critical"
+}

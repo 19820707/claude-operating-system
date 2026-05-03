@@ -7,12 +7,13 @@
       "tool": "tools/session-prime.ps1",
       "installedPath": ".claude/scripts/session-prime.ps1",
       "mode": "read-only",
-      "purpose": "Build bounded startup context from session-state, learning-log, workflow, and capabilities.",
+      "purpose": "Build bounded startup context from session-state, learning-log, workflow, capabilities, and intent routes.",
       "reads": [
         ".claude/session-state.md",
         ".claude/learning-log.md",
         ".claude/workflow-manifest.json",
-        ".claude/os-capabilities.json"
+        ".claude/os-capabilities.json",
+        ".claude/capability-manifest.json"
       ],
       "writes": [],
       "maxInputChars": 6000

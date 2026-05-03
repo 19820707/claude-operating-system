@@ -19,7 +19,7 @@ $manifest = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 if ([int]$manifest.schemaVersion -lt 1) { Fail 'schemaVersion must be >= 1' }
 if (-not $manifest.profiles) { Fail 'profiles array missing' }
 
-$allowedCommands = @('help','health','doctor','validate','route','docs','workflow','update','bootstrap')
+$allowedCommands = @('help', 'health', 'doctor', 'init', 'validate', 'critical', 'route', 'docs', 'workflow', 'profile', 'prime', 'absorb', 'digest', 'update', 'bootstrap')
 $seen = @{}
 $defaultCount = 0
 

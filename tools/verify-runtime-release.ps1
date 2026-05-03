@@ -1,5 +1,4 @@
-# verify-runtime-release.ps1 — Validate Claude OS Runtime release metadata
-# Run from repo root or any cwd:
+# verify-runtime-release.ps1 — Validate Claude OS Runtime release metadata (manifest-driven contract text)
 #   pwsh ./tools/verify-runtime-release.ps1
 
 $ErrorActionPreference = 'Stop'
@@ -13,7 +12,10 @@ function Fail {
 }
 
 function Require-FileText {
-    param([string]$RelativePath, [string[]]$Terms)
+    param(
+        [string]$RelativePath,
+        [string[]]$Terms
+    )
     $path = Join-Path $RepoRoot $RelativePath
     if (-not (Test-Path -LiteralPath $path)) {
         Fail "missing $RelativePath"
@@ -38,23 +40,38 @@ if ($version -notmatch '^\d+\.\d+\.\d+$') { Fail "VERSION must be semver, got '$
 
 $manifestPath = Join-Path $RepoRoot 'os-manifest.json'
 if (-not (Test-Path -LiteralPath $manifestPath)) { Fail 'missing os-manifest.json' }
-else {
-    $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-    if ([string]$manifest.runtime.version -ne $version) {
-        Fail "os-manifest runtime.version '$($manifest.runtime.version)' does not match VERSION '$version'"
+$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+if ([string]$manifest.runtime.version -ne $version) {
+    Fail "os-manifest runtime.version '$($manifest.runtime.version)' does not match VERSION '$version'"
+}
+if ([string]$manifest.runtime.level -ne 'advanced-engineering-runtime') {
+    Fail 'os-manifest runtime.level must be advanced-engineering-runtime'
+}
+if (-not ([string]$manifest.validationPolicy.releaseGate).Contains('human approval required')) {
+    Fail 'releaseGate must include human approval required'
+}
+Write-Host "OK:  os-manifest runtime $version"
+
+$archTerms = @('Claude OS Runtime', 'os-manifest.json', 'init-project.ps1', 'Invariants')
+$chgTerms = @('1.0.0', 'Claude OS Runtime v1', 'human approval required')
+$secTerms = @('human approval required', 'secrets', 'PII', 'filesystem', 'CI/CD')
+$vp = $manifest.validationPolicy
+if ($null -ne $vp -and $vp.PSObject.Properties.Name -contains 'releaseContract') {
+    $rc = $vp.releaseContract
+    if ($rc.PSObject.Properties.Name -contains 'architectureRequiredSubstrings') {
+        $archTerms = @($rc.architectureRequiredSubstrings | ForEach-Object { [string]$_ })
     }
-    if ([string]$manifest.runtime.level -ne 'advanced-engineering-runtime') {
-        Fail 'os-manifest runtime.level must be advanced-engineering-runtime'
+    if ($rc.PSObject.Properties.Name -contains 'changelogRequiredSubstrings') {
+        $chgTerms = @($rc.changelogRequiredSubstrings | ForEach-Object { [string]$_ })
     }
-    if (-not ([string]$manifest.validationPolicy.releaseGate).Contains('human approval required')) {
-        Fail 'releaseGate must include human approval required'
+    if ($rc.PSObject.Properties.Name -contains 'securityRequiredSubstrings') {
+        $secTerms = @($rc.securityRequiredSubstrings | ForEach-Object { [string]$_ })
     }
-    Write-Host "OK:  os-manifest runtime $version"
 }
 
-Require-FileText -RelativePath 'CHANGELOG.md' -Terms @('1.0.0', 'Claude OS Runtime v1', 'human approval required') | Out-Null
-Require-FileText -RelativePath 'ARCHITECTURE.md' -Terms @('Claude OS Runtime', 'os-manifest.json', 'init-project.ps1', 'Invariants') | Out-Null
-Require-FileText -RelativePath 'SECURITY.md' -Terms @('human approval required', 'secrets', 'PII', 'filesystem', 'CI/CD') | Out-Null
+Require-FileText -RelativePath 'CHANGELOG.md' -Terms $chgTerms | Out-Null
+Require-FileText -RelativePath 'ARCHITECTURE.md' -Terms $archTerms | Out-Null
+Require-FileText -RelativePath 'SECURITY.md' -Terms $secTerms | Out-Null
 
 if ($failed) { throw 'Runtime release metadata verification failed.' }
 

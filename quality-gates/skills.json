@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.skills",
+  "title": "Skills quality gate",
+  "description": "Canonical skills, manifest, structure, and drift checks.",
+  "domain": "skills",
+  "requiredValidators": [
+    {
+      "id": "verify-skills-manifest",
+      "script": "tools/verify-skills-manifest.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-skills-structure",
+      "script": "tools/verify-skills-structure.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-skills",
+      "script": "tools/verify-skills.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-skills-drift",
+      "script": "tools/verify-skills-drift.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": ["experimental"],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "Skill counts and categories match bootstrap-manifest.json",
+    "SKILL.md frontmatter passes structure checks",
+    "Drift status recorded when strict profile requires -Strict on drift tool"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 0,
+    "roles": ["skills-maintainer"],
+    "requiresMaintainerApproval": false
+  },
+  "strictModeBehavior": "Evaluator passes -Strict to verify-skills-manifest and verify-skills-drift when the caller sets -Strict; any fail status or disallowed warn blocks the gate."
+}

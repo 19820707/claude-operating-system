@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-context-budget",
+  "title": "Claude OS context / token economy file budgets",
+  "type": "object",
+  "required": ["schemaVersion", "maxBytes", "maxLines", "skillGlob"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "maxBytes": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 1024 }
+    },
+    "maxLines": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 50 }
+    },
+    "skillGlob": { "type": "string", "minLength": 1 },
+    "exemptPaths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": true
+}

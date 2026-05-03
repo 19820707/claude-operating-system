@@ -1,6 +1,31 @@
 # Never commit
+# Local workspace context (generated from OS_WORKSPACE_CONTEXT.template.md)
+/OS_WORKSPACE_CONTEXT.md
+
+# Local operator journal (generated from OPERATOR_JOURNAL.template.md)
+/OPERATOR_JOURNAL.md
+
+# Local validation / runtime evidence (opt-in writers only)
+/logs/
+/logs/*.jsonl
+/logs/*.log
+/local-evidence/
+/evidence/local/
+/exports/
+
+# Local distribution zip + staging (build-distribution.ps1)
+/dist/
+
+# Generated skill mirrors (canonical is source/skills/); ignore if tooling materializes these under repo root
+/.claude/skills/
+/.cursor/skills/
+/.codex/skills/
+
 # Nested copy/clone of this repo at workspace root (common on Windows); do not track.
 /claude-operating-system/
+
+# Optional local clone of another fork for comparison (not part of the OS contract).
+/extern-reference/
 
 # Local scratch / backup scripts (never track)
 *.local-backup.ps1

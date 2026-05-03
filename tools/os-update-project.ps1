@@ -63,6 +63,8 @@ Write-Host ''
 # Invariant: updater refreshes managed OS artifacts only; it never overwrites project-owned state.
 Copy-ManagedFile -From (Join-Path $RepoRoot 'docs-index.json') -To (Join-Path $target '.claude/docs-index.json')
 Copy-ManagedFile -From (Join-Path $RepoRoot 'os-capabilities.json') -To (Join-Path $target '.claude/os-capabilities.json')
+Copy-ManagedFile -From (Join-Path $RepoRoot 'capability-manifest.json') -To (Join-Path $target '.claude/capability-manifest.json')
+Copy-ManagedFile -From (Join-Path $RepoRoot 'deprecation-manifest.json') -To (Join-Path $target '.claude/deprecation-manifest.json')
 Copy-ManagedFile -From (Join-Path $RepoRoot 'workflow-manifest.json') -To (Join-Path $target '.claude/workflow-manifest.json')
 Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/query-docs-index.ps1') -To (Join-Path $target '.claude/scripts/query-docs-index.ps1')
 Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/route-capability.ps1') -To (Join-Path $target '.claude/scripts/route-capability.ps1')
@@ -102,6 +104,8 @@ $installRecord = [pscustomobject]@{
     artifacts = @(
         '.claude/docs-index.json',
         '.claude/os-capabilities.json',
+        '.claude/capability-manifest.json',
+        '.claude/deprecation-manifest.json',
         '.claude/workflow-manifest.json',
         '.claude/scripts/query-docs-index.ps1',
         '.claude/scripts/route-capability.ps1',

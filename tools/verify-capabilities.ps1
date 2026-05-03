@@ -1,10 +1,12 @@
-# verify-capabilities.ps1 — Validate os-capabilities.json routing contract
+# verify-capabilities.ps1 — Validate os-capabilities.json + capability-manifest.json routing contracts
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-capabilities.ps1
 
 $ErrorActionPreference = 'Stop'
 $RepoRoot = Split-Path $PSScriptRoot -Parent
 $capPath = Join-Path $RepoRoot 'os-capabilities.json'
+$routePath = Join-Path $RepoRoot 'capability-manifest.json'
+$playPath = Join-Path $RepoRoot 'playbook-manifest.json'
 $docsPath = Join-Path $RepoRoot 'docs-index.json'
 $skillsRoot = Join-Path $RepoRoot 'source/skills'
 $failed = $false
@@ -42,14 +44,20 @@ Write-Host ''
 
 $cap = Read-JsonFile -Path $capPath -Name 'os-capabilities.json'
 $docs = Read-JsonFile -Path $docsPath -Name 'docs-index.json'
+$routesDoc = Read-JsonFile -Path $routePath -Name 'capability-manifest.json'
+$play = Read-JsonFile -Path $playPath -Name 'playbook-manifest.json'
 
 if (-not $cap.capabilities) { throw 'os-capabilities.json missing capabilities array' }
+if (-not $routesDoc.routes) { throw 'capability-manifest.json missing routes array' }
 
 $docIds = @{}
 foreach ($section in @($docs.sections)) { $docIds[[string]$section.id] = $true }
 
 $skillNames = @{}
 Get-ChildItem -LiteralPath $skillsRoot -Directory | ForEach-Object { $skillNames[$_.Name] = $true }
+
+$playbookIds = @{}
+foreach ($pb in @($play.playbooks)) { $playbookIds[[string]$pb.id] = $true }
 
 $allowedRisk = @('low', 'medium', 'high', 'critical')
 $allowedCost = @('low', 'medium', 'high')
@@ -101,7 +109,82 @@ foreach ($c in @($cap.capabilities)) {
 
 if ($count -lt 6) { Fail "expected at least 6 capabilities, found $count" }
 
+$requiredRouteIds = @(
+    'route.release',
+    'route.incident',
+    'route.migration',
+    'route.bootstrap',
+    'route.docs-audit',
+    'route.adapter-drift',
+    'route.skill-authoring',
+    'route.strict-validation',
+    'route.security-review'
+)
+
+$allowedMode = @('read-only', 'standard', 'strict', 'controlled-change', 'break-glass', 'release-gate')
+$allowedApproval = @('none', 'peer', 'maintainer', 'security', 'incident-command')
+$routeSeen = @{}
+$routeCount = 0
+
+Write-Host ''
+Write-Host '--- capability-manifest routes ---'
+
+foreach ($r in @($routesDoc.routes)) {
+    $routeCount++
+    $rid = [string]$r.id
+    if ($rid -notmatch '^route\.[a-z0-9]+(-[a-z0-9]+)*$') { Fail "route #$routeCount has invalid id '$rid'"; continue }
+    if ($routeSeen.ContainsKey($rid)) { Fail "duplicate route id $rid" }
+    $routeSeen[$rid] = $true
+
+    if ([string]::IsNullOrWhiteSpace([string]$r.title)) { Fail "$rid missing title" }
+    if ([string]::IsNullOrWhiteSpace([string]$r.summary)) { Fail "$rid missing summary" }
+
+    $mode = [string]$r.operatingMode
+    if ($allowedMode -notcontains $mode) { Fail "$rid invalid operatingMode '$mode'" }
+
+    $rk = [string]$r.riskLevel
+    if ($allowedRisk -notcontains $rk) { Fail "$rid invalid riskLevel '$rk'" }
+
+    $ap = [string]$r.requiredApproval
+    if ($allowedApproval -notcontains $ap) { Fail "$rid invalid requiredApproval '$ap'" }
+
+    $rtags = @($r.tags | ForEach-Object { [string]$_ })
+    if ($rtags.Count -eq 0) { Fail "$rid must declare at least one tag" }
+    foreach ($tag in $rtags) {
+        if ($tag -notmatch '^[a-z0-9][a-z0-9-]*$') { Fail "$rid has invalid tag '$tag'" }
+    }
+
+    foreach ($sk in @($r.relevantSkills | ForEach-Object { [string]$_ })) {
+        if (-not $skillNames.ContainsKey($sk)) { Fail "$rid references unknown skill '$sk'" }
+    }
+
+    foreach ($pb in @($r.relevantPlaybooks | ForEach-Object { [string]$_ })) {
+        if (-not $playbookIds.ContainsKey($pb)) { Fail "$rid references unknown playbook id '$pb'" }
+    }
+
+    foreach ($doc in @($r.docs | ForEach-Object { [string]$_ })) {
+        if (-not $docIds.ContainsKey($doc)) { Fail "$rid references unknown docs-index section '$doc'" }
+    }
+
+    foreach ($v in @($r.validators)) { Test-SafeCommand -Command ([string]$v) -Field "$rid.validators" }
+
+    $highRisk = ($rk -in @('high', 'critical')) -or (@($rtags | Where-Object { $criticalTags -contains $_ }).Count -gt 0)
+    if ($highRisk -and $ap -eq 'none') {
+        Fail "$rid is high/critical or critical-tagged but requiredApproval is none"
+    }
+
+    Write-Host "OK:  $rid ($mode / $rk / approval=$ap)"
+}
+
+foreach ($req in $requiredRouteIds) {
+    if (-not $routeSeen.ContainsKey($req)) { Fail "missing required intent route: $req" }
+}
+
+if ($routeCount -lt $requiredRouteIds.Count) {
+    Fail "expected at least $($requiredRouteIds.Count) routes, found $routeCount"
+}
+
 if ($failed) { throw 'Capability registry verification failed.' }
 
 Write-Host ''
-Write-Host "Capability registry checks passed ($count capabilities)."
+Write-Host "Capability checks passed ($count capabilities, $routeCount intent routes)."

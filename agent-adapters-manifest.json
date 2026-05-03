@@ -35,5 +35,32 @@
       "managed": true,
       "purpose": "Tool-neutral runtime summary, handoff protocol, operating contract, plus legacy .agents/ pointer for template compatibility"
     }
-  ]
+  ],
+  "canonicalSources": {
+    "skills": "source/skills/",
+    "claudePolicy": "CLAUDE.md",
+    "agentPolicy": "AGENTS.md"
+  },
+  "generatedTargets": [
+    {
+      "agent": "claude",
+      "path": ".claude/skills",
+      "source": "source/skills/"
+    },
+    {
+      "agent": "cursor",
+      "path": ".cursor/skills",
+      "source": "source/skills/"
+    },
+    {
+      "agent": "codex",
+      "path": ".codex/skills",
+      "source": "source/skills/"
+    }
+  ],
+  "driftPolicy": {
+    "generatedTargetsMustMatchCanonical": true,
+    "manualEditsInGeneratedTargetsAreWarnings": true,
+    "releaseRequiresNoDrift": true
+  }
 }

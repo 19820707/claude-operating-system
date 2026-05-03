@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "description": "Minimal valid runtime-budget.json for schema and $ref coverage in verify-examples.",
+  "profiles": {
+    "quick": {
+      "targetSeconds": 30,
+      "maxFilesScanned": 200,
+      "requireGit": false,
+      "requireBash": false,
+      "requireCleanWorkingTree": false
+    },
+    "standard": {
+      "targetSeconds": 120,
+      "maxFilesScanned": 800,
+      "requireGit": true,
+      "requireBash": false,
+      "requireCleanWorkingTree": false
+    },
+    "strict": {
+      "targetSeconds": 600,
+      "maxFilesScanned": 4000,
+      "requireGit": true,
+      "requireBash": true,
+      "requireCleanWorkingTree": true
+    }
+  },
+  "ordering": ["quick", "standard", "strict"],
+  "approvalRequiredFor": ["Critical", "Production", "Incident", "Migration", "Release", "Destructive"],
+  "neverTreatAsPassed": ["skipped", "warn", "unknown", "not_run", "degraded", "blocked"]
+}

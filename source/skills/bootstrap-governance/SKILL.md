@@ -31,3 +31,27 @@ Use this skill when the work touches project scaffolding, `.claude/` initializat
 - Manifest paths are always relative and never contain `..`.
 - Protected local files are never overwritten unless explicitly allowed by contract.
 - Validation output must be short, actionable, and free of secrets or raw stack traces.
+
+## Non-goals
+
+- Duplicating full policy corpora; defer to `policies/*.md` and `CLAUDE.md`.
+
+## Inputs
+
+- Named bootstrap paths, manifest diffs, and CI or local validation context.
+
+## Outputs
+
+- Idempotent bootstrap actions, manifest updates, and honest validation status.
+
+## Failure modes
+
+- Silent drift between docs and `bootstrap-manifest.json`, or unsafe path writes.
+
+## Examples
+
+- Inline procedures above illustrate intended use.
+
+## Related files
+
+- `skills-manifest.json`, `policies/multi-tool-adapters.md`, `bootstrap-manifest.json` (repo root)

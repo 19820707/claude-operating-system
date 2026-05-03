@@ -14,19 +14,35 @@ param(
 $ErrorActionPreference = 'Stop'
 $RepoRoot = Split-Path $PSScriptRoot -Parent
 $Checks = @()
+. (Join-Path $RepoRoot 'tools/lib/safe-output.ps1')
+. (Join-Path $RepoRoot 'tools/lib/os-remediation-guidance.ps1')
 
 function Add-Check {
     param(
         [string]$Name,
         [string]$Status,
         [string]$Detail = '',
-        [string]$Remediation = ''
+        [string]$Reason = '',
+        [string]$Impact = '',
+        [string]$Remediation = '',
+        [string]$StrictImpact = '',
+        [string]$DocsLink = ''
     )
+    $f = New-OsDoctorCheckFinding -CheckName $Name -Status $Status -Detail $Detail
+    if ($Reason) { $f.reason = $Reason }
+    if ($Impact) { $f.impact = $Impact }
+    if ($Remediation) { $f.remediation = $Remediation }
+    if ($StrictImpact) { $f.strictImpact = $StrictImpact }
+    if ($DocsLink) { $f.docsLink = $DocsLink }
     $script:Checks += [pscustomobject]@{
-        name = $Name
-        status = $Status
-        detail = $Detail
-        remediation = $Remediation
+        name           = $Name
+        status         = $Status
+        detail         = $Detail
+        reason         = [string]$f.reason
+        impact         = [string]$f.impact
+        remediation    = [string]$f.remediation
+        strictImpact   = [string]$f.strictImpact
+        docsLink       = [string]$f.docsLink
     }
 }
 
@@ -224,14 +240,29 @@ $doctorEnv = [ordered]@{
 $doctorRepo = Get-DoctorRepoState
 
 if ($Json) {
+    $outChecks = foreach ($ch in $Checks) {
+        $row = [ordered]@{
+            name   = $ch.name
+            status = $ch.status
+            detail = (Redact-SensitiveText -Text ([string]$ch.detail) -MaxLength 280)
+        }
+        if ([string]$ch.status -ne 'ok') {
+            $row.reason = (Redact-SensitiveText -Text ([string]$ch.reason) -MaxLength 400)
+            $row.impact = (Redact-SensitiveText -Text ([string]$ch.impact) -MaxLength 400)
+            $row.remediation = (Redact-SensitiveText -Text ([string]$ch.remediation) -MaxLength 400)
+            $row.strictImpact = (Redact-SensitiveText -Text ([string]$ch.strictImpact) -MaxLength 400)
+            $row.docsLink = (Redact-SensitiveText -Text ([string]$ch.docsLink) -MaxLength 200)
+        }
+        [pscustomobject]$row
+    }
     [pscustomobject]@{
         status      = if ($failures.Count -gt 0) { 'fail' } elseif ($warnings.Count -gt 0) { 'warn' } else { 'ok' }
         failures    = $failures.Count
         warnings    = $warnings.Count
         environment = [pscustomobject]$doctorEnv
         repo          = $doctorRepo
-        checks        = $Checks
-    } | ConvertTo-Json -Depth 8 -Compress | Write-Output
+        checks        = @($outChecks)
+    } | ConvertTo-Json -Depth 10 -Compress | Write-Output
     if ($failures.Count -gt 0) { exit 1 }
     exit 0
 }
@@ -243,8 +274,9 @@ foreach ($check in $Checks) {
     $line = "  $($check.status.ToUpper().PadRight(4)) $($check.name)"
     if ($check.detail) { $line += " - $($check.detail)" }
     Write-Host $line
-    if ($check.remediation -and $check.status -ne 'ok') {
-        Write-Host "       fix: $($check.remediation)"
+    if ([string]$check.status -ne 'ok') {
+        if ($check.remediation) { Write-Host "       remediation: $($check.remediation)" }
+        if ($check.docsLink) { Write-Host "       docs: $($check.docsLink)" }
     }
 }
 Write-Host ''

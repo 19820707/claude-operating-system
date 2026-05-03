@@ -10,7 +10,8 @@ alwaysApply: true
 - **`CLAUDE.md`** — project policy and entry for Claude Code–aligned work.
 - **`.claude/session-state.md`** — live branch, risks, decisions, next steps.
 - **`.claude/workflow-manifest.json`** — progressive delivery gates.
-- **`.claude/os-capabilities.json`** — what automation and routing are allowed.
+- **`.claude/os-capabilities.json`** — what automation and routing are allowed (`os.*`).
+- **`.claude/capability-manifest.json`** — task-kind intent routes (`route.*`) with approvals, evidence, and validators.
 
 Also keep **`AGENTS.md`** (repo root) aligned: it is the thin cross-tool contract for Codex/Cursor/others.
 

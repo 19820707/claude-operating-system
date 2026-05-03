@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.release",
+  "title": "Release quality gate",
+  "description": "Strict profile validation and aggregate gates. No false-green: only envelope status ok counts as pass.",
+  "domain": "release",
+  "requiredValidators": [
+    {
+      "id": "verify-distribution",
+      "script": "tools/verify-distribution.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-quality-gates",
+      "script": "tools/verify-quality-gates.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-deprecations",
+      "script": "tools/verify-deprecations.ps1",
+      "arguments": ["-Json", "-Strict"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-upgrade-notes",
+      "script": "tools/verify-upgrade-notes.ps1",
+      "arguments": ["-Json", "-Strict"],
+      "emitJson": true
+    },
+    {
+      "id": "os-validate-strict",
+      "script": "tools/os-validate.ps1",
+      "arguments": ["-Profile", "strict", "-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": [],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "verify-distribution JSON ok (distribution-manifest paths resolve)",
+    "verify-quality-gates structural manifest ok",
+    "verify-deprecations -Strict ok (no forbidden deprecated scripts on orchestrator or gate surfaces)",
+    "verify-upgrade-notes -Strict ok (contract schemaVersion bumps documented in upgrade-manifest.json)",
+    "os-validate strict aggregate JSON status ok (includes os-validate-all -Strict at end of strict profile)",
+    "Release checklist or decision-log entry for residual risk when applicable"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 1,
+    "roles": ["release-owner", "maintainer"],
+    "requiresMaintainerApproval": true
+  },
+  "strictModeBehavior": "Evaluator always applies strict semantics for this gate: reject skip, warn, fail, unknown, degraded, blocked, and human-readable aliases skipped/not_run as equivalent to non-pass (aligned with runtime-budget.neverTreatAsPassed).",
+  "passInterpretation": {
+    "onlyStatusOkIsPass": true,
+    "statusesNeverEquivalentToPassed": [
+      "skip",
+      "warn",
+      "unknown",
+      "degraded",
+      "blocked",
+      "fail"
+    ],
+    "nonPassStatusAliases": ["skipped", "not_run"]
+  }
+}

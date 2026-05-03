@@ -3,7 +3,41 @@
 Source of truth for global Claude Code operational infrastructure.
 Persistent, versionable, restorable across machines and projects.
 
-**Navigation:** see [INDEX.md](INDEX.md) for a full map of every file and when to use it.
+**Navigation:** see [INDEX.md](INDEX.md) for a full map of every file and when to use it. Quick paths: **[docs/QUICKSTART.md](docs/QUICKSTART.md)**, **[docs/VALIDATION.md](docs/VALIDATION.md)**, **[docs/RELEASE-READINESS.md](docs/RELEASE-READINESS.md)**, **[docs/SKILLS.md](docs/SKILLS.md)** (skills), **[playbooks/README.md](playbooks/README.md)** (playbooks), **[recipes/README.md](recipes/README.md)** (command recipes + `recipe-manifest.json`).
+
+---
+
+## Get started
+
+```powershell
+git clone https://github.com/19820707/claude-operating-system.git
+cd claude-operating-system
+pwsh ./tools/os-runtime.ps1 init
+pwsh ./tools/os-runtime.ps1 doctor
+pwsh ./tools/os-runtime.ps1 validate -Profile quick
+```
+
+Strict validation (release-style, includes full `os-validate-all` when profile is `strict`):
+
+```powershell
+pwsh ./tools/os-runtime.ps1 validate -Profile strict -Json
+```
+
+Scaffold a new project (from this repo):
+
+```powershell
+pwsh ./init-project.ps1 ../my-project
+```
+
+**Surfaces:** This repository is the **global source** for policies and templates. **`~/.claude/`** is the active local copy after `install.ps1` (disposable; reconstructible). Each **project repo** carries its own `.claude/` runtime (session state, learning log, commands) plus thin adapters (`AGENTS.md`, `.cursor/rules/`, etc.).
+
+**Profiles:** **quick** runs contracts, **skills manifest + structure + `verify-skills`**, and lightweight verifiers. **standard** adds **skills economy + drift** (warn on body drift if copies exist), manifests, adapter checks, Git hygiene (warn if not a Git checkout), and `os-doctor`. **strict** uses **`-Strict`** on skills manifest/structure/drift (missing generated copies and manifest disk mismatches fail), then `os-validate-all -Strict` (bootstrap smoke, session cycle, bash `-n` when Bash is on PATH and not skipped).
+
+**Bash:** Optional on Windows for local runs (`-SkipBashSyntax`). **CI (Ubuntu)** uses `-RequireBash` so shell syntax is a real gate.
+
+**Honest status:** `warn`, `skip`, `unknown`, `degraded`, `blocked`, and `not_run` are **not** treated as passed (see `runtime-budget.json` / [VALIDATION.md](docs/VALIDATION.md)).
+
+**Evidence:** Use `-WriteHistory` on `init`, `validate`, `verify-os-health`, or `os-validate-all` to append one JSON object per run to `logs/validation-history.jsonl` (gitignored).
 
 ---
 

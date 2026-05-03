@@ -33,3 +33,27 @@ Use this skill when the task requires separating what is known from what is infe
 - Assumptions must be labeled, not hidden in prose.
 - Evidence outranks confidence language.
 - Decision debt must be visible after handoff.
+
+## Non-goals
+
+- Duplicating full policy corpora; defer to `policies/*.md` and `CLAUDE.md`.
+
+## Inputs
+
+- Named decision surfaces, evidence paths, and risk class from session or user.
+
+## Outputs
+
+- Labeled claims, gates, and honest status (`ok` / `warn` / `fail` / `skip` / `unknown`).
+
+## Failure modes
+
+- Hidden assumptions, unlabeled inference, or treating `skip`/`warn` as pass.
+
+## Examples
+
+- Inline procedures above illustrate intended use.
+
+## Related files
+
+- `skills-manifest.json`, `policies/reporting-format.md` (repo root)

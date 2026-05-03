@@ -1,0 +1,1584 @@
+{
+    "schemaVersion":  1,
+    "description":  "Metadata for tools/*.ps1; templates/scripts governed by bootstrap-manifest projectBootstrap.scripts",
+    "tools":  [
+                  {
+                      "path":  "tools/git-recover-local.ps1",
+                      "id":  "git-recover-local",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/lib/safe-output.ps1",
+                      "id":  "lib-safe-output",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/lib/validation-envelope.ps1",
+                      "id":  "lib-validation-envelope",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/lib/os-remediation-guidance.ps1",
+                      "id":  "lib-os-remediation-guidance",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/os-doctor.ps1",
+                      "id":  "os-doctor",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/os-runtime.ps1",
+                      "id":  "os-runtime",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/os-update-project.ps1",
+                      "id":  "os-update-project",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "Project .claude/ and managed paths under -ProjectPath (see script)"
+                                 ],
+                      "writeRisk":  "high",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "Managed templates copied into target project .claude/ tree"
+                                                                  ],
+                                        "rollbackNote":  "Restore project from git or re-run os-update-project without -DryRun after diff review."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/os-validate-all.ps1",
+                      "id":  "os-validate-all",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/query-docs-index.ps1",
+                      "id":  "query-docs-index",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/route-capability.ps1",
+                      "id":  "route-capability",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/run-contract-tests.ps1",
+                      "id":  "run-contract-tests",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/runtime-profile.ps1",
+                      "id":  "runtime-profile",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/session-absorb.ps1",
+                      "id":  "session-absorb",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     ".claude/learning-log.md (under -ProjectPath)"
+                                 ],
+                      "writeRisk":  "medium",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      ".claude/learning-log.md"
+                                                                  ],
+                                        "rollbackNote":  "Remove appended digest section from learning-log.md or restore file from VCS."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/session-digest.ps1",
+                      "id":  "session-digest",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     ".claude/learning-log.md",
+                                     ".claude/decision-log.jsonl"
+                                 ],
+                      "writeRisk":  "medium",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      ".claude/learning-log.md",
+                                                                      ".claude/decision-log.jsonl"
+                                                                  ],
+                                        "rollbackNote":  "Truncate appended digest from logs or restore .claude/*.md / jsonl from backup."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/session-prime.ps1",
+                      "id":  "session-prime",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-agent-adapters.ps1",
+                      "id":  "verify-agent-adapters",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-bootstrap-manifest.ps1",
+                      "id":  "verify-bootstrap-manifest",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-bootstrap-examples.ps1",
+                      "id":  "verify-bootstrap-examples",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-capabilities.ps1",
+                      "id":  "verify-capabilities",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-checklists.ps1",
+                      "id":  "verify-checklists",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-claudeignore.ps1",
+                      "id":  "verify-claudeignore",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-critical-systems.ps1",
+                      "id":  "verify-critical-systems",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-deprecations.ps1",
+                      "id":  "verify-deprecations",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-doc-manifest.ps1",
+                      "id":  "verify-doc-manifest",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-examples.ps1",
+                      "id":  "verify-examples",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/export-audit-evidence.ps1",
+                      "id":  "export-audit-evidence",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "-OutputPath directory",
+                                     "evidence-bundle.json",
+                                     "audit-evidence-manifest.json"
+                                 ],
+                      "writeRisk":  "high",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "<OutputPath>/evidence-bundle.json",
+                                                                      "<OutputPath>/audit-evidence-manifest.json"
+                                                                  ],
+                                        "rollbackNote":  "Delete the export directory or remove the two JSON artifacts; no repo files touched unless OutputPath points inside repo."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/build-distribution.ps1",
+                      "id":  "build-distribution",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "dist/claude-os-distribution.zip",
+                                     "dist/pack-staging/"
+                                 ],
+                      "writeRisk":  "high",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "Portable zip under dist/ from distribution-manifest.json"
+                                                                  ],
+                                        "rollbackNote":  "Delete dist/ outputs; no in-place repo mutation outside dist/."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  false
+                  },
+                  {
+                      "path":  "tools/evaluate-quality-gate.ps1",
+                      "id":  "evaluate-quality-gate",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-quality-gates.ps1",
+                      "id":  "verify-quality-gates",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-docs-index.ps1",
+                      "id":  "verify-docs-index",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-git-hygiene.ps1",
+                      "id":  "verify-git-hygiene",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-no-secrets.ps1",
+                      "id":  "verify-no-secrets",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-json-contracts.ps1",
+                      "id":  "verify-json-contracts",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-lifecycle.ps1",
+                      "id":  "verify-lifecycle",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-os-health.ps1",
+                      "id":  "verify-os-health",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-os-invariants.ps1",
+                      "id":  "verify-os-invariants",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-runtime-dispatcher.ps1",
+                      "id":  "verify-runtime-dispatcher",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-runtime-profiles.ps1",
+                      "id":  "verify-runtime-profiles",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-runtime-release.ps1",
+                      "id":  "verify-runtime-release",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-security-policy.ps1",
+                      "id":  "verify-security-policy",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-playbooks.ps1",
+                      "id":  "verify-playbooks",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-recipes.ps1",
+                      "id":  "verify-recipes",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-session-memory.ps1",
+                      "id":  "verify-session-memory",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-skills.ps1",
+                      "id":  "verify-skills",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/test-skills.ps1",
+                      "id":  "test-skills",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-skills-drift.ps1",
+                      "id":  "verify-skills-drift",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-skills-economy.ps1",
+                      "id":  "verify-skills-economy",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-skills-manifest.ps1",
+                      "id":  "verify-skills-manifest",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-skills-structure.ps1",
+                      "id":  "verify-skills-structure",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/sync-skills.ps1",
+                      "id":  "sync-skills",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "skills-manifest.json skills[].generatedTargets (e.g. .claude/skills, .cursor/skills, .codex/skills)"
+                                 ],
+                      "writeRisk":  "high",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "Each skills[].generatedTargets path under repo root"
+                                                                  ],
+                                        "rollbackNote":  "Re-run sync-skills from canonical source/skills or git checkout generated copies."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  false
+                  },
+                  {
+                      "path":  "tools/verify-token-economy-policy.ps1",
+                      "id":  "verify-token-economy-policy",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-upgrade-notes.ps1",
+                      "id":  "verify-upgrade-notes",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-workflow-manifest.ps1",
+                      "id":  "verify-workflow-manifest",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/workflow-status.ps1",
+                      "id":  "workflow-status",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/init-os-runtime.ps1",
+                      "id":  "init-os-runtime",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "OS_WORKSPACE_CONTEXT.md",
+                                     "OPERATOR_JOURNAL.md",
+                                     "logs/"
+                                 ],
+                      "writeRisk":  "low",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "OS_WORKSPACE_CONTEXT.md",
+                                                                      "OPERATOR_JOURNAL.md",
+                                                                      "logs/"
+                                                                  ],
+                                        "rollbackNote":  "Delete generated local files or git checkout; safe to re-run init-os-runtime."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  false
+                  },
+                  {
+                      "path":  "tools/os-validate.ps1",
+                      "id":  "os-validate",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/sync-agent-adapters.ps1",
+                      "id":  "sync-agent-adapters",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-agent-adapter-drift.ps1",
+                      "id":  "verify-agent-adapter-drift",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh",
+                                       "git"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/append-approval-log.ps1",
+                      "id":  "append-approval-log",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                      "logs/approval-log.jsonl"
+                                  ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  false
+                  },
+                  {
+                      "path":  "tools/verify-approval-log.ps1",
+                      "id":  "verify-approval-log",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-context-economy.ps1",
+                      "id":  "verify-context-economy",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-components.ps1",
+                      "id":  "verify-components",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-compatibility.ps1",
+                      "id":  "verify-compatibility",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-doc-contract-consistency.ps1",
+                      "id":  "verify-doc-contract-consistency",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-distribution.ps1",
+                      "id":  "verify-distribution",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-runtime-budget.ps1",
+                      "id":  "verify-runtime-budget",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-script-manifest.ps1",
+                      "id":  "verify-script-manifest",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/write-validation-history.ps1",
+                      "id":  "write-validation-history",
+                      "maturity":  "stable",
+                      "defaultEnabled":  false,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     "logs/validation-history.jsonl"
+                                 ],
+                      "writeRisk":  "low",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      "logs/validation-history.jsonl"
+                                                                  ],
+                                        "rollbackNote":  "Remove appended JSONL line(s) or restore logs/validation-history.jsonl from backup."
+                                    },
+                      "exitPolicy":  "informational",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/invoke-safe-apply.ps1",
+                      "id":  "invoke-safe-apply",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  }
+              ],
+    "templateShell":  {
+                          "directory":  "templates/scripts",
+                          "countSource":  "bootstrap-manifest.json#projectBootstrap.scripts",
+                          "maturity":  "stable",
+                          "requires":  [
+                                           "bash"
+                                       ],
+                          "defaultEnabled":  false,
+                          "exitPolicy":  "informational",
+                          "safeToRunInCI":  true
+                      },
+    "shellScripts":  [
+                         {
+                             "path":  "templates/scripts/agent-coordinator.sh",
+                             "id":  "agent-coordinator",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/autonomous-learning-loop.sh",
+                             "id":  "autonomous-learning-loop",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/causal-trace.sh",
+                             "id":  "causal-trace",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/consolidate-runbook.sh",
+                             "id":  "consolidate-runbook",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/context-allocator.sh",
+                             "id":  "context-allocator",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/context-builder.sh",
+                             "id":  "context-builder",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/context-topology.sh",
+                             "id":  "context-topology",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/contract-delta.sh",
+                             "id":  "contract-delta",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/coordination-check.sh",
+                             "id":  "coordination-check",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/cross-project-sync.sh",
+                             "id":  "cross-project-sync",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/decision-append.sh",
+                             "id":  "decision-append",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/decision-audit.sh",
+                             "id":  "decision-audit",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/drift-detect.sh",
+                             "id":  "drift-detect",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/epistemic-check.sh",
+                             "id":  "epistemic-check",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/epistemic-state.sh",
+                             "id":  "epistemic-state",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/heuristic-ratchet.sh",
+                             "id":  "heuristic-ratchet",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/invariant-engine.sh",
+                             "id":  "invariant-engine",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/invariant-lifecycle.sh",
+                             "id":  "invariant-lifecycle",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/invariant-verify.sh",
+                             "id":  "invariant-verify",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/knowledge-graph.sh",
+                             "id":  "knowledge-graph",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/living-arch-graph.sh",
+                             "id":  "living-arch-graph",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/module-complexity.sh",
+                             "id":  "module-complexity",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/os-telemetry.sh",
+                             "id":  "os-telemetry",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/policy-compliance.sh",
+                             "id":  "policy-compliance",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/policy-compliance-audit.sh",
+                             "id":  "policy-compliance-audit",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/post-compact.sh",
+                             "id":  "post-compact",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/pre-compact.sh",
+                             "id":  "pre-compact",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/preflight.sh",
+                             "id":  "preflight",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/probabilistic-risk-model.sh",
+                             "id":  "probabilistic-risk-model",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/promote-heuristics.sh",
+                             "id":  "promote-heuristics",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/risk-surface-scan.sh",
+                             "id":  "risk-surface-scan",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/runbook-inject.sh",
+                             "id":  "runbook-inject",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/salience-score.sh",
+                             "id":  "salience-score",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/semantic-diff-analyze.sh",
+                             "id":  "semantic-diff-analyze",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/session-end.sh",
+                             "id":  "session-end",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/session-index.sh",
+                             "id":  "session-index",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/simulate-change.sh",
+                             "id":  "simulate-change",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/ts-error-budget.sh",
+                             "id":  "ts-error-budget",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         }
+                     ]
+}

@@ -20,6 +20,9 @@ if ($help.Exit -ne 0) { throw 'dispatcher: help must exit 0' }
 $h = ($help.Out | Out-String)
 if (-not $h.Contains('Claude OS Runtime v1')) { throw 'dispatcher: help output must include Runtime v1 (capturable)' }
 
+$init = Invoke-RT @('init', '-SkipBashSyntax')
+if ($init.Exit -ne 0) { throw 'dispatcher: init -SkipBashSyntax must exit 0' }
+
 $wf = Invoke-RT @('workflow', '-Phase', 'verify', '-Json')
 if ($wf.Exit -ne 0) { throw 'dispatcher: workflow -Json must exit 0' }
 $null = ($wf.Out | Out-String) | ConvertFrom-Json
@@ -39,6 +42,15 @@ $null = ($prof.Out | Out-String) | ConvertFrom-Json
 # Strict / bash flags must be forwarded via splat (never reuse $args as a local variable).
 # Do not invoke `validate` from this script: os-validate-all -> health -> verify-runtime-dispatcher would recurse.
 $src = Get-Content -LiteralPath $rt -Raw
+if ($src -notmatch "'init'") {
+    throw "dispatcher: os-runtime.ps1 must include init command in ValidateSet."
+}
+if (-not $src.Contains('init-os-runtime.ps1')) {
+    throw 'dispatcher: os-runtime.ps1 must invoke tools/init-os-runtime.ps1 for init.'
+}
+if (-not $src.Contains('os-validate.ps1')) {
+    throw 'dispatcher: os-runtime.ps1 must invoke tools/os-validate.ps1 for profiled validate.'
+}
 if (-not $src.Contains('$params[''Strict'']')) {
     throw "dispatcher: os-runtime.ps1 must forward -Strict to os-validate-all (expected splat key Strict)."
 }

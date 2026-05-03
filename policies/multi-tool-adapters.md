@@ -109,3 +109,11 @@ For production-impacting bootstrap/update behaviour or changing this separation:
 **Root markdown + `.cursor/rules/` + `.agent/` (or `.agents/`) = how each tool enters that truth — not a second runtime.**
 
 For production-impacting layout or bootstrap changes: **human approval required**.
+
+---
+
+## External reference — Arcads (patterns only)
+
+**Arcads** may be used **only** as a reference for **observable operating patterns**: idempotent setup; **local, gitignored** working context; **canonical skills** under a single source tree with **generated** Claude/Cursor (and similar) copies; a **manifest-driven sync** path; **local** references and logs (not committed secrets); **`.env` hygiene**; a **thin `AGENTS.md`**; and **simple onboarding** docs.
+
+Anything **beyond** that set—validators, quality gates, playbooks, upgrade ledger, distribution contracts, capability routing, strict profiles, or other OS machinery—is **Claude OS–specific engineering**. It must **not** be described or justified as “copied from Arcads” or assumed to match Arcads unless explicitly documented as a deliberate port with its own review.

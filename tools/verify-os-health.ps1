@@ -10,7 +10,8 @@ param(
     [switch]$SkipBashSyntax,
     [switch]$RequireBash,
     [switch]$Strict,
-    [switch]$Json
+    [switch]$Json,
+    [switch]$WriteHistory
 )
 
 $ErrorActionPreference = 'Stop'
@@ -18,6 +19,7 @@ $RepoRoot = Split-Path $PSScriptRoot -Parent
 $Failures = @()
 $Results = @()
 . (Join-Path $PSScriptRoot 'lib/safe-output.ps1')
+. (Join-Path $PSScriptRoot 'lib/os-remediation-guidance.ps1')
 . (Join-Path $PSScriptRoot 'lib/validation-envelope.ps1')
 
 function Add-Result {
@@ -25,13 +27,29 @@ function Add-Result {
         [string]$Name,
         [string]$Status,
         [int]$LatencyMs,
-        [string]$Note = ''
+        [string]$Note = '',
+        [string]$Reason = '',
+        [string]$Impact = '',
+        [string]$Remediation = '',
+        [string]$StrictImpact = '',
+        [string]$DocsLink = ''
     )
+    $f = New-OsHealthStepFinding -StepName $Name -Status $Status -Note $Note
+    if ($Reason) { $f.reason = $Reason }
+    if ($Impact) { $f.impact = $Impact }
+    if ($Remediation) { $f.remediation = $Remediation }
+    if ($StrictImpact) { $f.strictImpact = $StrictImpact }
+    if ($DocsLink) { $f.docsLink = $DocsLink }
     $script:Results += [pscustomobject]@{
-        name = $Name
-        status = $Status
-        latency_ms = $LatencyMs
-        note = $Note
+        name           = $Name
+        status         = $Status
+        latency_ms     = $LatencyMs
+        note           = $Note
+        reason         = [string]$f.reason
+        impact         = [string]$f.impact
+        remediation    = [string]$f.remediation
+        strictImpact   = [string]$f.strictImpact
+        docsLink       = [string]$f.docsLink
     }
 }
 
@@ -184,10 +202,21 @@ if ($RequireBash -and -not $script:BashAvailable) {
         Write-Host ''
     }
     if ($Json) {
+        $pf = New-OsHealthStepFinding -StepName 'preconditions' -Status 'fail' -Note 'bash required on PATH when -RequireBash is set'
         $pre = New-OsHealthEnvelope -Strict $Strict.IsPresent -Checks @(
-            [pscustomobject]@{ name = 'preconditions'; status = 'fail'; latency_ms = 0; note = 'bash required on PATH when -RequireBash is set' }
+            [pscustomobject]@{
+                name           = 'preconditions'
+                status         = 'fail'
+                latency_ms     = 0
+                note           = 'bash required on PATH when -RequireBash is set'
+                reason         = [string]$pf.reason
+                impact         = [string]$pf.impact
+                remediation    = [string]$pf.remediation
+                strictImpact   = [string]$pf.strictImpact
+                docsLink       = [string]$pf.docsLink
+            }
         ) -FailureCount 1 -WarningCount 0 -RepoRoot $RepoRoot -TotalLatencyMs 0
-        $pre | ConvertTo-Json -Depth 10 -Compress | Write-Output
+        $pre | ConvertTo-Json -Depth 12 -Compress | Write-Output
         exit 1
     }
     throw 'verify-os-health: -RequireBash requires bash on PATH.'
@@ -224,14 +253,92 @@ Invoke-HealthStep -Name 'git-hygiene' -Script {
     & (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1') @gh
 }
 
+Invoke-HealthStep -Name 'no-secrets' -Script {
+    $ns = @('-Json')
+    if ($Strict) { $ns += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-no-secrets.ps1') @ns 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-no-secrets failed' }
+}
+
 Invoke-HealthStep -Name 'manifest' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1') }
 Invoke-HealthStep -Name 'runtime-release' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1') }
 Invoke-HealthStep -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
+Invoke-HealthStep -Name 'contract-tests' -Script { & (Join-Path $RepoRoot 'tools/run-contract-tests.ps1') }
+Invoke-HealthStep -Name 'quality-gates' -Script { & (Join-Path $RepoRoot 'tools/verify-quality-gates.ps1') }
+Invoke-HealthStep -Name 'deprecations' -Script { & (Join-Path $RepoRoot 'tools/verify-deprecations.ps1') -Strict }
+Invoke-HealthStep -Name 'runtime-budget' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-budget.ps1') }
+Invoke-HealthStep -Name 'context-economy' -Script { & (Join-Path $RepoRoot 'tools/verify-context-economy.ps1') }
+Invoke-HealthStep -Name 'doc-contract-consistency' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-contract-consistency.ps1') }
+Invoke-HealthStep -Name 'compatibility' -Script {
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-compatibility.ps1') -Json 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-compatibility failed' }
+}
+Invoke-HealthStep -Name 'lifecycle' -Script {
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-lifecycle.ps1') -Json 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-lifecycle failed' }
+}
+Invoke-HealthStep -Name 'distribution' -Script {
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-distribution.ps1') -Json 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-distribution failed' }
+}
+Invoke-HealthStep -Name 'upgrade-notes' -Script {
+    $ua = @('-Json')
+    if ($Strict) { $ua += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-upgrade-notes.ps1') @ua 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-upgrade-notes failed' }
+}
+Invoke-HealthStep -Name 'approval-log' -Script {
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-approval-log.ps1') -Json 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-approval-log failed' }
+}
+Invoke-HealthStep -Name 'script-manifest' -Script {
+    $smArgs = @()
+    if ($Strict) { $smArgs += '-Strict' }
+    & (Join-Path $RepoRoot 'tools/verify-script-manifest.ps1') @smArgs
+}
+Invoke-HealthStep -Name 'components' -Script {
+    $vc = @('-Json')
+    if ($Strict) { $vc += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-components.ps1') @vc 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-components failed' }
+}
 Invoke-HealthStep -Name 'agent-adapters' -Script { & (Join-Path $RepoRoot 'tools/verify-agent-adapters.ps1') }
 Invoke-HealthStep -Name 'runtime-profiles' -Script { & (Join-Path $RepoRoot 'tools/verify-runtime-profiles.ps1') }
 Invoke-HealthStep -Name 'runtime-profile' -Script { Test-RuntimeProfile }
 Invoke-HealthStep -Name 'session-memory' -Script { & (Join-Path $RepoRoot 'tools/verify-session-memory.ps1') }
-Invoke-HealthStep -Name 'skills' -Script { & (Join-Path $RepoRoot 'tools/verify-skills.ps1') }
+Invoke-HealthStep -Name 'playbooks' -Script {
+    $pa = @('-Json')
+    if ($Strict) { $pa += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-playbooks.ps1') @pa 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-playbooks failed' }
+}
+Invoke-HealthStep -Name 'recipes' -Script {
+    $ra = @('-Json')
+    if ($Strict) { $ra += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-recipes.ps1') @ra 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-recipes failed' }
+}
+Invoke-HealthStep -Name 'skills-manifest' -Script {
+    $ma = @('-Json')
+    if ($Strict) { $ma += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-skills-manifest.ps1') @ma 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-skills-manifest failed' }
+}
+Invoke-HealthStep -Name 'skills' -Script {
+    & (Join-Path $RepoRoot 'tools/verify-skills.ps1')
+    $structArgs = @('-Json')
+    if ($Strict) { $structArgs += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-skills-structure.ps1') @structArgs 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-skills-structure failed' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-skills-economy.ps1') -Json 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-skills-economy failed' }
+    $driftA = @('-Json')
+    if ($Strict) { $driftA += '-Strict' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/verify-skills-drift.ps1') @driftA 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'verify-skills-drift failed' }
+    $null = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/test-skills.ps1') @() 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'test-skills failed' }
+}
 Invoke-HealthStep -Name 'docs' -Script { & (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1') }
 Invoke-HealthStep -Name 'docs-index' -Script { & (Join-Path $RepoRoot 'tools/verify-docs-index.ps1') }
 Invoke-HealthStep -Name 'docs-index-query' -Script { Test-DocsIndexQuery }
@@ -251,12 +358,16 @@ Invoke-HealthStepWithBudget -Name 'doctor' -WarnMs 10000 -FailMs 30000 -Script {
     if ($result.status -eq 'fail') { throw 'os-doctor.ps1 reported blocking failures' }
 }
 Invoke-HealthStep -Name 'powershell-syntax' -Script {
-    Test-PowerShellSyntax -Files @(
+    $psSyntaxFiles = @(
         (Join-Path $RepoRoot 'install.ps1'),
         (Join-Path $RepoRoot 'init-project.ps1'),
         (Join-Path $RepoRoot 'tools/lib/safe-output.ps1'),
         (Join-Path $RepoRoot 'tools/verify-agent-adapters.ps1'),
         (Join-Path $RepoRoot 'tools/verify-bootstrap-manifest.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-bootstrap-examples.ps1'),
+        (Join-Path $RepoRoot 'tools/evaluate-quality-gate.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-quality-gates.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-deprecations.ps1'),
         (Join-Path $RepoRoot 'tools/verify-doc-manifest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-docs-index.ps1'),
         (Join-Path $RepoRoot 'tools/query-docs-index.ps1'),
@@ -269,20 +380,49 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/session-absorb.ps1'),
         (Join-Path $RepoRoot 'tools/session-digest.ps1'),
         (Join-Path $RepoRoot 'tools/verify-runtime-profiles.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-playbooks.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-recipes.ps1'),
         (Join-Path $RepoRoot 'tools/verify-session-memory.ps1'),
         (Join-Path $RepoRoot 'tools/verify-checklists.ps1'),
         (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1'),
+        (Join-Path $RepoRoot 'tools/invoke-safe-apply.ps1'),
+        (Join-Path $RepoRoot 'tools/run-contract-tests.ps1'),
         (Join-Path $RepoRoot 'tools/verify-runtime-release.ps1'),
         (Join-Path $RepoRoot 'tools/os-doctor.ps1'),
         (Join-Path $RepoRoot 'tools/os-runtime.ps1'),
         (Join-Path $RepoRoot 'tools/os-update-project.ps1'),
         (Join-Path $RepoRoot 'tools/os-validate-all.ps1'),
         (Join-Path $RepoRoot 'tools/verify-skills.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-skills-manifest.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-skills-structure.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-skills-drift.ps1'),
+        (Join-Path $RepoRoot 'tools/test-skills.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-skills-economy.ps1'),
+        (Join-Path $RepoRoot 'tools/sync-skills.ps1'),
         (Join-Path $RepoRoot 'tools/verify-os-health.ps1'),
         (Join-Path $RepoRoot 'tools/lib/validation-envelope.ps1'),
         (Join-Path $RepoRoot 'tools/verify-git-hygiene.ps1'),
-        (Join-Path $RepoRoot 'tools/verify-runtime-dispatcher.ps1')
+        (Join-Path $RepoRoot 'tools/verify-no-secrets.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-runtime-dispatcher.ps1'),
+        (Join-Path $RepoRoot 'tools/init-os-runtime.ps1'),
+        (Join-Path $RepoRoot 'tools/os-validate.ps1'),
+        (Join-Path $RepoRoot 'tools/sync-agent-adapters.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-agent-adapter-drift.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-context-economy.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-components.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-compatibility.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-lifecycle.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-distribution.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-upgrade-notes.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-approval-log.ps1'),
+        (Join-Path $RepoRoot 'tools/append-approval-log.ps1'),
+        (Join-Path $RepoRoot 'tools/build-distribution.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-doc-contract-consistency.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-runtime-budget.ps1'),
+        (Join-Path $RepoRoot 'tools/verify-script-manifest.ps1'),
+        (Join-Path $RepoRoot 'tools/write-validation-history.ps1')
     )
+    Test-PowerShellSyntax -Files $psSyntaxFiles
 }
 
 if (-not $SkipBootstrapSmoke) {
@@ -302,9 +442,31 @@ $totalMs = [int]($Results | Measure-Object -Property latency_ms -Sum).Sum
 $warnCount = @($Results | Where-Object { $_.status -eq 'warn' }).Count
 $failCount = $Failures.Count
 
+if ($WriteHistory) {
+    $histSt = if ($failCount -gt 0) { 'fail' } elseif ($warnCount -gt 0) { 'warn' } else { 'ok' }
+    $histWarns = [System.Collections.Generic.List[string]]::new()
+    foreach ($r in @($Results | Where-Object { $_.status -eq 'warn' })) {
+        $n = if ($r.note) { [string]$r.note } else { '' }
+        [void]$histWarns.Add((Redact-SensitiveText -Text ("$($r.name): $n").TrimEnd(': ') -MaxLength 400))
+    }
+    $histFails = [System.Collections.Generic.List[string]]::new()
+    foreach ($f in @($Failures)) { [void]$histFails.Add([string]$f) }
+    $rec = [ordered]@{
+        timestamp  = (Get-Date).ToUniversalTime().ToString('o')
+        event      = 'validation'
+        tool       = 'verify-os-health'
+        profile    = ''
+        status     = $histSt
+        durationMs = $totalMs
+        warnings   = @($histWarns)
+        failures   = @($histFails)
+    }
+    & (Join-Path $RepoRoot 'tools/write-validation-history.ps1') -Record ($rec | ConvertTo-Json -Depth 8 -Compress) -RepoRoot $RepoRoot -Quiet
+}
+
 if ($Json) {
     $envelope = New-OsHealthEnvelope -Strict $Strict.IsPresent -Checks @($Results) -FailureCount $failCount -WarningCount $warnCount -RepoRoot $RepoRoot -TotalLatencyMs $totalMs
-    $envelope | ConvertTo-Json -Depth 10 -Compress | Write-Output
+    $envelope | ConvertTo-Json -Depth 14 -Compress | Write-Output
 }
 
 if (-not $Json) {
@@ -314,6 +476,14 @@ if (-not $Json) {
         $line = "  $($r.status.ToUpper().PadRight(4)) $($r.name) ($($r.latency_ms) ms)"
         if ($r.note) { $line += " - $(Redact-SensitiveText -Text $r.note -MaxLength 180)" }
         Write-Host $line
+        if ([string]$r.status -in @('warn', 'fail', 'skip')) {
+            if ($r.remediation) {
+                Write-Host ("       remediation: {0}" -f (Redact-SensitiveText -Text ([string]$r.remediation) -MaxLength 220))
+            }
+            if ($r.docsLink) {
+                Write-Host ("       docs: {0}" -f (Redact-SensitiveText -Text ([string]$r.docsLink) -MaxLength 120))
+            }
+        }
     }
     Write-Host ''
     Write-Host "Health checks: $($Results.Count), failures: $failCount, warnings: $warnCount, total: $totalMs ms"

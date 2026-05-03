@@ -8,7 +8,8 @@ param(
     [switch]$Strict,
     [switch]$SkipBashSyntax,
     [switch]$RequireBash,
-    [switch]$Json
+    [switch]$Json,
+    [switch]$WriteHistory
 )
 
 $ErrorActionPreference = 'Stop'
@@ -184,6 +185,8 @@ function Write-ValidateSummaryJson {
         [void]$diag.Add("pwsh ./tools/os-doctor.ps1 -Json$db")
     }
     if ($failedNames -contains 'json-contracts') { [void]$diag.Add('pwsh ./tools/verify-json-contracts.ps1') }
+    if ($failedNames -contains 'examples') { [void]$diag.Add('pwsh ./tools/verify-examples.ps1') }
+    if ($failedNames -contains 'bootstrap-examples') { [void]$diag.Add('pwsh ./tools/verify-bootstrap-examples.ps1') }
     if ($failedNames -contains 'generated-project-tools') { [void]$diag.Add('pwsh ./tools/os-validate-all.ps1 -Strict (see init-project logs above)') }
     if ($failedNames -contains 'session-memory-cycle') { [void]$diag.Add('pwsh ./tools/verify-session-memory.ps1') }
 
@@ -263,6 +266,7 @@ function Invoke-HealthAggregate {
     elseif ($RequireBash) { $hp['RequireBash'] = $true }
     if ($Strict) { $hp['Strict'] = $true }
     if ($script:JsonMode) { $hp['Json'] = $true }
+    if ($WriteHistory) { $hp['WriteHistory'] = $true }
     $cap = [System.Collections.Generic.List[string]]::new()
     try {
         foreach ($line in @(& (Join-Path $RepoRoot 'tools/verify-os-health.ps1') @hp 2>$null)) {
@@ -320,10 +324,31 @@ function Invoke-HealthAggregate {
 Invoke-HealthAggregate
 Invoke-Validation -Name 'doctor' -Script { Invoke-DoctorStrict }
 Invoke-Validation -Name 'json-contracts' -Script { & (Join-Path $RepoRoot 'tools/verify-json-contracts.ps1') }
+Invoke-Validation -Name 'contract-tests' -Script { & (Join-Path $RepoRoot 'tools/run-contract-tests.ps1') }
+Invoke-Validation -Name 'examples' -Script { & (Join-Path $RepoRoot 'tools/verify-examples.ps1') }
+Invoke-Validation -Name 'bootstrap-examples' -Script { & (Join-Path $RepoRoot 'tools/verify-bootstrap-examples.ps1') }
 Invoke-Validation -Name 'generated-project-tools' -Script { Test-GeneratedProjectTools }
 Invoke-Validation -Name 'session-memory-cycle' -Script { Test-SessionMemoryCycle }
 
 if (-not $Json) { Write-Host '' }
+
+function Write-OsValidateAllHistory {
+    param([string]$Status)
+    if (-not $WriteHistory) { return }
+    $wrn = @($script:ValidateRecords | Where-Object { $_.status -eq 'warn' } | ForEach-Object { [string]$_.name })
+    $fl = @($script:ValidateRecords | Where-Object { $_.status -eq 'fail' } | ForEach-Object { [string]$_.name })
+    $rec = [ordered]@{
+        timestamp  = (Get-Date).ToUniversalTime().ToString('o')
+        event      = 'validation'
+        tool       = 'os-validate-all'
+        profile    = $(if ($Strict) { 'strict' } else { 'release' })
+        status     = $Status
+        durationMs = [int](@($script:ValidateRecords | Measure-Object -Property latencyMs -Sum).Sum)
+        warnings   = @($wrn)
+        failures   = @($fl)
+    }
+    & (Join-Path $RepoRoot 'tools/write-validation-history.ps1') -Record ($rec | ConvertTo-Json -Depth 8 -Compress) -RepoRoot $RepoRoot -Quiet
+}
 
 $aggregateStatus = if ($failures.Count -gt 0) {
     'fail'
@@ -334,6 +359,7 @@ $aggregateStatus = if ($failures.Count -gt 0) {
 }
 
 if ($failures.Count -gt 0) {
+    Write-OsValidateAllHistory -Status $aggregateStatus
     if ($Json) {
         Write-ValidateSummaryJson -Status $aggregateStatus
         exit 1
@@ -350,14 +376,18 @@ if ($failures.Count -gt 0) {
         $lines += "  pwsh ./tools/os-doctor.ps1 -Json$db"
     }
     if ($names -match 'json-contracts') { $lines += '  pwsh ./tools/verify-json-contracts.ps1' }
+    if ($names -match 'examples') { $lines += '  pwsh ./tools/verify-examples.ps1' }
+    if ($names -match 'bootstrap-examples') { $lines += '  pwsh ./tools/verify-bootstrap-examples.ps1' }
     if ($names -match 'generated-project-tools') { $lines += '  pwsh ./tools/os-validate-all.ps1 -Strict (see init-project + temp project logs above)' }
     if ($names -match 'session-memory-cycle') { $lines += '  pwsh ./tools/verify-session-memory.ps1' }
     throw ($lines -join "`n")
 }
 
 if ($Json) {
+    Write-OsValidateAllHistory -Status $aggregateStatus
     Write-ValidateSummaryJson -Status $aggregateStatus
     exit 0
 }
 
+Write-OsValidateAllHistory -Status $aggregateStatus
 Write-Host 'All validation checks passed.'

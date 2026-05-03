@@ -55,10 +55,23 @@ Write-Host ''
 $manifestPairs = @{
     'os-manifest.json' = 'schemas/os-manifest.schema.json'
     'bootstrap-manifest.json' = 'schemas/bootstrap-manifest.schema.json'
+    'skills-manifest.json' = 'schemas/skills-manifest.schema.json'
     'docs-index.json' = 'schemas/docs-index.schema.json'
     'os-capabilities.json' = 'schemas/os-capabilities.schema.json'
+    'capability-manifest.json' = 'schemas/capability-manifest.schema.json'
     'workflow-manifest.json' = 'schemas/workflow-manifest.schema.json'
     'agent-adapters-manifest.json' = 'schemas/agent-adapters.schema.json'
+    'runtime-budget.json' = 'schemas/runtime-budget.schema.json'
+    'context-budget.json' = 'schemas/context-budget.schema.json'
+    'script-manifest.json' = 'schemas/script-manifest.schema.json'
+    'playbook-manifest.json' = 'schemas/playbook-manifest.schema.json'
+    'recipe-manifest.json' = 'schemas/recipe-manifest.schema.json'
+    'deprecation-manifest.json' = 'schemas/deprecation-manifest.schema.json'
+    'component-manifest.json' = 'schemas/component-manifest.schema.json'
+    'compatibility-manifest.json' = 'schemas/compatibility-manifest.schema.json'
+    'lifecycle-manifest.json' = 'schemas/lifecycle-manifest.schema.json'
+    'distribution-manifest.json' = 'schemas/distribution-manifest.schema.json'
+    'upgrade-manifest.json' = 'schemas/upgrade-manifest.schema.json'
 }
 
 foreach ($pair in $manifestPairs.GetEnumerator() | Sort-Object Name) {
@@ -68,6 +81,21 @@ foreach ($pair in $manifestPairs.GetEnumerator() | Sort-Object Name) {
     if (-not $schema) { continue }
     if (-not ($schema.PSObject.Properties.Name -contains '$schema')) { Fail "$($pair.Value) missing `$schema declaration" }
     Write-Host "OK:  $($pair.Key) + $($pair.Value)"
+}
+
+$qgDir = Join-Path $RepoRoot 'quality-gates'
+$qgSchema = 'schemas/quality-gate.schema.json'
+if (Test-Path -LiteralPath $qgDir) {
+    $schQ = Read-JsonFile -RelativePath $qgSchema
+    if (-not $schQ) { }
+    elseif (-not ($schQ.PSObject.Properties.Name -contains '$schema')) { Fail "$qgSchema missing `$schema declaration" }
+    else {
+        foreach ($qg in Get-ChildItem -LiteralPath $qgDir -Filter '*.json' -File | Sort-Object Name) {
+            $rel = ('quality-gates/' + $qg.Name)
+            $null = Read-JsonFile -RelativePath $rel
+            Write-Host "OK:  $rel + $qgSchema"
+        }
+    }
 }
 
 $os = Read-JsonFile -RelativePath 'os-manifest.json'

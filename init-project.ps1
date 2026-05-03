@@ -28,6 +28,8 @@ function Test-OsRepo {
         (Join-Path $Root 'bootstrap-manifest.json'),
         (Join-Path $Root 'docs-index.json'),
         (Join-Path $Root 'os-capabilities.json'),
+        (Join-Path $Root 'capability-manifest.json'),
+        (Join-Path $Root 'deprecation-manifest.json'),
         (Join-Path $Root 'workflow-manifest.json'),
         (Join-Path $Root 'tools\query-docs-index.ps1'),
         (Join-Path $Root 'tools\route-capability.ps1'),
@@ -269,6 +271,9 @@ Copy-FileAlways -From (Join-Path $Source 'docs-index.json') -To (Join-Path $Proj
 Copy-FileAlways -From (Join-Path $Source 'tools\query-docs-index.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\query-docs-index.ps1')
 # Invariant: os-capabilities.json is the local routing contract for choosing the cheapest safe OS capability.
 Copy-FileAlways -From (Join-Path $Source 'os-capabilities.json') -To (Join-Path $ProjectRoot '.claude\os-capabilities.json')
+# Invariant: capability-manifest.json maps task intents (route.*) to modes, approvals, skills, playbooks, and validators.
+Copy-FileAlways -From (Join-Path $Source 'capability-manifest.json') -To (Join-Path $ProjectRoot '.claude\capability-manifest.json')
+Copy-FileAlways -From (Join-Path $Source 'deprecation-manifest.json') -To (Join-Path $ProjectRoot '.claude\deprecation-manifest.json')
 Copy-FileAlways -From (Join-Path $Source 'tools\route-capability.ps1') -To (Join-Path $ProjectRoot '.claude\scripts\route-capability.ps1')
 # Invariant: workflow-manifest.json defines the progressive delivery gates for artifact-first work.
 Copy-FileAlways -From (Join-Path $Source 'workflow-manifest.json') -To (Join-Path $ProjectRoot '.claude\workflow-manifest.json')

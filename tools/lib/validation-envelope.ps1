@@ -18,12 +18,20 @@ function New-OsHealthEnvelope {
         'ok'
     }
     $checkObjs = foreach ($c in $Checks) {
-        [ordered]@{
+        $row = [ordered]@{
             name      = [string]$c.name
             status    = [string]$c.status
             latencyMs = [int]$c.latency_ms
             detail    = (Redact-SensitiveText -Text ([string]$c.note) -MaxLength 220)
         }
+        if ([string]$c.status -in @('warn', 'fail', 'skip')) {
+            foreach ($k in @('reason', 'impact', 'remediation', 'strictImpact', 'docsLink')) {
+                $pv = $c.PSObject.Properties[$k]
+                $raw = if ($pv) { [string]$pv.Value } else { '' }
+                $row[$k] = (Redact-SensitiveText -Text $raw -MaxLength 400)
+            }
+        }
+        $row
     }
     return [ordered]@{
         name     = 'verify-os-health'
@@ -34,5 +42,30 @@ function New-OsHealthEnvelope {
         failures = $FailureCount
         totalMs  = $TotalLatencyMs
         repo     = (Redact-SensitiveText -Text $RepoRoot -MaxLength 200)
+    }
+}
+
+function New-OsValidatorEnvelope {
+    param(
+        [Parameter(Mandatory = $true)][string]$Tool,
+        [Parameter(Mandatory = $true)][ValidateSet('ok', 'warn', 'fail', 'skip', 'blocked', 'degraded', 'unknown')][string]$Status,
+        [int]$DurationMs = 0,
+        [object[]]$Checks = @(),
+        [string[]]$Warnings = @(),
+        [string[]]$Failures = @(),
+        [object[]]$Findings = @(),
+        [string[]]$Actions = @()
+    )
+    $w = @($Warnings | ForEach-Object { Redact-SensitiveText -Text ([string]$_) -MaxLength 400 })
+    $f = @($Failures | ForEach-Object { Redact-SensitiveText -Text ([string]$_) -MaxLength 400 })
+    return [ordered]@{
+        tool      = [string]$Tool
+        status    = [string]$Status
+        durationMs = [int]$DurationMs
+        checks    = @($Checks)
+        warnings  = @($w)
+        failures  = @($f)
+        findings  = @($Findings)
+        actions   = @($Actions)
     }
 }

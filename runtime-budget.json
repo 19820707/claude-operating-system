@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "description": "Wall-clock and environment budgets for validation profiles. Targets are soft guidance; verifiers emit warn/fail honestly.",
+  "profiles": {
+    "quick": {
+      "targetSeconds": 120,
+      "maxFilesScanned": 500,
+      "requireGit": false,
+      "requireBash": false,
+      "requireCleanWorkingTree": false
+    },
+    "standard": {
+      "targetSeconds": 600,
+      "maxFilesScanned": 2000,
+      "requireGit": false,
+      "requireBash": false,
+      "requireCleanWorkingTree": false
+    },
+    "strict": {
+      "targetSeconds": 1800,
+      "maxFilesScanned": 8000,
+      "requireGit": true,
+      "requireBash": true,
+      "requireCleanWorkingTree": true
+    }
+  },
+  "ordering": ["quick", "standard", "strict"],
+  "approvalRequiredFor": [
+    "Critical",
+    "Production",
+    "Incident",
+    "Migration",
+    "Release",
+    "Destructive"
+  ],
+  "neverTreatAsPassed": [
+    "skipped",
+    "warn",
+    "unknown",
+    "not_run",
+    "degraded",
+    "blocked"
+  ]
+}

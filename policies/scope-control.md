@@ -33,6 +33,7 @@ graphify-out/cache/
 
 ## Rules
 
+- **Complexity:** do not add process, automation, or repo surface unless it becomes a **contract** (manifest/schema), **validator** (declared in `script-manifest.json`), **playbook** (`playbooks/` + `playbook-manifest.json`), **skill** (`source/skills/` + `skills-manifest.json`), or another **auditable artifact** (e.g. `quality-gates/*.json`, checklist under `checklists/`) with a clear enforcement or review path. Informal convention alone is not enough.
 - Do not read ignored paths during broad discovery.
 - Do not include ignored paths in generated context graphs or summaries.
 - Do not override `.claudeignore` silently.

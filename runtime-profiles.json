@@ -5,23 +5,23 @@
     {
       "id": "core",
       "purpose": "Small-context operation: only the safest, cheapest routing and status tools.",
-      "commands": ["help", "doctor", "route", "docs", "workflow"],
+      "commands": ["help", "doctor", "init", "route", "docs", "workflow"],
       "default": true
     },
     {
       "id": "ops",
       "purpose": "Operational project work: health, routing, docs, workflow, bootstrap and update.",
-      "commands": ["help", "health", "doctor", "route", "docs", "workflow", "bootstrap", "update"]
+      "commands": ["help", "health", "doctor", "init", "route", "docs", "workflow", "bootstrap", "update"]
     },
     {
       "id": "strict",
-      "purpose": "Release-grade validation profile for CI and human-gated changes.",
-      "commands": ["help", "health", "doctor", "validate", "route", "docs", "workflow"]
+      "purpose": "Release-grade validation for CI and human-gated changes; `validate -Profile strict` runs skills manifest/structure/economy/drift (strict drift), bootstrap, and `os-validate-all -Strict`.",
+      "commands": ["help", "health", "doctor", "init", "validate", "route", "docs", "workflow"]
     },
     {
       "id": "full",
-      "purpose": "Full runtime surface for maintainers.",
-      "commands": ["help", "health", "doctor", "validate", "route", "docs", "workflow", "bootstrap", "update"]
+      "purpose": "Full runtime surface for maintainers; `validate` uses the same skills + adapter gates as profile selection (quick / standard / strict).",
+      "commands": ["help", "health", "doctor", "init", "validate", "route", "docs", "workflow", "bootstrap", "update"]
     }
   ]
 }

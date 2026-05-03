@@ -39,6 +39,27 @@
       "tags": ["skills", "capabilities", "bootstrap", "maestro-pattern"]
     },
     {
+      "id": "skills/handbook",
+      "path": "docs/SKILLS.md",
+      "title": "Skills handbook",
+      "purpose": "Manifest-governed skills: canonical paths, sync, drift, validation profiles, maturity, and risk.",
+      "tags": ["skills", "manifest", "validation", "documentation"]
+    },
+    {
+      "id": "playbooks/index",
+      "path": "playbooks/README.md",
+      "title": "Operational playbooks",
+      "purpose": "Release, incident, migration, bootstrap, docs contract, and adapter drift runbooks validated by verify-playbooks.ps1.",
+      "tags": ["playbooks", "runbooks", "release", "incident", "validation"]
+    },
+    {
+      "id": "recipes/index",
+      "path": "recipes/README.md",
+      "title": "Command recipes",
+      "purpose": "Short copy-paste sequences for validate, init, skills, drift, and release; validated by verify-recipes.ps1.",
+      "tags": ["recipes", "commands", "validation", "bootstrap"]
+    },
+    {
       "id": "bootstrap/windows-project",
       "path": "init-project.ps1",
       "title": "Windows Project Bootstrap",
@@ -109,6 +130,13 @@
       "tags": ["policies", "governance", "safety"]
     },
     {
+      "id": "policies/deprecation",
+      "path": "policies/deprecation.md",
+      "title": "Deprecation policy",
+      "purpose": "deprecation-manifest.json registry, strict enforcement surfaces, and optional upstream fork comparison.",
+      "tags": ["policies", "deprecation", "governance", "validation"]
+    },
+    {
       "id": "prompts/reusable",
       "path": "prompts",
       "title": "Reusable Prompts",
@@ -121,6 +149,141 @@
       "title": "Invariant Engine Bundles",
       "purpose": "TypeScript-derived .cjs bundles for invariant verification, semantic diff, and contract delta simulation.",
       "tags": ["invariants", "typescript", "verification", "bundles"]
+    },
+    {
+      "id": "docs/quickstart",
+      "path": "docs/QUICKSTART.md",
+      "title": "Operator Quickstart",
+      "purpose": "Five-minute Windows path, Linux/CI strict path, project bootstrap, and troubleshooting Git/Bash/PowerShell.",
+      "tags": ["quickstart", "onboarding", "validation", "windows", "ci"]
+    },
+    {
+      "id": "docs/validation",
+      "path": "docs/VALIDATION.md",
+      "title": "Validation Profiles and Status Taxonomy",
+      "purpose": "Profiles (quick/standard/strict), JSON envelopes, false-green avoidance, and release gates.",
+      "tags": ["validation", "profiles", "json", "release", "governance"]
+    },
+    {
+      "id": "docs/compatibility",
+      "path": "docs/COMPATIBILITY.md",
+      "title": "Platform compatibility matrix",
+      "purpose": "Windows PS 5.1 vs pwsh, Linux/macOS pwsh, Bash/Git Bash/WSL, GitHub Actions; compatibility-manifest.json and verify-compatibility.ps1.",
+      "tags": ["compatibility", "platforms", "ci", "validation", "documentation"]
+    },
+    {
+      "id": "docs/lifecycle",
+      "path": "docs/LIFECYCLE.md",
+      "title": "Install, init, update, rollback, and project lifecycle",
+      "purpose": "lifecycle-manifest.json: writes, backups, idempotency, rollback, validation after install/init/update/repair/uninstall/bootstrap.",
+      "tags": ["lifecycle", "bootstrap", "install", "validation", "documentation"]
+    },
+    {
+      "id": "docs/distribution",
+      "path": "docs/DISTRIBUTION.md",
+      "title": "Distribution zip packaging",
+      "purpose": "distribution-manifest.json, build-distribution.ps1, verify-distribution.ps1; include/exclude rules for portable packs.",
+      "tags": ["distribution", "packaging", "release", "validation", "documentation"]
+    },
+    {
+      "id": "docs/contract-tests",
+      "path": "docs/CONTRACT-TESTS.md",
+      "title": "Cross-surface contract tests",
+      "purpose": "run-contract-tests.ps1 rules: manifests, docs commands, capabilities, gates, adapters, release evidence mapping, and strict-profile maturity.",
+      "tags": ["validation", "contracts", "manifests", "ci", "documentation"]
+    },
+    {
+      "id": "docs/safe-apply",
+      "path": "docs/SAFE-APPLY.md",
+      "title": "Safe apply for mutating scripts",
+      "purpose": "Dry-run, WhatIf, manifest writes/safeApply, invoke-safe-apply.ps1, and verify-script-manifest strict rules for writeRisk.",
+      "tags": ["validation", "scripts", "safety", "ci", "documentation"]
+    },
+    {
+      "id": "docs/components",
+      "path": "docs/COMPONENTS.md",
+      "title": "Component maturity registry",
+      "purpose": "component-manifest.json tiers, verify-components.ps1 coverage and strict/release surface rules, allowlist.",
+      "tags": ["validation", "governance", "manifests", "ci", "documentation"]
+    },
+    {
+      "id": "docs/operator-journal",
+      "path": "docs/OPERATOR-JOURNAL.md",
+      "title": "Operator journal (local)",
+      "purpose": "Gitignored OPERATOR_JOURNAL.md for audits, validation failures, and local notes; init-os-runtime creation; no secrets.",
+      "tags": ["operators", "audit", "validation", "documentation", "local"]
+    },
+    {
+      "id": "docs/security-lint",
+      "path": "docs/SECURITY-LINT.md",
+      "title": "Secret and credential lint",
+      "purpose": "verify-no-secrets.ps1: tracked .env, PEM blocks, provider key shapes, markdown examples, OS_WORKSPACE_CONTEXT.template.md, examples/, and .gitignore /logs/; warn vs strict.",
+      "tags": ["security", "secrets", "validation", "ci", "documentation"]
+    },
+    {
+      "id": "docs/examples",
+      "path": "docs/EXAMPLES.md",
+      "title": "Runtime JSON Examples",
+      "purpose": "Representative validator and health envelopes, manifest fixtures, schema map, and verify-examples.",
+      "tags": ["validation", "json", "schemas", "examples", "documentation"]
+    },
+    {
+      "id": "docs/audit-evidence",
+      "path": "docs/AUDIT-EVIDENCE.md",
+      "title": "Audit Evidence Export",
+      "purpose": "Sanitized export-audit-evidence bundle, manifest schema, privacy invariants, and parameters.",
+      "tags": ["audit", "validation", "compliance", "json", "documentation"]
+    },
+    {
+      "id": "docs/troubleshooting",
+      "path": "docs/TROUBLESHOOTING.md",
+      "title": "Troubleshooting",
+      "purpose": "Common failures: Git, Bash on Windows, PowerShell version, adapter and skill drift, JSON schemas, runtime-release docs, generated files.",
+      "tags": ["troubleshooting", "validation", "windows", "git", "documentation"]
+    },
+    {
+      "id": "docs/project-bootstrap",
+      "path": "docs/PROJECT-BOOTSTRAP.md",
+      "title": "Project Bootstrap (init-project)",
+      "purpose": "init-project.ps1 contract, .claude layout, adapters, decision log, and examples/project-bootstrap reference trees.",
+      "tags": ["bootstrap", "init-project", "documentation", "examples"]
+    },
+    {
+      "id": "docs/capabilities",
+      "path": "docs/CAPABILITIES.md",
+      "title": "Capabilities and intent routing",
+      "purpose": "os-capabilities vs capability-manifest routes, route-capability.ps1 usage, approval tiers, and required route ids.",
+      "tags": ["capabilities", "routing", "validation", "playbooks", "documentation"]
+    },
+    {
+      "id": "docs/quality-gates",
+      "path": "docs/QUALITY-GATES.md",
+      "title": "Manifest-governed quality gates",
+      "purpose": "quality-gates/*.json contracts, verify-quality-gates, evaluate-quality-gate, and release false-green rules.",
+      "tags": ["quality", "validation", "release", "manifest", "documentation"]
+    },
+    {
+      "id": "docs/release-readiness",
+      "path": "docs/RELEASE-READINESS.md",
+      "title": "Release Readiness Evidence",
+      "purpose": "Strict validation commands, clean-state checklist, and optional JSONL evidence before merge or tag.",
+      "tags": ["release", "validation", "ci", "governance"]
+    },
+    {
+      "id": "docs/upgrade",
+      "path": "docs/UPGRADE.md",
+      "title": "Contract upgrades and migrations",
+      "purpose": "Human workflow and upgrade-manifest.json contract for documented schemaVersion bumps; verify-upgrade-notes gate.",
+      "tags": ["upgrade", "release", "contracts", "manifest"],
+      "command": "pwsh ./tools/verify-upgrade-notes.ps1 -Json -Strict"
+    },
+    {
+      "id": "docs/approvals",
+      "path": "docs/APPROVALS.md",
+      "title": "Human approval ledger",
+      "purpose": "Steward-class playbook sign-off via logs/approval-log.jsonl; append-approval-log and verify-approval-log; not used for routine os-validate.",
+      "tags": ["approvals", "governance", "playbooks", "audit", "documentation"],
+      "command": "pwsh ./tools/verify-approval-log.ps1 -Json"
     }
   ]
 }

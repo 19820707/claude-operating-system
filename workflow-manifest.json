@@ -72,6 +72,8 @@
     ".claude/learning-log.md",
     ".claude/docs-index.json",
     ".claude/os-capabilities.json",
+    ".claude/capability-manifest.json",
+    ".claude/deprecation-manifest.json",
     ".claude/workflow-manifest.json",
     ".claude/decision-log.jsonl"
   ]

@@ -93,6 +93,8 @@ Require-ContainsLiteral -RelativePath 'templates/adapters/cursor-claude-os-runti
     -Substring '.claude/workflow-manifest.json' -Why 'Cursor rule must mention workflow-manifest'
 Require-ContainsLiteral -RelativePath 'templates/adapters/cursor-claude-os-runtime.mdc' `
     -Substring '.claude/os-capabilities.json' -Why 'Cursor rule must mention os-capabilities'
+Require-ContainsLiteral -RelativePath 'templates/adapters/cursor-claude-os-runtime.mdc' `
+    -Substring '.claude/capability-manifest.json' -Why 'Cursor rule must mention capability-manifest'
 
 Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 'Claude OS Runtime' `
     -Why 'AGENTS.md must state Claude OS Runtime'
@@ -104,6 +106,8 @@ Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 
     -Why 'AGENTS.md must mention workflow-manifest'
 Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring '.claude/os-capabilities.json' `
     -Why 'AGENTS.md must mention os-capabilities'
+Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring '.claude/capability-manifest.json' `
+    -Why 'AGENTS.md must mention capability-manifest'
 Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 'session-prime.ps1' `
     -Why 'AGENTS.md must mention session-prime script'
 Require-ContainsLiteral -RelativePath 'templates/adapters/AGENTS.md' -Substring 'route-capability.ps1' `

@@ -32,3 +32,34 @@ Use this skill when correctness depends on a property that must remain true acro
 - Contract changes require explicit compatibility notes.
 - Generated JSON reports are evidence, not UI output.
 - Verification should fail closed when confidence is insufficient.
+
+## Safety rules
+
+- Do not expose secrets or raw stack traces in user-facing output.
+- Do not treat skipped, warn, unknown, degraded, or blocked outcomes as passed.
+- Do not bypass invariants on critical surfaces without documented approval and rollback.
+- Do not overwrite user-local files unless explicitly allowed by contract.
+
+## Non-goals
+
+- Duplicating full policy corpora; defer to `policies/*.md` and `CLAUDE.md`.
+
+## Inputs
+
+- Invariant statements, code or API deltas, and verification tooling output.
+
+## Outputs
+
+- Verification records, deltas, and honest pass/fail/warn outcomes.
+
+## Failure modes
+
+- Orphan invariants, silent contract drift, or false-green from partial checks.
+
+## Examples
+
+- Inline procedures above illustrate intended use.
+
+## Related files
+
+- `skills-manifest.json`, `policies/scope-control.md` (repo root)

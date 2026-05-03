@@ -32,3 +32,34 @@ Use this skill to prevent collisions between concurrent agents, parallel worktre
 - Claims expire or are explicitly released.
 - Shared decisions must be inspectable after session compaction.
 - Coordination state is operational evidence, not decoration.
+
+## Safety rules
+
+- Do not expose secrets in coordination logs or handoff text.
+- Do not treat skipped, warn, unknown, degraded, or blocked outcomes as passed.
+- Do not perform destructive shared-surface work without explicit coordination and approval.
+- Do not overwrite user-local files outside claimed paths.
+
+## Non-goals
+
+- Duplicating full policy corpora; defer to `policies/*.md` and `CLAUDE.md`.
+
+## Inputs
+
+- Agent roles, touched paths, and coordination artifacts in `.claude/`.
+
+## Outputs
+
+- Claims, releases, and evidence with explicit status taxonomy.
+
+## Failure modes
+
+- Stale leases, overlapping writes, or unlabeled concurrent edits.
+
+## Examples
+
+- Inline procedures above illustrate intended use.
+
+## Related files
+
+- `skills-manifest.json`, `policies/engineering-governance.md` (repo root)

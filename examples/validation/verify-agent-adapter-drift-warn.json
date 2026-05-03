@@ -1,0 +1,29 @@
+{
+  "tool": "verify-agent-adapter-drift",
+  "status": "warn",
+  "durationMs": 380,
+  "checks": [
+    {
+      "name": "adapter-drift",
+      "status": "warn",
+      "detail": "git porcelain on templates/adapters + existing generatedTargets paths"
+    }
+  ],
+  "warnings": [
+    "templates/adapters has uncommitted changes vs HEAD"
+  ],
+  "failures": [],
+  "findings": [
+    {
+      "path": "templates/adapters",
+      "severity": "warn",
+      "detail": "templates/adapters has uncommitted changes vs HEAD"
+    },
+    {
+      "path": "templates/adapters/codex/SKILL.template.md",
+      "severity": "ok",
+      "detail": "clean vs HEAD"
+    }
+  ],
+  "actions": []
+}

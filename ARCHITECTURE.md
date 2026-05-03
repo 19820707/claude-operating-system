@@ -20,10 +20,10 @@ os-manifest.json
 | Runtime contract | `VERSION`, `os-manifest.json`, `CHANGELOG.md` | Versioned operational contract |
 | Bootstrap contract | `bootstrap-manifest.json`, `init-project.ps1` | Deterministic project scaffold |
 | Navigation | `docs-index.json`, `query-docs-index.ps1` | Section-first documentation retrieval |
-| Capabilities | `os-capabilities.json`, `route-capability.ps1` | Cheap safe routing to skills/checks |
+| Capabilities | `os-capabilities.json`, `capability-manifest.json`, `route-capability.ps1` | Registry (`os.*`) plus intent routes (`route.*`) to skills, playbooks, validators, and evidence |
 | Workflow | `workflow-manifest.json`, `workflow-status.ps1` | Progressive artifact-first delivery gates |
 | Safety | `templates/checklists/*`, `policies/*` | Human-gated safety and release controls |
-| Validation | `tools/verify-*.ps1`, `os-validate-all.ps1` | Drift detection and release validation |
+| Validation | `tools/verify-*.ps1`, `os-validate-all.ps1`, `quality-gates/*.json` | Drift detection, release validation, manifest-governed quality gates |
 | Runtime ops | `os-runtime.ps1`, `os-doctor.ps1`, `os-update-project.ps1` | Unified CLI, diagnostics, managed updates |
 
 ## Runtime entrypoint

@@ -65,3 +65,27 @@ When broad discovery is used, state the reason, maximum scope, and stop conditio
 - Context must be proportional to risk and uncertainty.
 - Economy never overrides safety-critical evidence.
 - Sub-agents are not free: delegation requires a cost/risk reason.
+
+## Non-goals
+
+- Duplicating full policy corpora; defer to `policies/*.md` and `CLAUDE.md`.
+
+## Inputs
+
+- Scoped paths, failing tests, diffs, or manifest-driven validation context.
+
+## Outputs
+
+- Scoped reads, bounded validation, and honest status (never `skip` as pass).
+
+## Failure modes
+
+- Broad discovery without a gate, or economy arguments overriding safety evidence.
+
+## Examples
+
+- Inline procedures above illustrate intended use.
+
+## Related files
+
+- `skills-manifest.json`, `policies/token-economy.md` (repo root)

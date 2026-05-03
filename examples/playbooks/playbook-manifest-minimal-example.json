@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "description": "Minimal illustrative playbook manifest for docs and schema tests.",
+  "canonicalRoot": "playbooks/",
+  "playbooks": [
+    {
+      "id": "example-runbook",
+      "name": "Example runbook",
+      "path": "playbooks/example-runbook.md",
+      "riskLevel": "low",
+      "summary": "Demonstrates playbook-manifest.json shape for operators and CI fixtures.",
+      "requiresApprovalFor": [],
+      "relatedSkills": ["release-readiness"]
+    }
+  ]
+}

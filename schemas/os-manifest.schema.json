@@ -17,7 +17,10 @@
         "runtimeProfiles": { "type": "string", "minLength": 1, "description": "runtime-profiles.json path" },
         "sessionMemory": { "type": "string", "minLength": 1, "description": "session-memory-manifest.json path" },
         "gitRecoveryPolicy": { "type": "string", "minLength": 1, "description": "Human Git recovery policy (markdown)" },
-        "agentAdapters": { "type": "string", "minLength": 1, "description": "Multi-tool adapter manifest (JSON)" }
+        "agentAdapters": { "type": "string", "minLength": 1, "description": "Multi-tool adapter manifest (JSON)" },
+        "skillsManifest": { "type": "string", "minLength": 1, "description": "Canonical skills manifest (JSON)" },
+        "playbooksManifest": { "type": "string", "minLength": 1, "description": "Playbook manifest (JSON)" },
+        "recipesManifest": { "type": "string", "minLength": 1, "description": "Recipe manifest (JSON)" }
       },
       "additionalProperties": { "type": "string", "minLength": 1 }
     },

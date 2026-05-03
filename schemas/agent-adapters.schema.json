@@ -41,6 +41,34 @@
           }
         ]
       }
+    },
+    "canonicalSources": {
+      "type": "object",
+      "description": "Canonical policy/skill sources in this repo (optional; used for drift guidance)",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "generatedTargets": {
+      "type": "array",
+      "description": "Optional: generated mirrors under project or repo root; drift checks apply when paths exist",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["agent", "path", "source"],
+        "properties": {
+          "agent": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "driftPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "generatedTargetsMustMatchCanonical": { "type": "boolean" },
+        "manualEditsInGeneratedTargetsAreWarnings": { "type": "boolean" },
+        "releaseRequiresNoDrift": { "type": "boolean" }
+      }
     }
   },
   "additionalProperties": false

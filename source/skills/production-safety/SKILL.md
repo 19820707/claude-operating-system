@@ -48,3 +48,34 @@ Invariant: **fallback != healthy; skipped != passed; warning != success**.
 - Sensitive output is summarized, not dumped.
 - Safety gates take precedence over speed.
 - Degraded runtime state must be visible to humans.
+
+## Safety rules
+
+- Do not expose secrets, tokens, PII, or raw stack traces in user-facing output.
+- Do not treat `skip`, `warn`, `unknown`, `degraded`, `blocked`, or partial outcomes as passed or success.
+- Do not perform destructive or irreversible production changes without explicit human approval and a defined rollback.
+- Do not overwrite user-local state unless the operation is explicitly scoped and approved.
+
+## Non-goals
+
+- Duplicating full policy corpora; defer to `policies/*.md` and `CLAUDE.md`.
+
+## Inputs
+
+- Risk class, blast radius, approval state, and affected systems.
+
+## Outputs
+
+- Explicit approvals, rollback plans, and pass/warn/fail/skip reporting.
+
+## Failure modes
+
+- False-green language, missing rollback, or unapproved destructive change.
+
+## Examples
+
+- Inline procedures above illustrate intended use.
+
+## Related files
+
+- `skills-manifest.json`, `policies/production-safety.md` (repo root)

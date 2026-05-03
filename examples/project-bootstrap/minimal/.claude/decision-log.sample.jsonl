@@ -1,0 +1,2 @@
+{"id":"D-2026-05-03-EXAMPLE-001","ts":"2026-05-03T12:00:00Z","session":"example-preview","type":"approval_gate","trigger":"Documentation-only decision log shape","policy_applied":"policies/production-safety.md","evidence":["docs/PROJECT-BOOTSTRAP.md"],"decision":"Synthetic row: no system change.","confidence":"KNOWN"}
+{"id":"D-2026-05-03-EXAMPLE-002","ts":"2026-05-03T12:01:00Z","type":"other","trigger":"Second sample line","policy_applied":"CLAUDE.md","decision":"Demonstrates JSONL append-only format per decision-log.schema.json."}

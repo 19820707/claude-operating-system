@@ -1,0 +1,24 @@
+{
+  "tool": "verify-skills-manifest",
+  "status": "fail",
+  "durationMs": 120,
+  "checks": [
+    {
+      "name": "skills-manifest",
+      "status": "fail",
+      "detail": "skills-manifest.json"
+    }
+  ],
+  "warnings": [],
+  "failures": [
+    "skills-manifest.json: duplicate skill id \"runtime-economy\""
+  ],
+  "findings": [
+    {
+      "file": "skills-manifest.json",
+      "issue": "duplicate_id",
+      "id": "runtime-economy"
+    }
+  ],
+  "actions": []
+}

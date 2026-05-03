@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-quality-gate",
+  "title": "Claude OS manifest-governed quality gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "title",
+    "domain",
+    "requiredValidators",
+    "allowedWarnings",
+    "blockingWarnings",
+    "requiredEvidence",
+    "approvalRequirements",
+    "strictModeBehavior"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "id": { "type": "string", "pattern": "^gate\\.[a-z0-9-]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "domain": {
+      "type": "string",
+      "enum": ["docs", "skills", "release", "bootstrap", "adapters", "security"]
+    },
+    "requiredValidators": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "script"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "script": {
+            "type": "string",
+            "pattern": "^tools/[A-Za-z0-9._-]+\\.ps1$"
+          },
+          "arguments": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "emitJson": { "type": "boolean" }
+        }
+      }
+    },
+    "allowedWarnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "blockingWarnings": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "requiredEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "approvalRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minHumanApprovers", "roles"],
+      "properties": {
+        "minHumanApprovers": { "type": "integer", "minimum": 0 },
+        "roles": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "requiresSecuritySignOff": { "type": "boolean" },
+        "requiresMaintainerApproval": { "type": "boolean" }
+      }
+    },
+    "strictModeBehavior": { "type": "string", "minLength": 1 },
+    "passInterpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "onlyStatusOkIsPass",
+        "statusesNeverEquivalentToPassed",
+        "nonPassStatusAliases"
+      ],
+      "properties": {
+        "onlyStatusOkIsPass": { "type": "boolean", "const": true },
+        "statusesNeverEquivalentToPassed": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["warn", "fail", "skip", "blocked", "degraded", "unknown"]
+          }
+        },
+        "nonPassStatusAliases": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

@@ -11,6 +11,12 @@ Navigation map. Every file, its purpose, and when to use it.
 | Check full OS health | `pwsh ./tools/verify-os-health.ps1` (optional **`-Json`**; redirect stderr with **`2>$null`** when piping JSON only) |
 | Release aggregate validation | `pwsh ./tools/os-validate-all.ps1 -Strict` (optional **`-Json`**) |
 | Check Git workspace hygiene (read-only) | `pwsh ./tools/verify-git-hygiene.ps1` |
+| Lint for committed secrets / credential-shaped strings | `pwsh ./tools/verify-no-secrets.ps1` (optional **`-Json`**, **`-Strict`**) — see `docs/SECURITY-LINT.md` |
+| Check validator platform matrix vs manifests | `pwsh ./tools/verify-compatibility.ps1` (**`-Json`**) — see `docs/COMPATIBILITY.md` |
+| Check install/init/update lifecycle manifest vs repo | `pwsh ./tools/verify-lifecycle.ps1` (**`-Json`**) — see `docs/LIFECYCLE.md` |
+| Document contract / schemaVersion bumps vs manifests | `pwsh ./tools/verify-upgrade-notes.ps1` (**`-Json`**, **`-Strict`**) — see `docs/UPGRADE.md` and `upgrade-manifest.json` |
+| Steward playbook human sign-off (append-only JSONL) | `pwsh ./tools/append-approval-log.ps1` / `pwsh ./tools/verify-approval-log.ps1` (**`-Json`**) — see `docs/APPROVALS.md` |
+| Build or verify portable distribution zip | `pwsh ./tools/build-distribution.ps1` (**`-WhatIf`**, **`-Json`**) / `pwsh ./tools/verify-distribution.ps1` (**`-Json`**) — see `docs/DISTRIBUTION.md` |
 | Verify multi-agent adapter templates + manifest | `pwsh ./tools/verify-agent-adapters.ps1` (optional `-Json`) |
 | Recover from fetch/rebase/nested clone issues | `GIT-RECOVERY.md` (also `docs/GIT-RECOVERY.md`) |
 | Start a new session | `templates/commands/session-start.md` |
@@ -46,6 +52,12 @@ Navigation map. Every file, its purpose, and when to use it.
 | `tools/verify-os-health.ps1` | Aggregates manifest, skills, docs, syntax, real bootstrap smoke, Bash checks, safe-output probe, **git-hygiene**, dispatcher checks, **doctor** (soft **10s** / hard **30s** latency budgets); **`-Json`** emits a compact envelope and uses **process exit codes** (`0` ok/warn-only, `1` fail / strict blocked); **`-Strict`** matches `os-validate-all -Strict` and fails on disallowed warnings (for example doctor soft-budget) | Primary local and CI health check |
 | `tools/os-validate-all.ps1` | Release gate: health, doctor (strict rules), json-contracts, generated project tools, session-memory cycle; **`-Json`** emits compact summary plus optional **healthSummary** (status, failure/warning counts, totalMs) | CI / pre-push |
 | `tools/verify-git-hygiene.ps1` | Read-only: nested `claude-operating-system/`, nested `.git`, rebase/merge/cherry state, conflict markers (`<<<<<<<` / `=======` / `>>>>>>>`), dirty tree; **`-Strict`** or CI = nested clone **FAIL**; **`-Strict`** also elevates remaining hygiene warnings to failures; optional **`-Json`** includes `checks`, `failureCount`, `warningCount` | Before `git add`, CI, release |
+| `tools/verify-no-secrets.ps1` | Read-only: no tracked `.env*`, `.gitignore` lists `/logs/`, PEM blocks, common provider key shapes; **warn** on ambiguous examples; **`-Strict`** promotes warns to fails; **`-Json`** uses `New-OsValidatorEnvelope` | `os-validate` standard/strict, `verify-os-health` (after git hygiene); see `docs/SECURITY-LINT.md` |
+| `tools/verify-compatibility.ps1` | Read-only: **`compatibility-manifest.json`** rows match script-manifest validator set; default + per-tool **`overrides`** for nine platform dimensions | `os-validate` (all profiles), `verify-os-health`; see `docs/COMPATIBILITY.md` |
+| `tools/verify-lifecycle.ps1` | Read-only: **`lifecycle-manifest.json`** commands cover required phases; field lengths; **`scriptPath`** exists when set | `os-validate` (all profiles), `verify-os-health`; see `docs/LIFECYCLE.md` |
+| `tools/verify-distribution.ps1` | Read-only: **`distribution-manifest.json`** resolves; mandatory paths in pack list | `os-validate`, `verify-os-health`, release gate; see `docs/DISTRIBUTION.md` |
+| `tools/verify-upgrade-notes.ps1` | Read-only: **`upgrade-manifest.json`** documents max **`schemaVersion`** per watched root JSON contract (aligned with **`verify-json-contracts`** + session memory + self); **`-Strict`** fails when on-disk version exceeds documented | `os-validate` standard/strict, `verify-os-health`, release gate; see `docs/UPGRADE.md` |
+| `tools/build-distribution.ps1` | Writes **`dist/*.zip`** from manifest (**`SupportsShouldProcess`** / **`-WhatIf`**) | Manual release packaging; `safeToRunInCI` false |
 | `tools/verify-runtime-dispatcher.ps1` | Contract tests for `tools/os-runtime.ps1` (help, JSON routes, absorb/digest guardrails) | Invoked from health |
 | `GIT-RECOVERY.md` | Safe Git recovery — fetch first, rebase conflicts, nested clone, stash discipline, forbidden commands | When push/pull/rebase fails |
 | `tools/verify-bootstrap-manifest.ps1` | Fails if repo tree or project bootstrap lists drift from manifest | CI, local pre-push, health check component |
@@ -59,7 +71,7 @@ Navigation map. Every file, its purpose, and when to use it.
 ## source/skills/
 
 Canonical skill layer. `source/skills` is source of truth; `init-project.ps1` installs it into `.claude/skills/`.
-Canonical count: **6/6** from `bootstrap-manifest.json`.
+Canonical count: **26/26** from `bootstrap-manifest.json`.
 
 | Skill | Category | Purpose |
 |-------|----------|---------|
@@ -301,7 +313,7 @@ Policy background: **`policies/multi-tool-adapters.md`**.
 | install.sh | Stable, dry-run + real-install validated (bash 5.2 / MSYS2 + Unix-compatible) |
 | bootstrap-manifest.json | Source of truth for repo counts, skills, bootstrap scripts, and critical paths |
 | tools/verify-os-health.ps1 | Primary health entrypoint — manifests, syntax, bootstrap, Bash, safe-output, git-hygiene, agent-adapters, dispatcher |
-| source/skills/ | 6/6 — manifest verified and bootstrapped to `.claude/skills/` |
+| source/skills/ | 26/26 — manifest verified and bootstrapped to `.claude/skills/` |
 | policies/ | 8/8 — complete |
 | prompts/ | 7/7 — complete |
 | templates/commands/ | 18/18 — manifest verified |
