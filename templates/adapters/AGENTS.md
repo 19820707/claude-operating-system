@@ -62,6 +62,18 @@ Every non-trivial patch must improve at least one of:
 
 Do **not** add abstractions, dependencies, or new runtime surfaces without measurable benefit.
 
+## No false green
+
+Never report degraded, skipped, partial, fallback, or warning states as success.
+
+- `skip` is not `pass`.
+- `warn` is not clean success.
+- fallback/demo/local behavior is degraded unless explicitly intended.
+- partial validation is partial, not validated.
+- unavailable evidence is unknown, not OK.
+
+Invariant: **fallback != healthy; skipped != passed; warning != success**.
+
 ## Validation ladder
 
 Use the cheapest reliable validation first:
