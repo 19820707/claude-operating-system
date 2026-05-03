@@ -151,6 +151,13 @@
       "tags": ["policies", "deprecation", "governance", "validation"]
     },
     {
+      "id": "policies/invariants",
+      "path": "policies/invariants.md",
+      "title": "Conservative invariants (I-001–I-010)",
+      "purpose": "Normative laws; paired with invariants-manifest.json and docs/DEGRADED-MODES.md.",
+      "tags": ["policies", "governance", "safety", "validation", "invariants"]
+    },
+    {
       "id": "prompts/reusable",
       "path": "prompts",
       "title": "Reusable Prompts",
@@ -184,6 +191,62 @@
       "title": "Autonomy layer",
       "purpose": "A0–A4 model, allowed vs steward-gated actions, os-autopilot, verify-autonomy-policy, repair loop, evidence, false-green rules.",
       "tags": ["governance", "autonomy", "validation", "agents", "safety"]
+    },
+    {
+      "id": "docs/value-for-engineers",
+      "path": "docs/VALUE-FOR-ENGINEERS.md",
+      "title": "Value for development engineers",
+      "purpose": "Why Claude OS: continuity, less micromanagement, gates, no false green, bootstrap, multi-tool discipline, skills, pre-CI validation, traceability — 17 concrete outcomes.",
+      "tags": ["governance", "onboarding", "autonomy", "validation", "documentation", "portuguese"]
+    },
+    {
+      "id": "docs/workflow-states",
+      "path": "docs/WORKFLOW-STATES.md",
+      "title": "Workflow states and transitions",
+      "purpose": "Phase diagram: DISCOVER through CLOSE; forbidden jumps; transition table vs critical surfaces, validate, repair, release, deploy.",
+      "tags": ["governance", "workflow", "validation", "agents", "documentation"]
+    },
+    {
+      "id": "docs/risk-energy",
+      "path": "docs/RISK-ENERGY.md",
+      "title": "Risk energy heuristic",
+      "purpose": "Conserved-quantity metaphor for manifests/schemas/statuses; simple riskEnergy score and merge/release threshold; future calculate-risk-energy script.",
+      "tags": ["governance", "risk", "validation", "documentation"]
+    },
+    {
+      "id": "docs/repo-boundaries",
+      "path": "docs/REPO-BOUNDARIES.md",
+      "title": "Repository field boundaries",
+      "purpose": "Map regions (policies, schemas, tools, skills, templates, .agent) to risk, required validation, and approval; escalation for agents.",
+      "tags": ["governance", "risk", "validation", "documentation", "onboarding"]
+    },
+    {
+      "id": "docs/degraded-modes",
+      "path": "docs/DEGRADED-MODES.md",
+      "title": "Degraded modes and validation semantics",
+      "purpose": "Non-passing statuses including degraded; I-001; honest partial failure vs success; CI and agent rules.",
+      "tags": ["governance", "validation", "documentation", "safety"]
+    },
+    {
+      "id": "docs/hazards",
+      "path": "docs/HAZARDS.md",
+      "title": "Hazard register (STPA-lite)",
+      "purpose": "Hazard → cause → control → evidence → residual risk → if control fails; false green, drift, autonomy, production gates; links to I-001–I-010.",
+      "tags": ["safety", "governance", "risk", "validation", "documentation"]
+    },
+    {
+      "id": "docs/fmea-lite",
+      "path": "docs/FMEA-LITE.md",
+      "title": "FMEA-lite (failure modes)",
+      "purpose": "Failure mode, effect, severity, detection, mitigation; proportional critical engineering without heavy formal frameworks.",
+      "tags": ["safety", "risk", "validation", "documentation"]
+    },
+    {
+      "id": "docs/assurance-case",
+      "path": "docs/ASSURANCE-CASE.md",
+      "title": "Assurance case (claims and evidence)",
+      "purpose": "Claim → argument → evidence → known gaps for false-green boundaries, autonomy vs critical surfaces, canonical vs generated, components, secrets, contract bumps.",
+      "tags": ["safety", "governance", "assurance", "validation", "documentation"]
     },
     {
       "id": "docs/compatibility",

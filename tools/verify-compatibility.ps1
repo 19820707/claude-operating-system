@@ -18,13 +18,16 @@ $checks = [System.Collections.Generic.List[object]]::new()
 
 $script:ExtraValidatorIds = [string[]]@(
     'append-approval-log',
+    'autonomous-commit-gate',
+    'classify-change',
     'test-skills',
     'run-contract-tests',
     'evaluate-quality-gate',
     'os-doctor',
     'os-autopilot',
     'os-validate',
-    'os-validate-all'
+    'os-validate-all',
+    'sync-generated-targets'
 )
 
 function Get-ExpectedValidatorIds {

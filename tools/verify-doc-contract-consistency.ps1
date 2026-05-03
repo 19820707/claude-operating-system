@@ -63,9 +63,11 @@ try {
         @{ j = 'quality-gates/bootstrap.json'; s = 'schemas/quality-gate.schema.json' }
         @{ j = 'quality-gates/adapters.json'; s = 'schemas/quality-gate.schema.json' }
         @{ j = 'quality-gates/security.json'; s = 'schemas/quality-gate.schema.json' }
+        @{ j = 'quality-gates/strict.json'; s = 'schemas/quality-gate.schema.json' }
         @{ j = 'workflow-manifest.json'; s = 'schemas/workflow-manifest.schema.json' }
         @{ j = 'agent-adapters-manifest.json'; s = 'schemas/agent-adapters.schema.json' }
         @{ j = 'runtime-budget.json'; s = 'schemas/runtime-budget.schema.json' }
+        @{ j = 'gate-status-contract.json'; s = 'schemas/gate-result.schema.json' }
         @{ j = 'policies/autonomy-policy.json'; s = 'schemas/autonomy-policy.schema.json' }
         @{ j = 'context-budget.json'; s = 'schemas/context-budget.schema.json' }
         @{ j = 'script-manifest.json'; s = 'schemas/script-manifest.schema.json' }

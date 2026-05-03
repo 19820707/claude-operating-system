@@ -18,7 +18,7 @@ Apply `schemas/quality-gate.schema.json`, `verify-quality-gates.ps1`, and `evalu
 
 ## Inputs
 
-- Gate file path; repo root; strict release policy when evaluating `gate.release`.
+- Gate file path; repo root; strict release policy when evaluating `gate.release`; contract drift checks via `gate.strict` + `verify-gate-results.ps1`.
 
 ## Outputs
 
@@ -48,7 +48,7 @@ Apply `schemas/quality-gate.schema.json`, `verify-quality-gates.ps1`, and `evalu
 ## Safety rules
 
 - Do not expose secrets or paste raw tokens.
-- Do not treat skipped, warn, unknown, degraded, or blocked outcomes as passed.
+- Do not treat skipped, warn, unknown, degraded, blocked, not_run, or skip outcomes as passed.
 - Do not perform destructive actions without documented human approval.
 - Do not overwrite user-local files except via declared generated targets and sync tools.
 

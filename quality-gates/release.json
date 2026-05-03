@@ -60,7 +60,8 @@
       "unknown",
       "degraded",
       "blocked",
-      "fail"
+      "fail",
+      "not_run"
     ],
     "nonPassStatusAliases": ["skipped", "not_run"]
   }

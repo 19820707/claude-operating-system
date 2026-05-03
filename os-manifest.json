@@ -11,6 +11,7 @@
   "manifests": {
     "bootstrap": "bootstrap-manifest.json",
     "docs": "docs-index.json",
+    "invariants": "invariants-manifest.json",
     "capabilities": "os-capabilities.json",
     "capabilityRoutes": "capability-manifest.json",
     "workflow": "workflow-manifest.json",

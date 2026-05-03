@@ -94,6 +94,7 @@ try {
         'bootstrap-manifest.json'              = 'schemas/bootstrap-manifest.schema.json'
         'skills-manifest.json'                 = 'schemas/skills-manifest.schema.json'
         'docs-index.json'                      = 'schemas/docs-index.schema.json'
+        'invariants-manifest.json'             = 'schemas/invariants-manifest.schema.json'
         'os-capabilities.json'                 = 'schemas/os-capabilities.schema.json'
         'capability-manifest.json'             = 'schemas/capability-manifest.schema.json'
         'workflow-manifest.json'               = 'schemas/workflow-manifest.schema.json'

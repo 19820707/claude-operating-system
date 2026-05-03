@@ -97,8 +97,9 @@ try {
 
     $manifestPaths = @(
         'os-manifest.json', 'bootstrap-manifest.json', 'skills-manifest.json', 'docs-index.json',
+        'invariants-manifest.json',
         'os-capabilities.json', 'capability-manifest.json', 'workflow-manifest.json', 'agent-adapters-manifest.json',
-        'runtime-budget.json', 'context-budget.json', 'script-manifest.json', 'playbook-manifest.json',
+        'runtime-budget.json', 'gate-status-contract.json', 'context-budget.json', 'script-manifest.json', 'playbook-manifest.json',
         'recipe-manifest.json', 'deprecation-manifest.json', 'runtime-profiles.json', 'component-manifest.json',
         'session-memory-manifest.json', 'upgrade-manifest.json'
     )

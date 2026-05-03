@@ -99,6 +99,9 @@
                            "id":  "run-contract-tests"
                        },
                        {
+                           "id":  "sync-generated-targets"
+                       },
+                       {
                            "id":  "test-skills"
                        },
                        {
@@ -112,6 +115,9 @@
                        },
                        {
                            "id":  "append-approval-log"
+                       },
+                       {
+                           "id":  "autonomous-commit-gate"
                        },
                        {
                            "id":  "verify-approval-log"
@@ -160,6 +166,18 @@
                        },
                        {
                            "id":  "verify-examples"
+                       },
+                       {
+                           "id":  "classify-change"
+                       },
+                       {
+                           "id":  "verify-gate-results"
+                       },
+                       {
+                           "id":  "verify-generated-drift"
+                       },
+                       {
+                           "id":  "verify-manifest-graph"
                        },
                        {
                            "id":  "verify-git-hygiene"

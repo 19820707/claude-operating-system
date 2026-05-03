@@ -10,7 +10,7 @@
 
 Orchestration entrypoints:
 
-- `pwsh ./tools/os-validate.ps1 -Profile <name> [-Json] [-SkipBashSyntax] [-WriteHistory]` — exits **1** when aggregate `status` is **warn** or **fail** (exit code **0** only when status is **ok**).
+- `pwsh ./tools/os-validate.ps1 -Profile <name> [-Json] [-SkipBashSyntax] [-WriteHistory]` — exits **1** when aggregate `status` is **warn** or **fail**, or when any child verifier emitted a non-**ok** envelope status such as **skip**, **blocked**, **degraded**, **unknown**, or **not_run** (exit code **0** only when aggregate status is **ok**).
 - `pwsh ./tools/os-runtime.ps1 validate -Profile <name>` (or `-ValidationProfile`; same behavior when the profile name is `quick`, `standard`, or `strict`).
 
 Full release aggregate (unchanged):
@@ -26,8 +26,15 @@ Full release aggregate (unchanged):
 | **fail** | Blocking; exit code non-zero when appropriate. |
 | **skip** | Not run (e.g. Bash absent with local policy) — **not** passed. |
 | **blocked** / **degraded** / **unknown** | Treat as non-green until investigated. |
+| **not_run** | Step or gate not executed — **not** passed (explicit in envelopes and strict aggregation). |
 
-Configured explicitly in `runtime-budget.json` → `neverTreatAsPassed`. Manifest-governed gates and the **release** false-green contract live under **`quality-gates/`**; see **`docs/QUALITY-GATES.md`** and **`pwsh ./tools/verify-quality-gates.ps1`**.
+Canonical vocabulary and cross-checks: **`gate-status-contract.json`** + **`schemas/gate-result.schema.json`**; run **`pwsh ./tools/verify-gate-results.ps1`** (also invoked from **`pwsh ./tools/os-validate.ps1`**) to ensure `runtime-budget.json`, **`quality-gates/release.json`** `passInterpretation`, and **`schemas/os-validator-envelope.schema.json`** stay aligned — reduces “looks green” drift across scripts and docs.
+
+**Structural graph:** **`pwsh ./tools/verify-manifest-graph.ps1`** (quick+ profiles) walks manifest↔schema pairs, script paths, skills/playbooks/recipes, capability references, distribution includes, and release-gate tool maturity vs `component-manifest.json` allowlist.
+
+**Generated targets:** **`pwsh ./tools/verify-generated-drift.ps1`** (standard+; `-Strict` on strict profile) extends skills drift with generation-header checks; **`pwsh ./tools/sync-generated-targets.ps1`** regenerates copies. Schema fragment: **`schemas/generated-target.schema.json`** (adapter `generatedTargets` shape).
+
+Configured explicitly in `runtime-budget.json` → `neverTreatAsPassed`. Normative wording: **`policies/invariants.md`** (I-001), **`docs/DEGRADED-MODES.md`**. Manifest-governed gates and the **release** / **strict** false-green contracts live under **`quality-gates/`**; see **`docs/QUALITY-GATES.md`** and **`pwsh ./tools/verify-quality-gates.ps1`**.
 
 ## JSON envelope (verifiers)
 

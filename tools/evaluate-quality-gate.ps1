@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('docs', 'skills', 'release', 'bootstrap', 'adapters', 'security')]
+    [ValidateSet('docs', 'skills', 'release', 'bootstrap', 'adapters', 'security', 'strict')]
     [string]$Gate,
 
     [switch]$Strict,
@@ -186,6 +186,6 @@ else {
 }
 
 if ($failures.Count -gt 0) { exit 1 }
-if ($doc.id -eq 'gate.release' -and $agg -ne 'ok') { exit 1 }
+if ($doc.id -in @('gate.release', 'gate.strict') -and $agg -ne 'ok') { exit 1 }
 if ($Strict -and $agg -eq 'warn') { exit 1 }
 exit 0

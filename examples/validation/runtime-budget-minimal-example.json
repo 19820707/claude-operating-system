@@ -26,5 +26,5 @@
   },
   "ordering": ["quick", "standard", "strict"],
   "approvalRequiredFor": ["Critical", "Production", "Incident", "Migration", "Release", "Destructive"],
-  "neverTreatAsPassed": ["skipped", "warn", "unknown", "not_run", "degraded", "blocked"]
+  "neverTreatAsPassed": ["skip", "skipped", "warn", "unknown", "not_run", "degraded", "blocked"]
 }

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define how agents may operate **locally** with high autonomy while **never** becoming unsupervised production actors, **never** weakening validation gates, and **never** treating ambiguous validation states as success.
+Define how agents may operate **locally** with high autonomy while **never** becoming unsupervised production actors, **never** weakening validation gates, and **never** treating ambiguous validation states as success. Invariantes globais: `policies/invariants.md` (I-001–I-010).
 
 ## Non-goals
 
@@ -52,6 +52,8 @@ Includes: production, release publish, destructive write, migration, incident ac
 
 ## Related
 
+- `policies/invariants.md` — leis conservativas (I-001–I-010).
+- `policies/auto-approve-matrix.md` — matriz L7 (nunca / autónomo se reversível+validado / sempre humano).
 - `docs/AUTONOMY.md` — operator guide.
 - `docs/APPROVALS.md` — human approval ledger.
 - `schemas/autonomy-policy.schema.json` — JSON contract.

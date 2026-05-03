@@ -987,6 +987,20 @@
                       "safeToRunInCI":  true
                   },
                   {
+                      "path":  "tools/verify-gate-results.ps1",
+                      "id":  "verify-gate-results",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
                       "path":  "tools/verify-autonomy-policy.ps1",
                       "id":  "verify-autonomy-policy",
                       "maturity":  "stable",
@@ -999,6 +1013,88 @@
                                  ],
                       "exitPolicy":  "fail",
                       "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/classify-change.ps1",
+                      "id":  "classify-change",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "informational",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/autonomous-commit-gate.ps1",
+                      "id":  "autonomous-commit-gate",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh",
+                                       "git"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "informational",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-generated-drift.ps1",
+                      "id":  "verify-generated-drift",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/verify-manifest-graph.ps1",
+                      "id":  "verify-manifest-graph",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+
+                                 ],
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  true
+                  },
+                  {
+                      "path":  "tools/sync-generated-targets.ps1",
+                      "id":  "sync-generated-targets",
+                      "maturity":  "stable",
+                      "defaultEnabled":  true,
+                      "requires":  [
+                                       "pwsh"
+                                   ],
+                      "writes":  [
+                                     ".claude/skills/",
+                                     ".cursor/skills/",
+                                     ".codex/skills/"
+                                 ],
+                      "writeRisk":  "medium",
+                      "safeApply":  {
+                                        "generatedWriteTargets":  [
+                                                                      ".claude/skills/",
+                                                                      ".cursor/skills/",
+                                                                      ".codex/skills/"
+                                                                  ],
+                                        "rollbackNote":  "Regenerate from source/skills via sync-skills.ps1; discard generated copies."
+                                    },
+                      "exitPolicy":  "fail",
+                      "safeToRunInCI":  false
                   },
                   {
                       "path":  "tools/os-autopilot.ps1",

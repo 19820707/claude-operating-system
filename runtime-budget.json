@@ -34,6 +34,7 @@
     "Destructive"
   ],
   "neverTreatAsPassed": [
+    "skip",
     "skipped",
     "warn",
     "unknown",

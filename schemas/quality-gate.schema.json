@@ -23,7 +23,7 @@
     "description": { "type": "string" },
     "domain": {
       "type": "string",
-      "enum": ["docs", "skills", "release", "bootstrap", "adapters", "security"]
+      "enum": ["docs", "skills", "release", "bootstrap", "adapters", "security", "strict"]
     },
     "requiredValidators": {
       "type": "array",
@@ -90,7 +90,7 @@
           "minItems": 1,
           "items": {
             "type": "string",
-            "enum": ["warn", "fail", "skip", "blocked", "degraded", "unknown"]
+            "enum": ["warn", "fail", "skip", "blocked", "degraded", "unknown", "not_run"]
           }
         },
         "nonPassStatusAliases": {

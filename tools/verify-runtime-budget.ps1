@@ -57,7 +57,7 @@ try {
         }
     }
 
-    foreach ($req in @('skipped', 'warn', 'unknown', 'not_run', 'degraded', 'blocked')) {
+    foreach ($req in @('skip', 'skipped', 'warn', 'unknown', 'not_run', 'degraded', 'blocked')) {
         $ntp = @($j.neverTreatAsPassed | ForEach-Object { [string]$_ })
         if ($ntp -notcontains $req) {
             [void]$failures.Add("neverTreatAsPassed must include '$req'")

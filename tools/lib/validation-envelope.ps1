@@ -48,7 +48,7 @@ function New-OsHealthEnvelope {
 function New-OsValidatorEnvelope {
     param(
         [Parameter(Mandatory = $true)][string]$Tool,
-        [Parameter(Mandatory = $true)][ValidateSet('ok', 'warn', 'fail', 'skip', 'blocked', 'degraded', 'unknown')][string]$Status,
+        [Parameter(Mandatory = $true)][ValidateSet('ok', 'warn', 'fail', 'skip', 'blocked', 'degraded', 'unknown', 'not_run')][string]$Status,
         [int]$DurationMs = 0,
         [object[]]$Checks = @(),
         [string[]]$Warnings = @(),

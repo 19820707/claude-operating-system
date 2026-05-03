@@ -24,6 +24,12 @@ $stepResults = [System.Collections.Generic.List[object]]::new()
 $warnings = [System.Collections.Generic.List[string]]::new()
 $failures = [System.Collections.Generic.List[string]]::new()
 
+function Test-OsEnvelopeNonPass {
+    param([string]$Status)
+    if ([string]::IsNullOrWhiteSpace($Status)) { return $false }
+    return $Status.ToLowerInvariant() -in @('warn', 'skip', 'blocked', 'degraded', 'unknown', 'not_run')
+}
+
 function Invoke-PwshTool {
     param(
         [string]$RelativeTool,
@@ -67,7 +73,7 @@ function Invoke-JsonTool {
         [void]$failures.Add("$StepName reported fail")
         Add-Step -Name $StepName -Status 'fail'
     }
-    elseif ($st -eq 'warn' -or $st -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $st) {
         [void]$warnings.Add("$StepName status=$st (not treated as passed)")
         Add-Step -Name $StepName -Status $st
     }
@@ -79,6 +85,7 @@ function Invoke-JsonTool {
 foreach ($pair in @(
         @{ rel = 'tools/verify-autonomy-policy.ps1'; name = 'verify-autonomy-policy' }
         @{ rel = 'tools/verify-runtime-budget.ps1'; name = 'verify-runtime-budget' }
+        @{ rel = 'tools/verify-gate-results.ps1'; name = 'verify-gate-results' }
         @{ rel = 'tools/verify-context-economy.ps1'; name = 'verify-context-economy' }
         @{ rel = 'tools/verify-compatibility.ps1'; name = 'verify-compatibility' }
         @{ rel = 'tools/verify-lifecycle.ps1'; name = 'verify-lifecycle' }
@@ -102,7 +109,7 @@ else {
         [void]$failures.Add('verify-script-manifest reported fail')
         Add-Step -Name 'verify-script-manifest' -Status 'fail'
     }
-    elseif ($smfSt -eq 'warn' -or $smfSt -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $smfSt) {
         [void]$warnings.Add("verify-script-manifest status=$smfSt (not treated as passed)")
         Add-Step -Name 'verify-script-manifest' -Status $smfSt
     }
@@ -124,12 +131,34 @@ else {
         [void]$failures.Add('verify-components reported fail')
         Add-Step -Name 'verify-components' -Status 'fail'
     }
-    elseif ($vcSt -eq 'warn' -or $vcSt -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $vcSt) {
         [void]$warnings.Add("verify-components status=$vcSt (not treated as passed)")
         Add-Step -Name 'verify-components' -Status $vcSt
     }
     else {
         Add-Step -Name 'verify-components' -Status 'ok'
+    }
+}
+
+$mgArgs = @('-Json')
+if ($Profile -eq 'strict') { $mgArgs += '-Strict' }
+$mgCode = Invoke-PwshTool -RelativeTool 'tools/verify-manifest-graph.ps1' -ArgList $mgArgs
+if ($mgCode -ne 0) {
+    [void]$failures.Add('verify-manifest-graph exit non-zero')
+    Add-Step -Name 'verify-manifest-graph' -Status 'fail' -Detail "exit $mgCode"
+}
+else {
+    $mgSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-manifest-graph.ps1' -ArgList $mgArgs
+    if ($mgSt -eq 'fail') {
+        [void]$failures.Add('verify-manifest-graph reported fail')
+        Add-Step -Name 'verify-manifest-graph' -Status 'fail'
+    }
+    elseif (Test-OsEnvelopeNonPass $mgSt) {
+        [void]$warnings.Add("verify-manifest-graph status=$mgSt")
+        Add-Step -Name 'verify-manifest-graph' -Status $mgSt
+    }
+    else {
+        Add-Step -Name 'verify-manifest-graph' -Status 'ok'
     }
 }
 
@@ -146,7 +175,7 @@ else {
         [void]$failures.Add('verify-skills-manifest reported fail')
         Add-Step -Name 'verify-skills-manifest' -Status 'fail'
     }
-    elseif ($mfSt -eq 'warn' -or $mfSt -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $mfSt) {
         [void]$warnings.Add("verify-skills-manifest status=$mfSt (not treated as passed)")
         Add-Step -Name 'verify-skills-manifest' -Status $mfSt
     }
@@ -168,7 +197,7 @@ else {
             [void]$failures.Add('verify-skills-structure reported fail')
             Add-Step -Name 'verify-skills-structure' -Status 'fail'
         }
-        elseif ($sst -eq 'warn' -or $sst -eq 'skip') {
+        elseif (Test-OsEnvelopeNonPass $sst) {
             [void]$warnings.Add("verify-skills-structure status=$sst")
             Add-Step -Name 'verify-skills-structure' -Status $sst
         }
@@ -203,7 +232,7 @@ else {
         [void]$failures.Add('verify-playbooks reported fail')
         Add-Step -Name 'verify-playbooks' -Status 'fail'
     }
-    elseif ($pbSt -eq 'warn' -or $pbSt -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $pbSt) {
         [void]$warnings.Add("verify-playbooks status=$pbSt (not treated as passed)")
         Add-Step -Name 'verify-playbooks' -Status $pbSt
     }
@@ -223,7 +252,7 @@ else {
         [void]$failures.Add('verify-approval-log reported fail')
         Add-Step -Name 'verify-approval-log' -Status 'fail'
     }
-    elseif ($alSt -eq 'warn' -or $alSt -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $alSt) {
         [void]$warnings.Add("verify-approval-log status=$alSt")
         Add-Step -Name 'verify-approval-log' -Status $alSt
     }
@@ -245,7 +274,7 @@ else {
         [void]$failures.Add('verify-recipes reported fail')
         Add-Step -Name 'verify-recipes' -Status 'fail'
     }
-    elseif ($recSt -eq 'warn' -or $recSt -eq 'skip') {
+    elseif (Test-OsEnvelopeNonPass $recSt) {
         [void]$warnings.Add("verify-recipes status=$recSt (not treated as passed)")
         Add-Step -Name 'verify-recipes' -Status $recSt
     }
@@ -283,12 +312,34 @@ if ($Profile -in @('standard', 'strict')) {
             [void]$failures.Add('verify-skills-drift reported fail')
             Add-Step -Name 'verify-skills-drift' -Status 'fail'
         }
-        elseif ($sdst -eq 'warn' -or $sdst -eq 'skip') {
+        elseif (Test-OsEnvelopeNonPass $sdst) {
             [void]$warnings.Add("verify-skills-drift status=$sdst")
             Add-Step -Name 'verify-skills-drift' -Status $sdst
         }
         else {
             Add-Step -Name 'verify-skills-drift' -Status 'ok'
+        }
+    }
+
+    $vgdArgs = @('-Json')
+    if ($Profile -eq 'strict') { $vgdArgs += '-Strict' }
+    $vgdCode = Invoke-PwshTool -RelativeTool 'tools/verify-generated-drift.ps1' -ArgList $vgdArgs
+    if ($vgdCode -ne 0) {
+        [void]$failures.Add('verify-generated-drift exit non-zero')
+        Add-Step -Name 'verify-generated-drift' -Status 'fail' -Detail "exit $vgdCode"
+    }
+    else {
+        $vgdSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-generated-drift.ps1' -ArgList $vgdArgs
+        if ($vgdSt -eq 'fail') {
+            [void]$failures.Add('verify-generated-drift reported fail')
+            Add-Step -Name 'verify-generated-drift' -Status 'fail'
+        }
+        elseif (Test-OsEnvelopeNonPass $vgdSt) {
+            [void]$warnings.Add("verify-generated-drift status=$vgdSt")
+            Add-Step -Name 'verify-generated-drift' -Status $vgdSt
+        }
+        else {
+            Add-Step -Name 'verify-generated-drift' -Status 'ok'
         }
     }
 
@@ -316,7 +367,7 @@ if ($Profile -in @('standard', 'strict')) {
             [void]$failures.Add('verify-no-secrets reported fail')
             Add-Step -Name 'verify-no-secrets' -Status 'fail'
         }
-        elseif ($secSt -eq 'warn' -or $secSt -eq 'skip') {
+        elseif (Test-OsEnvelopeNonPass $secSt) {
             [void]$warnings.Add("verify-no-secrets status=$secSt")
             Add-Step -Name 'verify-no-secrets' -Status $secSt
         }
@@ -338,7 +389,7 @@ if ($Profile -in @('standard', 'strict')) {
             [void]$failures.Add('verify-upgrade-notes reported fail')
             Add-Step -Name 'verify-upgrade-notes' -Status 'fail'
         }
-        elseif ($upSt -eq 'warn' -or $upSt -eq 'skip') {
+        elseif (Test-OsEnvelopeNonPass $upSt) {
             [void]$warnings.Add("verify-upgrade-notes status=$upSt")
             Add-Step -Name 'verify-upgrade-notes' -Status $upSt
         }
@@ -404,7 +455,7 @@ if ($Profile -eq 'strict') {
             [void]$failures.Add('verify-deprecations reported fail')
             Add-Step -Name 'verify-deprecations' -Status 'fail'
         }
-        elseif ($depSt -eq 'warn' -or $depSt -eq 'skip') {
+        elseif (Test-OsEnvelopeNonPass $depSt) {
             [void]$warnings.Add("verify-deprecations status=$depSt")
             Add-Step -Name 'verify-deprecations' -Status $depSt
         }

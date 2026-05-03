@@ -31,6 +31,7 @@
     "policies/autonomy-policy.json",
     "recipe-manifest.json",
     "runtime-budget.json",
+    "gate-status-contract.json",
     "runtime-profiles.json",
     "script-manifest.json",
     "session-memory-manifest.json",

@@ -45,7 +45,15 @@
         },
         {
           "kind": "tool",
+          "id": "verify-gate-results"
+        },
+        {
+          "kind": "tool",
           "id": "verify-autonomy-policy"
+        },
+        {
+          "kind": "tool",
+          "id": "classify-change"
         },
         {
           "kind": "tool",
@@ -165,6 +173,22 @@
         {
           "kind": "tool",
           "id": "sync-skills"
+        },
+        {
+          "kind": "tool",
+          "id": "sync-generated-targets"
+        },
+        {
+          "kind": "tool",
+          "id": "autonomous-commit-gate"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-generated-drift"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-manifest-graph"
         },
         {
           "kind": "tool",
@@ -460,6 +484,18 @@
         },
         {
           "kind": "policy",
+          "path": "policies/auto-approve-matrix.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/invariants.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/critical-invariants.md"
+        },
+        {
+          "kind": "policy",
           "path": "policies/deprecation.md"
         },
         {
@@ -516,6 +552,10 @@
         },
         {
           "kind": "manifest",
+          "path": "invariants-manifest.json"
+        },
+        {
+          "kind": "manifest",
           "path": "session-memory-manifest.json"
         },
         {
@@ -556,7 +596,15 @@
         },
         {
           "kind": "manifest",
+          "path": "quality-gates/strict.json"
+        },
+        {
+          "kind": "manifest",
           "path": "recipe-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "gate-status-contract.json"
         },
         {
           "kind": "manifest",
@@ -791,6 +839,21 @@
           "kind": "gateValidator",
           "gateId": "gate.release",
           "validatorId": "os-validate-strict"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.strict",
+          "validatorId": "verify-gate-results"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.strict",
+          "validatorId": "verify-runtime-budget"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.strict",
+          "validatorId": "verify-quality-gates"
         },
         {
           "kind": "gateValidator",

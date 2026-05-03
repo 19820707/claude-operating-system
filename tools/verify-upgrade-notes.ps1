@@ -29,6 +29,7 @@ $canonicalWatched = @(
     'deprecation-manifest.json',
     'distribution-manifest.json',
     'docs-index.json',
+    'invariants-manifest.json',
     'lifecycle-manifest.json',
     'os-capabilities.json',
     'os-manifest.json',

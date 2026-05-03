@@ -69,25 +69,25 @@ function Test-GateFile {
         if (-not (Test-Path -LiteralPath $vf)) { Fail "$RelPath validator $sid missing file $scriptRel" }
     }
 
-    if ($id -eq 'gate.release') {
+    if ($id -in @('gate.release', 'gate.strict')) {
         if (-not ($gate.PSObject.Properties.Name -contains 'passInterpretation')) {
-            Fail 'gate.release must declare passInterpretation'
+            Fail "$id must declare passInterpretation"
         }
         else {
             $pi = $gate.passInterpretation
-            if (-not $pi.onlyStatusOkIsPass) { Fail 'gate.release passInterpretation.onlyStatusOkIsPass must be true' }
-            $mustStatuses = @('skip', 'warn', 'unknown', 'degraded', 'blocked', 'fail')
+            if (-not $pi.onlyStatusOkIsPass) { Fail "$id passInterpretation.onlyStatusOkIsPass must be true" }
+            $mustStatuses = @('skip', 'warn', 'unknown', 'degraded', 'blocked', 'fail', 'not_run')
             $have = @($pi.statusesNeverEquivalentToPassed | ForEach-Object { [string]$_ })
             foreach ($ms in $mustStatuses) {
                 if ($have -notcontains $ms) {
-                    Fail "gate.release passInterpretation.statusesNeverEquivalentToPassed must include '$ms'"
+                    Fail "$id passInterpretation.statusesNeverEquivalentToPassed must include '$ms'"
                 }
             }
             $mustAlias = @('skipped', 'not_run')
             $aliases = @($pi.nonPassStatusAliases | ForEach-Object { [string]$_ })
             foreach ($ma in $mustAlias) {
                 if ($aliases -notcontains $ma) {
-                    Fail "gate.release passInterpretation.nonPassStatusAliases must include '$ma' (runtime-budget alignment)"
+                    Fail "$id passInterpretation.nonPassStatusAliases must include '$ma' (runtime-budget alignment)"
                 }
             }
         }
@@ -102,7 +102,7 @@ try {
         Fail 'quality-gates directory missing'
     }
     else {
-        $expected = @('docs', 'skills', 'release', 'bootstrap', 'adapters', 'security')
+        $expected = @('docs', 'skills', 'release', 'bootstrap', 'adapters', 'security', 'strict')
         foreach ($name in $expected) {
             Test-GateFile -RelPath "quality-gates/$name.json"
         }

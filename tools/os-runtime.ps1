@@ -1,4 +1,4 @@
-# os-runtime.ps1 — Unified Claude OS Runtime dispatcher
+# os-runtime.ps1 - Unified Claude OS Runtime dispatcher
 # Examples:
 #   pwsh ./tools/os-runtime.ps1 health
 #   pwsh ./tools/os-runtime.ps1 validate -Strict
@@ -38,7 +38,9 @@ param(
     [string]$Id = '',
     [string]$Phase = '',
     [string]$ProjectPath = '',
-    [string]$Profile = '',
+    # Avoid shadowing automatic variable $PROFILE; -Profile remains valid via Alias.
+    [Alias('Profile')]
+    [string]$OsProfile = '',
     [string]$ValidationProfile = '',
     [string]$Note = '',
     [string]$Kind = 'observation',
@@ -91,12 +93,6 @@ function Show-Help {
     ) | Write-Output
 }
 
-function Require-ProjectPath {
-    if ([string]::IsNullOrWhiteSpace($ProjectPath)) {
-        throw 'ProjectPath is required for this command.'
-    }
-}
-
 try {
     switch ($Command) {
         'help' {
@@ -134,8 +130,8 @@ try {
         }
         'validate' {
             $vProf = $ValidationProfile
-            if ([string]::IsNullOrWhiteSpace($vProf) -and ($Profile -in @('quick', 'standard', 'strict'))) {
-                $vProf = $Profile
+            if ([string]::IsNullOrWhiteSpace($vProf) -and ($OsProfile -in @('quick', 'standard', 'strict'))) {
+                $vProf = $OsProfile
             }
             if ($vProf -in @('quick', 'standard', 'strict')) {
                 $vp = @{ Profile = $vProf }
@@ -185,7 +181,8 @@ try {
             Complete-OsChildExit
             break
         }
-        'workflow' {
+        # Scriptblock label: 'workflow' is a reserved keyword; string clause can confuse some parsers/hosts.
+        { $_ -eq 'workflow' } {
             $params = @{}
             if ($Phase) { $params['Phase'] = $Phase }
             if ($Json) { $params['Json'] = $true }
@@ -210,6 +207,7 @@ try {
             break
         }
         'absorb' {
+            # Binds to script params -Note and -Kind (never use placeholder vars here; typos break the switch parse in some hosts).
             if ([string]::IsNullOrWhiteSpace($Note)) { throw 'Note is required for absorb.' }
             $params = @{ Note = $Note; Kind = $Kind }
             if ($ProjectPath) { $params['ProjectPath'] = $ProjectPath }
@@ -231,7 +229,7 @@ try {
             break
         }
         'update' {
-            Require-ProjectPath
+            if ([string]::IsNullOrWhiteSpace($ProjectPath)) { throw 'ProjectPath is required for this command.' }
             $params = @{ ProjectPath = $ProjectPath }
             if ($DryRun) { $params['DryRun'] = $true }
             & (Join-Path $RepoRoot 'tools/os-update-project.ps1') @params
@@ -239,9 +237,9 @@ try {
             break
         }
         'bootstrap' {
-            Require-ProjectPath
+            if ([string]::IsNullOrWhiteSpace($ProjectPath)) { throw 'ProjectPath is required for this command.' }
             $params = @{ ProjectPath = $ProjectPath }
-            if ($Profile) { $params['Profile'] = $Profile }
+            if ($OsProfile) { $params['Profile'] = $OsProfile }
             if ($DryRun) { $params['DryRun'] = $true }
             if ($SkipGitInit) { $params['SkipGitInit'] = $true }
             & (Join-Path $RepoRoot 'init-project.ps1') @params
@@ -251,19 +249,19 @@ try {
     }
 }
 catch {
-    # Invariant: short redacted line — no long stack traces as default output.
+    # Invariant: short redacted line - no long stack traces as default output.
     $safe = Redact-SensitiveText -Text $_.Exception.Message -MaxLength 360
-    Write-Host "Claude OS runtime command failed: $safe"
-    Write-Host "Command: $Command"
-    Write-Host 'Suggested diagnostics:'
-    Write-Host '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
-    Write-Host '  pwsh ./tools/os-doctor.ps1 -SkipBashSyntax'
-    Write-Host '  pwsh ./tools/os-runtime.ps1 critical'
+    Write-Output "Claude OS runtime command failed: $safe"
+    Write-Output "Command: $Command"
+    Write-Output 'Suggested diagnostics:'
+    Write-Output '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
+    Write-Output '  pwsh ./tools/os-doctor.ps1 -SkipBashSyntax'
+    Write-Output '  pwsh ./tools/os-runtime.ps1 critical'
     if ($Command -eq 'validate') {
-        Write-Host '  pwsh ./tools/os-validate.ps1 -Profile quick -Json'
-        Write-Host '  pwsh ./tools/verify-json-contracts.ps1'
-        Write-Host '  pwsh ./tools/verify-git-hygiene.ps1 -Json'
-        Write-Host '  pwsh ./tools/os-validate-all.ps1 -Strict -SkipBashSyntax'
+        Write-Output '  pwsh ./tools/os-validate.ps1 -Profile quick -Json'
+        Write-Output '  pwsh ./tools/verify-json-contracts.ps1'
+        Write-Output '  pwsh ./tools/verify-git-hygiene.ps1 -Json'
+        Write-Output '  pwsh ./tools/os-validate-all.ps1 -Strict -SkipBashSyntax'
     }
     exit 1
 }

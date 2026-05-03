@@ -10,6 +10,7 @@ Quality gates are **JSON manifests** under **`quality-gates/`**. Each file descr
 | `quality-gates/bootstrap.json` | bootstrap | Bootstrap manifest + bootstrap examples |
 | `quality-gates/adapters.json` | adapters | Adapter templates + drift |
 | `quality-gates/security.json` | security | Security policy, `.claudeignore`, critical-systems |
+| `quality-gates/strict.json` | strict | No-false-green **contract** drift: `verify-gate-results`, runtime budget, gate registry shape |
 
 Schema: **`schemas/quality-gate.schema.json`**.
 
@@ -24,14 +25,14 @@ Schema: **`schemas/quality-gate.schema.json`**.
 `quality-gates/release.json` declares **`passInterpretation`**:
 
 - **`onlyStatusOkIsPass`**: `true`
-- **`statusesNeverEquivalentToPassed`**: `skip`, `warn`, `unknown`, `degraded`, `blocked`, `fail`
+- **`statusesNeverEquivalentToPassed`**: `skip`, `warn`, `unknown`, `degraded`, `blocked`, `fail`, `not_run`
 - **`nonPassStatusAliases`**: `skipped`, `not_run` (aligned with **`runtime-budget.json`** → `neverTreatAsPassed`)
 
 `verify-quality-gates.ps1` **fails** if any of those statuses or aliases are missing from the manifest, so the release contract cannot silently rot.
 
 ## Status taxonomy
 
-See **`docs/VALIDATION.md`**. Validator envelopes use **`schemas/os-validator-envelope.schema.json`** (`ok`, `warn`, `fail`, `skip`, `blocked`, `degraded`, `unknown`). The release gate treats only **`ok`** as pass when `passInterpretation` is present; **`evaluate-quality-gate.ps1`** also exits **1** on any aggregate **`warn`** for **`gate.release`**.
+See **`docs/VALIDATION.md`**. Validator envelopes use **`schemas/os-validator-envelope.schema.json`** (`ok`, `warn`, `fail`, `skip`, `blocked`, `degraded`, `unknown`, `not_run`). The **release** and **strict** gates treat only **`ok`** as pass when `passInterpretation` is present; **`evaluate-quality-gate.ps1`** exits **1** on any aggregate **`warn`** for **`gate.release`** / **`gate.strict`** when aggregate is not **`ok`**.
 
 ## Deprecations
 

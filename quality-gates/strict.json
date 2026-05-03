@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.strict",
+  "title": "No-false-green contract gate",
+  "description": "Machine-verifiable alignment of canonical gate statuses, runtime-budget neverTreatAsPassed, release pass semantics, and validator envelope vocabulary. Run before or alongside release gate for contract drift detection.",
+  "domain": "strict",
+  "requiredValidators": [
+    {
+      "id": "verify-gate-results",
+      "script": "tools/verify-gate-results.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-runtime-budget",
+      "script": "tools/verify-runtime-budget.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-quality-gates",
+      "script": "tools/verify-quality-gates.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": [],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "verify-gate-results JSON ok (gate-status-contract, runtime-budget, release passInterpretation, envelope enum)",
+    "verify-runtime-budget JSON ok",
+    "verify-quality-gates structural JSON ok (includes strict domain gate file)"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 0,
+    "roles": ["maintainer"],
+    "requiresMaintainerApproval": false
+  },
+  "strictModeBehavior": "Same non-pass semantics as release gate: only envelope status ok counts as pass; skip, warn, fail, unknown, degraded, blocked, not_run, and aliases skipped are never pass.",
+  "passInterpretation": {
+    "onlyStatusOkIsPass": true,
+    "statusesNeverEquivalentToPassed": [
+      "skip",
+      "warn",
+      "unknown",
+      "degraded",
+      "blocked",
+      "fail",
+      "not_run"
+    ],
+    "nonPassStatusAliases": ["skipped", "not_run"]
+  }
+}

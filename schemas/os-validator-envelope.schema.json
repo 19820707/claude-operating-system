@@ -9,7 +9,7 @@
     "tool": { "type": "string", "minLength": 1 },
     "status": {
       "type": "string",
-      "enum": ["ok", "warn", "fail", "skip", "blocked", "degraded", "unknown"]
+      "enum": ["ok", "warn", "fail", "skip", "blocked", "degraded", "unknown", "not_run"]
     },
     "durationMs": { "type": "integer", "minimum": 0 },
     "checks": {

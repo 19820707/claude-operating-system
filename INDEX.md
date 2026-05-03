@@ -37,6 +37,7 @@ Navigation map. Every file, its purpose, and when to use it.
 | Pipeline stages, confidence tokens, validation boundaries | `ARCHITECTURE.md` |
 | O que o Claude OS **não** é (CI/CD, Actions, revisão, SaaS, produção, supervisão) — PT | `docs/POSICIONAMENTO-NAO-E.md` |
 | Fluxo §2–§11, competências §14–§17 (maturidade, resultado, autonomia) — PT | `docs/CAPACIDADES-OPERACIONAIS.md` |
+| Porquê usar (17 problemas concretos + impacto) — PT | `docs/VALUE-FOR-ENGINEERS.md` |
 
 ---
 
