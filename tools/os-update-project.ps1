@@ -42,6 +42,15 @@ function Copy-ManagedDirectory {
     }
 }
 
+function Copy-ProjectOwnedIfMissing {
+    param([string]$From, [string]$To, [string]$Label)
+    if (Test-Path -LiteralPath $To) {
+        Write-StatusLine -Status 'skip' -Name "$Label (exists — project-owned, not overwriting)"
+        return
+    }
+    Copy-ManagedFile -From $From -To $To
+}
+
 $target = [System.IO.Path]::GetFullPath($ProjectPath)
 if (-not (Test-Path -LiteralPath $target)) { throw "ProjectPath not found: $target" }
 
@@ -63,6 +72,10 @@ Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/session-absorb.ps1') -To (Joi
 Copy-ManagedFile -From (Join-Path $RepoRoot 'tools/session-digest.ps1') -To (Join-Path $target '.claude/scripts/session-digest.ps1')
 Copy-ManagedDirectory -From (Join-Path $RepoRoot 'templates/checklists') -To (Join-Path $target '.claude/checklists')
 Copy-ManagedDirectory -From (Join-Path $RepoRoot 'source/skills') -To (Join-Path $target '.claude/skills')
+Copy-ManagedDirectory -From (Join-Path $RepoRoot 'policies') -To (Join-Path $target '.claude/policies')
+
+# Invariant: .claudeignore is project-owned scope control. Bootstrap/update may create it, but must not overwrite local exclusions.
+Copy-ProjectOwnedIfMissing -From (Join-Path $RepoRoot 'templates/claudeignore') -To (Join-Path $target '.claudeignore') -Label '.claudeignore'
 
 $adaptersSrc = Join-Path $RepoRoot 'templates/adapters'
 $agentsDest = Join-Path $target 'AGENTS.md'
@@ -98,6 +111,8 @@ $installRecord = [pscustomobject]@{
         '.claude/scripts/session-digest.ps1',
         '.claude/checklists',
         '.claude/skills',
+        '.claude/policies',
+        '.claudeignore',
         'AGENTS.md',
         '.cursor/rules/claude-os-runtime.mdc',
         '.agent/runtime.md',
