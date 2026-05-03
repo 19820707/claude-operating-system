@@ -2,6 +2,7 @@
 # Examples:
 #   pwsh ./tools/os-runtime.ps1 health
 #   pwsh ./tools/os-runtime.ps1 validate -Strict
+#   pwsh ./tools/os-runtime.ps1 critical
 #   pwsh ./tools/os-runtime.ps1 route -Query "security review"
 #   pwsh ./tools/os-runtime.ps1 docs -Query bootstrap
 #   pwsh ./tools/os-runtime.ps1 workflow -Phase verify
@@ -13,7 +14,7 @@
 [CmdletBinding(PositionalBinding = $false)]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('help', 'health', 'doctor', 'validate', 'route', 'docs', 'workflow', 'profile', 'prime', 'absorb', 'digest', 'update', 'bootstrap')]
+    [ValidateSet('help', 'health', 'doctor', 'validate', 'critical', 'route', 'docs', 'workflow', 'profile', 'prime', 'absorb', 'digest', 'update', 'bootstrap')]
     [string]$Command = 'help',
 
     [string]$Query = '',
@@ -49,6 +50,7 @@ function Show-Help {
         '  health                 Run repository health checks'
         '  doctor                 Diagnose runtime/environment readiness'
         '  validate [-Strict] [-Json] [-SkipBashSyntax] [-RequireBash]  Release-grade validation (bash -n optional unless -RequireBash)'
+        '  critical [-Json]       Verify critical-systems policy gates (token economy, no false green, scope control)'
         '  route -Query <text>    Route intent to OS capability'
         '  docs -Query <text>     Query section-first docs index'
         '  workflow [-Phase id]   Show progressive workflow gates/status'
@@ -92,6 +94,11 @@ try {
             if ($RequireBash) { $params['RequireBash'] = $true }
             if ($Json) { $params['Json'] = $true }
             & (Join-Path $RepoRoot 'tools/os-validate-all.ps1') @params
+        }
+        'critical' {
+            $params = @{}
+            if ($Json) { $params['Json'] = $true }
+            & (Join-Path $RepoRoot 'tools/verify-critical-systems.ps1') @params
         }
         'route' {
             $params = @{}
@@ -167,6 +174,7 @@ try {
     Write-Host 'Suggested diagnostics:'
     Write-Host '  pwsh ./tools/verify-os-health.ps1 -SkipBashSyntax'
     Write-Host '  pwsh ./tools/os-doctor.ps1 -SkipBashSyntax'
+    Write-Host '  pwsh ./tools/os-runtime.ps1 critical'
     if ($Command -eq 'validate') {
         Write-Host '  pwsh ./tools/verify-json-contracts.ps1'
         Write-Host '  pwsh ./tools/verify-git-hygiene.ps1 -Json'
