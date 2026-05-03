@@ -14,9 +14,10 @@ function Invoke-Check {
     param([string]$Name, [string]$ScriptName)
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
     try {
-        $args = @()
-        if ($Json) { $args += '-Json' }
-        & (Join-Path $RepoRoot "tools/$ScriptName") @args | Out-Null
+        # Hashtable splat — array splat of '-Json' can bind positionally and break child scripts.
+        $childArgs = @{}
+        if ($Json) { $childArgs['Json'] = $true }
+        & (Join-Path $RepoRoot "tools/$ScriptName") @childArgs | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "$ScriptName returned non-zero" }
         $sw.Stop()
         [void]$script:Records.Add([pscustomobject]@{ name = $Name; status = 'ok'; latencyMs = [int]$sw.ElapsedMilliseconds; detail = '' })

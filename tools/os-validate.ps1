@@ -24,7 +24,7 @@ $stepResults = [System.Collections.Generic.List[object]]::new()
 $warnings = [System.Collections.Generic.List[string]]::new()
 $failures = [System.Collections.Generic.List[string]]::new()
 
-function Run-Pwsh {
+function Invoke-PwshTool {
     param(
         [string]$RelativeTool,
         [string[]]$ArgList
@@ -34,7 +34,7 @@ function Run-Pwsh {
     return [int]$LASTEXITCODE
 }
 
-function Try-JsonStatus {
+function Get-OsToolJsonStatus {
     param([string]$RelativeTool, [string[]]$ArgList)
     $p = Join-Path $RepoRoot $RelativeTool
     $raw = @(& pwsh -NoProfile -File $p @ArgList 2>$null)
@@ -54,15 +54,15 @@ function Add-Step {
     [void]$script:stepResults.Add([ordered]@{ name = $Name; status = $Status; detail = (Redact-SensitiveText -Text $Detail -MaxLength 220) })
 }
 
-function Run-JsonTool {
+function Invoke-JsonTool {
     param([string]$Rel, [string]$StepName)
-    $code = Run-Pwsh -RelativeTool $Rel -ArgList @('-Json')
+    $code = Invoke-PwshTool -RelativeTool $Rel -ArgList @('-Json')
     if ($code -ne 0) {
         [void]$failures.Add("$StepName exit $code")
         Add-Step -Name $StepName -Status 'fail' -Detail "exit $code"
         return
     }
-    $st = Try-JsonStatus -RelativeTool $Rel -ArgList @('-Json')
+    $st = Get-OsToolJsonStatus -RelativeTool $Rel -ArgList @('-Json')
     if ($st -eq 'fail') {
         [void]$failures.Add("$StepName reported fail")
         Add-Step -Name $StepName -Status 'fail'
@@ -86,18 +86,18 @@ foreach ($pair in @(
         @{ rel = 'tools/verify-doc-contract-consistency.ps1'; name = 'verify-doc-contract-consistency' }
         @{ rel = 'tools/verify-quality-gates.ps1'; name = 'verify-quality-gates' }
     )) {
-    Run-JsonTool -Rel $pair.rel -StepName $pair.name
+    Invoke-JsonTool -Rel $pair.rel -StepName $pair.name
 }
 
 $smfArgs = @('-Json')
 if ($Profile -eq 'strict') { $smfArgs += '-Strict' }
-$smfCode = Run-Pwsh -RelativeTool 'tools/verify-script-manifest.ps1' -ArgList $smfArgs
+$smfCode = Invoke-PwshTool -RelativeTool 'tools/verify-script-manifest.ps1' -ArgList $smfArgs
 if ($smfCode -ne 0) {
     [void]$failures.Add('verify-script-manifest exit non-zero')
     Add-Step -Name 'verify-script-manifest' -Status 'fail' -Detail "exit $smfCode"
 }
 else {
-    $smfSt = Try-JsonStatus -RelativeTool 'tools/verify-script-manifest.ps1' -ArgList $smfArgs
+    $smfSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-script-manifest.ps1' -ArgList $smfArgs
     if ($smfSt -eq 'fail') {
         [void]$failures.Add('verify-script-manifest reported fail')
         Add-Step -Name 'verify-script-manifest' -Status 'fail'
@@ -113,13 +113,13 @@ else {
 
 $vcArgs = @('-Json')
 if ($Profile -eq 'strict') { $vcArgs += '-Strict' }
-$vcCode = Run-Pwsh -RelativeTool 'tools/verify-components.ps1' -ArgList $vcArgs
+$vcCode = Invoke-PwshTool -RelativeTool 'tools/verify-components.ps1' -ArgList $vcArgs
 if ($vcCode -ne 0) {
     [void]$failures.Add('verify-components exit non-zero')
     Add-Step -Name 'verify-components' -Status 'fail' -Detail "exit $vcCode"
 }
 else {
-    $vcSt = Try-JsonStatus -RelativeTool 'tools/verify-components.ps1' -ArgList $vcArgs
+    $vcSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-components.ps1' -ArgList $vcArgs
     if ($vcSt -eq 'fail') {
         [void]$failures.Add('verify-components reported fail')
         Add-Step -Name 'verify-components' -Status 'fail'
@@ -135,13 +135,13 @@ else {
 
 $mfSkillsArgs = @('-Json')
 if ($Profile -eq 'strict') { $mfSkillsArgs += '-Strict' }
-$mfCode = Run-Pwsh -RelativeTool 'tools/verify-skills-manifest.ps1' -ArgList $mfSkillsArgs
+$mfCode = Invoke-PwshTool -RelativeTool 'tools/verify-skills-manifest.ps1' -ArgList $mfSkillsArgs
 if ($mfCode -ne 0) {
     [void]$failures.Add('verify-skills-manifest exit non-zero')
     Add-Step -Name 'verify-skills-manifest' -Status 'fail' -Detail "exit $mfCode"
 }
 else {
-    $mfSt = Try-JsonStatus -RelativeTool 'tools/verify-skills-manifest.ps1' -ArgList $mfSkillsArgs
+    $mfSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-skills-manifest.ps1' -ArgList $mfSkillsArgs
     if ($mfSt -eq 'fail') {
         [void]$failures.Add('verify-skills-manifest reported fail')
         Add-Step -Name 'verify-skills-manifest' -Status 'fail'
@@ -156,14 +156,14 @@ else {
 }
 $structArgs = @('-Json')
 if ($Profile -eq 'strict') { $structArgs += '-Strict' }
-$structCode = Run-Pwsh -RelativeTool 'tools/verify-skills-structure.ps1' -ArgList $structArgs
+$structCode = Invoke-PwshTool -RelativeTool 'tools/verify-skills-structure.ps1' -ArgList $structArgs
 if ($structCode -ne 0) {
     [void]$failures.Add('verify-skills-structure exit non-zero')
     Add-Step -Name 'verify-skills-structure' -Status 'fail' -Detail "exit $structCode"
 }
 else {
     if ($Profile -eq 'strict') {
-        $sst = Try-JsonStatus -RelativeTool 'tools/verify-skills-structure.ps1' -ArgList $structArgs
+        $sst = Get-OsToolJsonStatus -RelativeTool 'tools/verify-skills-structure.ps1' -ArgList $structArgs
         if ($sst -eq 'fail') {
             [void]$failures.Add('verify-skills-structure reported fail')
             Add-Step -Name 'verify-skills-structure' -Status 'fail'
@@ -181,7 +181,7 @@ else {
     }
 }
 
-$vsk = Run-Pwsh -RelativeTool 'tools/verify-skills.ps1' -ArgList @()
+$vsk = Invoke-PwshTool -RelativeTool 'tools/verify-skills.ps1' -ArgList @()
 if ($vsk -ne 0) {
     [void]$failures.Add('verify-skills exit non-zero')
     Add-Step -Name 'verify-skills' -Status 'fail' -Detail "exit $vsk"
@@ -192,13 +192,13 @@ else {
 
 $pbArgs = @('-Json')
 if ($Profile -eq 'strict') { $pbArgs += '-Strict' }
-$pbCode = Run-Pwsh -RelativeTool 'tools/verify-playbooks.ps1' -ArgList $pbArgs
+$pbCode = Invoke-PwshTool -RelativeTool 'tools/verify-playbooks.ps1' -ArgList $pbArgs
 if ($pbCode -ne 0) {
     [void]$failures.Add('verify-playbooks exit non-zero')
     Add-Step -Name 'verify-playbooks' -Status 'fail' -Detail "exit $pbCode"
 }
 else {
-    $pbSt = Try-JsonStatus -RelativeTool 'tools/verify-playbooks.ps1' -ArgList $pbArgs
+    $pbSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-playbooks.ps1' -ArgList $pbArgs
     if ($pbSt -eq 'fail') {
         [void]$failures.Add('verify-playbooks reported fail')
         Add-Step -Name 'verify-playbooks' -Status 'fail'
@@ -212,13 +212,13 @@ else {
     }
 }
 
-$alCode = Run-Pwsh -RelativeTool 'tools/verify-approval-log.ps1' -ArgList @('-Json')
+$alCode = Invoke-PwshTool -RelativeTool 'tools/verify-approval-log.ps1' -ArgList @('-Json')
 if ($alCode -ne 0) {
     [void]$failures.Add('verify-approval-log exit non-zero')
     Add-Step -Name 'verify-approval-log' -Status 'fail' -Detail "exit $alCode"
 }
 else {
-    $alSt = Try-JsonStatus -RelativeTool 'tools/verify-approval-log.ps1' -ArgList @('-Json')
+    $alSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-approval-log.ps1' -ArgList @('-Json')
     if ($alSt -eq 'fail') {
         [void]$failures.Add('verify-approval-log reported fail')
         Add-Step -Name 'verify-approval-log' -Status 'fail'
@@ -234,13 +234,13 @@ else {
 
 $recArgs = @('-Json')
 if ($Profile -eq 'strict') { $recArgs += '-Strict' }
-$recCode = Run-Pwsh -RelativeTool 'tools/verify-recipes.ps1' -ArgList $recArgs
+$recCode = Invoke-PwshTool -RelativeTool 'tools/verify-recipes.ps1' -ArgList $recArgs
 if ($recCode -ne 0) {
     [void]$failures.Add('verify-recipes exit non-zero')
     Add-Step -Name 'verify-recipes' -Status 'fail' -Detail "exit $recCode"
 }
 else {
-    $recSt = Try-JsonStatus -RelativeTool 'tools/verify-recipes.ps1' -ArgList $recArgs
+    $recSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-recipes.ps1' -ArgList $recArgs
     if ($recSt -eq 'fail') {
         [void]$failures.Add('verify-recipes reported fail')
         Add-Step -Name 'verify-recipes' -Status 'fail'
@@ -258,7 +258,7 @@ foreach ($pair in @(
         @{ rel = 'tools/verify-json-contracts.ps1'; name = 'verify-json-contracts' }
         @{ rel = 'tools/verify-bootstrap-manifest.ps1'; name = 'verify-bootstrap-manifest' }
     )) {
-    $c = Run-Pwsh -RelativeTool $pair.rel -ArgList @()
+    $c = Invoke-PwshTool -RelativeTool $pair.rel -ArgList @()
     if ($c -ne 0) {
         [void]$failures.Add("$($pair.name) exit $c")
         Add-Step -Name $pair.name -Status 'fail' -Detail "exit $c"
@@ -269,16 +269,16 @@ foreach ($pair in @(
 }
 
 if ($Profile -in @('standard', 'strict')) {
-    Run-JsonTool -Rel 'tools/verify-skills-economy.ps1' -StepName 'verify-skills-economy'
+    Invoke-JsonTool -Rel 'tools/verify-skills-economy.ps1' -StepName 'verify-skills-economy'
     $skillDriftArgs = @('-Json')
     if ($Profile -eq 'strict') { $skillDriftArgs += '-Strict' }
-    $sdc = Run-Pwsh -RelativeTool 'tools/verify-skills-drift.ps1' -ArgList $skillDriftArgs
+    $sdc = Invoke-PwshTool -RelativeTool 'tools/verify-skills-drift.ps1' -ArgList $skillDriftArgs
     if ($sdc -ne 0) {
         [void]$failures.Add('verify-skills-drift exit non-zero')
         Add-Step -Name 'verify-skills-drift' -Status 'fail' -Detail "exit $sdc"
     }
     else {
-        $sdst = Try-JsonStatus -RelativeTool 'tools/verify-skills-drift.ps1' -ArgList $skillDriftArgs
+        $sdst = Get-OsToolJsonStatus -RelativeTool 'tools/verify-skills-drift.ps1' -ArgList $skillDriftArgs
         if ($sdst -eq 'fail') {
             [void]$failures.Add('verify-skills-drift reported fail')
             Add-Step -Name 'verify-skills-drift' -Status 'fail'
@@ -292,26 +292,26 @@ if ($Profile -in @('standard', 'strict')) {
         }
     }
 
-    $ghc = Run-Pwsh -RelativeTool 'tools/verify-git-hygiene.ps1' -ArgList @('-Json', '-WarnIfNoGit')
+    $ghc = Invoke-PwshTool -RelativeTool 'tools/verify-git-hygiene.ps1' -ArgList @('-Json', '-WarnIfNoGit')
     if ($ghc -ne 0) {
         [void]$failures.Add('verify-git-hygiene exit non-zero')
         Add-Step -Name 'verify-git-hygiene' -Status 'fail'
     }
     else {
-        $gst = Try-JsonStatus -RelativeTool 'tools/verify-git-hygiene.ps1' -ArgList @('-Json', '-WarnIfNoGit')
+        $gst = Get-OsToolJsonStatus -RelativeTool 'tools/verify-git-hygiene.ps1' -ArgList @('-Json', '-WarnIfNoGit')
         if ($gst -eq 'warn') { [void]$warnings.Add('git-hygiene warn (e.g. missing .git or dirty tree)') }
         Add-Step -Name 'verify-git-hygiene' -Status $(if ($gst) { $gst } else { 'ok' })
     }
 
     $secArgs = @('-Json')
     if ($Profile -eq 'strict') { $secArgs += '-Strict' }
-    $secC = Run-Pwsh -RelativeTool 'tools/verify-no-secrets.ps1' -ArgList $secArgs
+    $secC = Invoke-PwshTool -RelativeTool 'tools/verify-no-secrets.ps1' -ArgList $secArgs
     if ($secC -ne 0) {
         [void]$failures.Add('verify-no-secrets exit non-zero')
         Add-Step -Name 'verify-no-secrets' -Status 'fail' -Detail "exit $secC"
     }
     else {
-        $secSt = Try-JsonStatus -RelativeTool 'tools/verify-no-secrets.ps1' -ArgList $secArgs
+        $secSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-no-secrets.ps1' -ArgList $secArgs
         if ($secSt -eq 'fail') {
             [void]$failures.Add('verify-no-secrets reported fail')
             Add-Step -Name 'verify-no-secrets' -Status 'fail'
@@ -327,13 +327,13 @@ if ($Profile -in @('standard', 'strict')) {
 
     $upArgs = @('-Json')
     if ($Profile -eq 'strict') { $upArgs += '-Strict' }
-    $upC = Run-Pwsh -RelativeTool 'tools/verify-upgrade-notes.ps1' -ArgList $upArgs
+    $upC = Invoke-PwshTool -RelativeTool 'tools/verify-upgrade-notes.ps1' -ArgList $upArgs
     if ($upC -ne 0) {
         [void]$failures.Add('verify-upgrade-notes exit non-zero')
         Add-Step -Name 'verify-upgrade-notes' -Status 'fail' -Detail "exit $upC"
     }
     else {
-        $upSt = Try-JsonStatus -RelativeTool 'tools/verify-upgrade-notes.ps1' -ArgList $upArgs
+        $upSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-upgrade-notes.ps1' -ArgList $upArgs
         if ($upSt -eq 'fail') {
             [void]$failures.Add('verify-upgrade-notes reported fail')
             Add-Step -Name 'verify-upgrade-notes' -Status 'fail'
@@ -358,7 +358,7 @@ if ($Profile -in @('standard', 'strict')) {
             'tools/verify-runtime-profiles.ps1'
         )) {
         $n = Split-Path $rel -Leaf
-        $c = Run-Pwsh -RelativeTool $rel -ArgList @()
+        $c = Invoke-PwshTool -RelativeTool $rel -ArgList @()
         if ($c -ne 0) {
             [void]$failures.Add("$n exit $c")
             Add-Step -Name $n -Status 'fail'
@@ -368,13 +368,13 @@ if ($Profile -in @('standard', 'strict')) {
 
     $driftArgs = @('-Json')
     if ($Profile -eq 'strict') { $driftArgs += '-FailOnDrift' }
-    $dc = Run-Pwsh -RelativeTool 'tools/verify-agent-adapter-drift.ps1' -ArgList $driftArgs
+    $dc = Invoke-PwshTool -RelativeTool 'tools/verify-agent-adapter-drift.ps1' -ArgList $driftArgs
     if ($dc -ne 0) {
         [void]$failures.Add('verify-agent-adapter-drift failed')
         Add-Step -Name 'verify-agent-adapter-drift' -Status 'fail'
     }
     else {
-        $dst = Try-JsonStatus -RelativeTool 'tools/verify-agent-adapter-drift.ps1' -ArgList $driftArgs
+        $dst = Get-OsToolJsonStatus -RelativeTool 'tools/verify-agent-adapter-drift.ps1' -ArgList $driftArgs
         if ($dst -eq 'warn') { [void]$warnings.Add('adapter drift warning') }
         Add-Step -Name 'verify-agent-adapter-drift' -Status $(if ($dst) { $dst } else { 'ok' })
     }
@@ -383,7 +383,7 @@ if ($Profile -in @('standard', 'strict')) {
     if ($Json) { $docParams += '-Json' }
     if ($SkipBashSyntax) { $docParams += '-SkipBashSyntax' }
     if ($RequireBash) { $docParams += '-RequireBash' }
-    $dc2 = Run-Pwsh -RelativeTool 'tools/os-doctor.ps1' -ArgList $docParams
+    $dc2 = Invoke-PwshTool -RelativeTool 'tools/os-doctor.ps1' -ArgList $docParams
     if ($dc2 -ne 0) {
         [void]$failures.Add('os-doctor failed')
         Add-Step -Name 'os-doctor' -Status 'fail'
@@ -393,13 +393,13 @@ if ($Profile -in @('standard', 'strict')) {
 
 if ($Profile -eq 'strict') {
     $depArgs = @('-Json', '-Strict')
-    $depCode = Run-Pwsh -RelativeTool 'tools/verify-deprecations.ps1' -ArgList $depArgs
+    $depCode = Invoke-PwshTool -RelativeTool 'tools/verify-deprecations.ps1' -ArgList $depArgs
     if ($depCode -ne 0) {
         [void]$failures.Add('verify-deprecations exit non-zero')
         Add-Step -Name 'verify-deprecations' -Status 'fail' -Detail "exit $depCode"
     }
     else {
-        $depSt = Try-JsonStatus -RelativeTool 'tools/verify-deprecations.ps1' -ArgList $depArgs
+        $depSt = Get-OsToolJsonStatus -RelativeTool 'tools/verify-deprecations.ps1' -ArgList $depArgs
         if ($depSt -eq 'fail') {
             [void]$failures.Add('verify-deprecations reported fail')
             Add-Step -Name 'verify-deprecations' -Status 'fail'
@@ -419,7 +419,7 @@ if ($Profile -eq 'strict') {
     elseif (Get-Command bash -ErrorAction SilentlyContinue) { $va += '-RequireBash' }
     if ($RequireBash) { $va += '-RequireBash' }
     if ($WriteHistory) { $va += '-WriteHistory' }
-    $ac = Run-Pwsh -RelativeTool 'tools/os-validate-all.ps1' -ArgList $va
+    $ac = Invoke-PwshTool -RelativeTool 'tools/os-validate-all.ps1' -ArgList $va
     if ($ac -ne 0) {
         [void]$failures.Add('os-validate-all strict failed')
         Add-Step -Name 'os-validate-all' -Status 'fail'

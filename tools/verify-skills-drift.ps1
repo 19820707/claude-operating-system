@@ -18,7 +18,7 @@ $failures = [System.Collections.Generic.List[string]]::new()
 $findings = [System.Collections.Generic.List[object]]::new()
 $checks = [System.Collections.Generic.List[object]]::new()
 
-function Strip-GeneratedHeader {
+function Remove-GeneratedSkillHeader {
     param([string]$Text)
     $lines = @($Text -split "`r?`n")
     if ($lines.Count -gt 0 -and $lines[0] -match '^\s*<!--\s*Generated from source/skills/') {
@@ -27,7 +27,7 @@ function Strip-GeneratedHeader {
     return $Text
 }
 
-function Normalize-SkillBody {
+function ConvertTo-NormalizedSkillBody {
     param([string]$Text)
     return (($Text -replace "`r`n", "`n").Trim())
 }
@@ -41,7 +41,7 @@ try {
         $src = Join-Path $RepoRoot ([string]$sk.path)
         if (-not (Test-Path -LiteralPath $src)) { continue }
         $canon = Get-Content -LiteralPath $src -Raw -Encoding utf8
-        $canonN = Normalize-SkillBody -Text $canon
+        $canonN = ConvertTo-NormalizedSkillBody -Text $canon
         foreach ($gt in @($sk.generatedTargets | ForEach-Object { [string]$_ })) {
             $genFull = Join-Path $RepoRoot ($gt.TrimStart('/', '\') -replace '/', [char][System.IO.Path]::DirectorySeparatorChar)
             if (-not (Test-Path -LiteralPath $genFull)) {
@@ -52,7 +52,7 @@ try {
                 continue
             }
             $genRaw = Get-Content -LiteralPath $genFull -Raw -Encoding utf8
-            $genNorm = Normalize-SkillBody -Text (Strip-GeneratedHeader -Text $genRaw)
+            $genNorm = ConvertTo-NormalizedSkillBody -Text (Remove-GeneratedSkillHeader -Text $genRaw)
             if ($genNorm -ne $canonN) {
                 $msg = "drift: $gt differs from $($sk.path)"
                 if ($Strict) {
