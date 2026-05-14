@@ -1,0 +1,126 @@
+{
+  "approvalPolicy": "on-request",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/scripts/preflight.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/scripts/session-end.sh && bash .claude/scripts/os-telemetry.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/scripts/pre-compact.sh"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/scripts/post-compact.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(git branch *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git rev-parse *)",
+      "Bash(git show *)",
+      "Bash(git status *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(ls *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(npm run build *)",
+      "Bash(npm run check *)",
+      "Bash(npx tsc *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx eslint *)",
+      "Bash(npx vitest run *)",
+      "Bash(npx playwright test *)",
+      "Bash(bash .claude/scripts/drift-detect.sh)",
+      "Bash(bash .claude/scripts/heuristic-ratchet.sh *)",
+      "Bash(bash .claude/scripts/ts-error-budget.sh *)",
+      "Bash(bash .claude/scripts/os-telemetry.sh *)",
+      "Bash(bash .claude/scripts/promote-heuristics.sh *)",
+      "Bash(bash .claude/scripts/risk-surface-scan.sh *)",
+      "Bash(bash .claude/scripts/session-index.sh *)",
+      "Bash(bash .claude/scripts/causal-trace.sh *)",
+      "Bash(bash .claude/scripts/cross-project-sync.sh *)",
+      "Bash(bash .claude/scripts/module-complexity.sh *)",
+      "Bash(bash .claude/scripts/living-arch-graph.sh *)",
+      "Bash(bash .claude/scripts/invariant-verify.sh *)",
+      "Bash(bash .claude/scripts/probabilistic-risk-model.sh *)",
+      "Bash(bash .claude/scripts/semantic-diff-analyze.sh *)",
+      "Bash(node .claude/invariant-engine/semantic-diff.cjs *)",
+      "Bash(bash .claude/scripts/autonomous-learning-loop.sh *)",
+      "Bash(bash .claude/scripts/decision-append.sh *)",
+      "Bash(bash .claude/scripts/policy-compliance-audit.sh *)",
+      "Bash(bash .claude/scripts/context-topology.sh *)",
+      "Bash(bash .claude/scripts/invariant-lifecycle.sh *)",
+      "Bash(bash .claude/scripts/coordination-check.sh *)",
+      "Bash(bash .claude/scripts/epistemic-check.sh *)",
+      "Bash(node .claude/invariant-engine/invariant-engine.cjs *)",
+      "Bash(bash .claude/scripts/preflight.sh)",
+      "Bash(bash .claude/scripts/session-end.sh)",
+      "Bash(bash .claude/scripts/decision-audit.sh *)",
+      "Bash(bash .claude/scripts/policy-compliance.sh *)",
+      "Bash(bash .claude/scripts/knowledge-graph.sh *)",
+      "Bash(bash .claude/scripts/context-allocator.sh *)",
+      "Bash(bash .claude/scripts/invariant-engine.sh *)",
+      "Bash(bash .claude/scripts/agent-coordinator.sh *)",
+      "Bash(bash .claude/scripts/epistemic-state.sh *)",
+      "Bash(bash .claude/scripts/salience-score.sh *)",
+      "Bash(bash .claude/scripts/simulate-change.sh *)",
+      "Bash(bash .claude/scripts/simulate-change.sh*)",
+      "Bash(bash .claude/scripts/contract-delta.sh *)",
+      "Bash(bash .claude/scripts/contract-delta.sh*)",
+      "Bash(bash .claude/scripts/runbook-inject.sh *)",
+      "Bash(bash .claude/scripts/context-builder.sh *)",
+      "Bash(bash .claude/scripts/consolidate-runbook.sh *)",
+      "Bash(node .claude/invariant-engine/simulate-contract-delta.cjs *)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Edit(.env)",
+      "Read(.env.local)",
+      "Edit(.env.local)",
+      "Read(.env.production)",
+      "Edit(.env.production)",
+      "Read(.env.development.local)",
+      "Edit(.env.development.local)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --mirror *)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf *)",
+      "Bash(npm publish *)"
+    ]
+  }
+}

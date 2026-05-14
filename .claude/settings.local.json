@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pwsh *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\center hub\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(git -C \"D:\\\\center hupp\\\\centro-hub\" add .claude/session-state.md)",
+      "Bash(git -C \"D:\\\\center hupp\\\\centro-hub\" diff --cached --name-only)",
+      "WebFetch(domain:localhost)",
+      "Bash(npm run *)"
+    ]
+  }
+}
