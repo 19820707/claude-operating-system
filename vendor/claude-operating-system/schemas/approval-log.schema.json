@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/approval-log.schema.json",
+  "title": "Claude OS human approval ledger entry",
+  "description": "One JSON object per line in logs/approval-log.jsonl (append-only).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "timestamp",
+    "operation",
+    "riskLevel",
+    "approver",
+    "scope",
+    "commandOrActionApproved",
+    "expirationOrUse",
+    "relatedValidationEvidence",
+    "rollbackPlanReference"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "minLength": 10,
+      "description": "RFC 3339 / ISO-8601 instant in UTC when the approval was recorded."
+    },
+    "operation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short name of the steward operation (e.g. release tag, migration cutover)."
+    },
+    "riskLevel": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human approver identity or placeholder until sign-off is captured (e.g. pending:release-owner)."
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repos, environments, tickets, or blast-radius boundary covered by the approval."
+    },
+    "commandOrActionApproved": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Exact command, deploy step, or destructive action that was approved."
+    },
+    "expirationOrUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Either a wall-clock expiry, a one-time-use flag, or both.",
+      "properties": {
+        "expiresAt": {
+          "type": "string",
+          "minLength": 10,
+          "description": "RFC 3339 instant after which the approval must not be reused."
+        },
+        "oneTimeUse": {
+          "type": "boolean",
+          "description": "When true, the approval applies to a single execution only."
+        }
+      },
+      "anyOf": [
+        { "required": ["expiresAt"] },
+        {
+          "properties": { "oneTimeUse": { "const": true } },
+          "required": ["oneTimeUse"]
+        }
+      ]
+    },
+    "relatedValidationEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Pointers to envelopes, CI URLs, commit SHAs, or redacted command transcripts."
+    },
+    "rollbackPlanReference": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path or doc id for rollback (e.g. playbooks/release.md, ticket URL, runbook section)."
+    }
+  }
+}

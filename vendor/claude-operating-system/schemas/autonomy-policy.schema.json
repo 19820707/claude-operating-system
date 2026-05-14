@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/autonomy-policy.schema.json",
+  "$comment": "Claude OS autonomy policy JSON contract",
+  "title": "Claude OS autonomy policy",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "description",
+    "defaultAutonomyLevel",
+    "levels",
+    "allowedAutonomousActions",
+    "requiresHumanApproval",
+    "validationRules"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "defaultAutonomyLevel": {
+      "type": "string",
+      "enum": ["A0", "A1", "A2", "A3", "A4"]
+    },
+    "targetAutonomousFraction": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "designNote": { "type": "string" },
+        "value": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "levels": {
+      "type": "object",
+      "required": ["A0", "A1", "A2", "A3", "A4"],
+      "additionalProperties": false,
+      "properties": {
+        "A0": { "$ref": "#/$defs/levelEntry" },
+        "A1": { "$ref": "#/$defs/levelEntry" },
+        "A2": { "$ref": "#/$defs/levelEntry" },
+        "A3": { "$ref": "#/$defs/levelEntry" },
+        "A4": { "$ref": "#/$defs/levelEntry" }
+      }
+    },
+    "allowedAutonomousActions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "requiresHumanApproval": {
+      "type": "object",
+      "required": ["surfaces"],
+      "additionalProperties": false,
+      "properties": {
+        "surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "forbiddenPatternsInAllowedActions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "validationRules": {
+      "type": "object",
+      "required": [
+        "neverDowngradeFailToWarn",
+        "neverTreatSkippedValidationAsSuccess",
+        "neverBypassValidators",
+        "neverTreatNonOkEnvelopeAsSuccess"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "neverDowngradeFailToWarn": { "type": "boolean" },
+        "neverTreatSkippedValidationAsSuccess": { "type": "boolean" },
+        "neverBypassValidators": { "type": "boolean" },
+        "neverTreatNonOkEnvelopeAsSuccess": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "levelEntry": {
+      "type": "object",
+      "required": ["label", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

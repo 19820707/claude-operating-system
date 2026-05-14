@@ -1,0 +1,8 @@
+{
+  "skillId": "runtime-economy",
+  "kind": "smoke",
+  "expect": {
+    "manifestPath": "source/skills/runtime-economy/SKILL.md",
+    "mustDeclare": ["Purpose", "Safety rules", "Procedure"]
+  }
+}

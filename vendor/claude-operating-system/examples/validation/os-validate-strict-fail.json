@@ -1,0 +1,23 @@
+{
+  "tool": "os-validate",
+  "status": "fail",
+  "durationMs": 91000,
+  "checks": [
+    { "name": "verify-runtime-budget", "status": "ok", "detail": "" },
+    { "name": "verify-context-economy", "status": "ok", "detail": "" },
+    { "name": "verify-script-manifest", "status": "ok", "detail": "" },
+    { "name": "verify-doc-contract-consistency", "status": "ok", "detail": "" },
+    { "name": "verify-skills-manifest", "status": "ok", "detail": "" },
+    { "name": "verify-skills-structure", "status": "ok", "detail": "" },
+    { "name": "verify-json-contracts", "status": "ok", "detail": "" },
+    { "name": "verify-agent-adapter-drift", "status": "ok", "detail": "" },
+    { "name": "os-doctor", "status": "ok", "detail": "" },
+    { "name": "os-validate-all", "status": "fail", "detail": "exit 1" }
+  ],
+  "warnings": [],
+  "failures": [
+    "os-validate-all strict failed"
+  ],
+  "findings": [{ "profile": "strict" }],
+  "actions": []
+}

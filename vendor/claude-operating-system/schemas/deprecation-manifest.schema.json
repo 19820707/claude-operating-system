@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-deprecation-manifest",
+  "title": "Claude OS deprecation manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "description",
+    "deprecatedScripts",
+    "deprecatedSkills",
+    "deprecatedDocs",
+    "deprecatedManifestFields",
+    "deprecatedCommands"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "upstreamReference": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Optional pointer to an external fork used for capability alignment (not validated)."
+    },
+    "deprecatedScripts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/deprecationEntry" }
+    },
+    "deprecatedSkills": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/deprecationEntry" }
+    },
+    "deprecatedDocs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/deprecationEntry" }
+    },
+    "deprecatedManifestFields": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/manifestFieldDeprecation" }
+    },
+    "deprecatedCommands": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/deprecationEntry" }
+    }
+  },
+  "$defs": {
+    "deprecationEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "target",
+        "replacement",
+        "deprecatedSince",
+        "removalNotBefore",
+        "reason",
+        "migrationInstructions",
+        "allowedInStrictMode"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "target": { "type": "string", "minLength": 1 },
+        "replacement": { "type": "string", "minLength": 1 },
+        "deprecatedSince": { "type": "string", "format": "date" },
+        "removalNotBefore": { "type": "string", "format": "date" },
+        "reason": { "type": "string", "minLength": 1 },
+        "migrationInstructions": { "type": "string", "minLength": 1 },
+        "allowedInStrictMode": { "type": "boolean" }
+      }
+    },
+    "manifestFieldDeprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "manifestPath",
+        "jsonKey",
+        "replacement",
+        "deprecatedSince",
+        "removalNotBefore",
+        "reason",
+        "migrationInstructions",
+        "allowedInStrictMode"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "manifestPath": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._/-]+\\.json$"
+        },
+        "jsonKey": { "type": "string", "minLength": 1 },
+        "replacement": { "type": "string", "minLength": 1 },
+        "deprecatedSince": { "type": "string", "format": "date" },
+        "removalNotBefore": { "type": "string", "format": "date" },
+        "reason": { "type": "string", "minLength": 1 },
+        "migrationInstructions": { "type": "string", "minLength": 1 },
+        "allowedInStrictMode": { "type": "boolean" }
+      }
+    }
+  }
+}

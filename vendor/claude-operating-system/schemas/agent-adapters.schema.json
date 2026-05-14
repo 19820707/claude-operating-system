@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claude OS agent adapters manifest",
+  "type": "object",
+  "required": ["schemaVersion", "adapters"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "adapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "entrypoint", "runtimePath", "managed", "purpose"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "entrypoint": { "type": "string", "minLength": 1 },
+              "runtimePath": { "type": "string", "minLength": 1 },
+              "managed": { "type": "boolean" },
+              "purpose": { "type": "string", "minLength": 1 }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "entrypoints", "runtimePath", "managed", "purpose"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "entrypoints": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "runtimePath": { "type": "string", "minLength": 1 },
+              "managed": { "type": "boolean" },
+              "purpose": { "type": "string", "minLength": 1 }
+            }
+          }
+        ]
+      }
+    },
+    "canonicalSources": {
+      "type": "object",
+      "description": "Canonical policy/skill sources in this repo (optional; used for drift guidance)",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "generatedTargets": {
+      "type": "array",
+      "description": "Optional: generated mirrors under project or repo root; drift checks apply when paths exist",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["agent", "path", "source"],
+        "properties": {
+          "agent": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "driftPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "generatedTargetsMustMatchCanonical": { "type": "boolean" },
+        "manualEditsInGeneratedTargetsAreWarnings": { "type": "boolean" },
+        "releaseRequiresNoDrift": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

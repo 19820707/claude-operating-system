@@ -1,0 +1,8 @@
+{
+  "skillId": "autonomous-runtime",
+  "kind": "smoke",
+  "expect": {
+    "manifestPath": "source/skills/autonomous-runtime/SKILL.md",
+    "mustDeclare": ["Purpose", "Safety rules", "Procedure"]
+  }
+}

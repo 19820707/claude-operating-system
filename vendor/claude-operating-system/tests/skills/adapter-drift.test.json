@@ -1,0 +1,8 @@
+{
+  "skillId": "adapter-drift",
+  "kind": "smoke",
+  "expect": {
+    "manifestPath": "source/skills/adapter-drift/SKILL.md",
+    "mustDeclare": ["generated", "manifest"]
+  }
+}

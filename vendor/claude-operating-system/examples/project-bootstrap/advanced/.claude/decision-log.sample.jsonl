@@ -1,0 +1,1 @@
+{"id":"D-2026-05-03-ADV-001","ts":"2026-05-03T14:00:00Z","session":"advanced-example","type":"scope_boundary","trigger":"Invariant bundle presence check","policy_applied":"policies/invariant-engineering.md","evidence":[".claude/invariant-engine/README.txt"],"decision":"Synthetic: document only; no override."}

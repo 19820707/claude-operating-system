@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "description": "If script-manifest marks a tool experimental or deprecated, it must not appear on os-validate strict surfaces unless its id is listed here.",
+  "toolIdsAllowExperimentalInStrictProfile": [],
+  "toolIdsAllowDeprecatedInStrictProfile": []
+}

@@ -1,0 +1,25 @@
+{
+  "tool": "verify-doc-contract-consistency",
+  "status": "fail",
+  "durationMs": 210,
+  "checks": [
+    {
+      "name": "doc-contract",
+      "status": "fail",
+      "detail": "manifests + README + CLAUDE policy refs"
+    }
+  ],
+  "warnings": [],
+  "failures": [
+    "skills count mismatch: source/skills with SKILL.md = 10, manifest expects 11"
+  ],
+  "findings": [
+    {
+      "file": "bootstrap-manifest.json",
+      "expected": "11 canonical skills with SKILL.md",
+      "actual": "10",
+      "severity": "fail"
+    }
+  ],
+  "actions": []
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-capability-manifest",
+  "title": "Claude OS capability intent routing manifest",
+  "type": "object",
+  "required": ["schemaVersion", "description", "routes"],
+  "additionalProperties": true,
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "defaults": { "type": "object", "additionalProperties": true },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "summary",
+          "keywords",
+          "tags",
+          "operatingMode",
+          "riskLevel",
+          "requiredApproval",
+          "relevantSkills",
+          "relevantPlaybooks",
+          "validators",
+          "expectedEvidence",
+          "forbiddenShortcuts",
+          "docs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^route\\.[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "title": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 },
+          "keywords": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "tags": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+          },
+          "operatingMode": {
+            "type": "string",
+            "enum": ["read-only", "standard", "strict", "controlled-change", "break-glass", "release-gate"]
+          },
+          "riskLevel": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "requiredApproval": {
+            "type": "string",
+            "enum": ["none", "peer", "maintainer", "security", "incident-command"]
+          },
+          "relevantSkills": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "relevantPlaybooks": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" }
+          },
+          "validators": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "expectedEvidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "forbiddenShortcuts": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "docs": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

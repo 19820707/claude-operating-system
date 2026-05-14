@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.docs",
+  "title": "Documentation quality gate",
+  "description": "Docs index, manifest drift, and doc-contract consistency before merge.",
+  "domain": "docs",
+  "requiredValidators": [
+    {
+      "id": "verify-docs-index",
+      "script": "tools/verify-docs-index.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-doc-manifest",
+      "script": "tools/verify-doc-manifest.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-doc-contract-consistency",
+      "script": "tools/verify-doc-contract-consistency.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-compatibility",
+      "script": "tools/verify-compatibility.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": [
+    "runtime-profiles",
+    "README Get started"
+  ],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "verify-docs-index JSON status ok (or warn only from allowedWarnings)",
+    "verify-doc-contract-consistency JSON status ok (or allowed warn)",
+    "verify-compatibility JSON status ok (platform matrix vs script-manifest)",
+    "No unresolved doc-contract failures for touched markdown or manifests"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 0,
+    "roles": ["docs-owner"],
+    "requiresMaintainerApproval": false
+  },
+  "strictModeBehavior": "When -Strict is used by the evaluator, treat any validator envelope status other than ok as gate failure; allowedWarnings may match substring against envelope warnings or check names for documented benign cases only."
+}

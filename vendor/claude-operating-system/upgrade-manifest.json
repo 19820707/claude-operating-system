@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "description": "Machine-readable upgrade and contract-bump records. Each entry documents schemaVersion increases for watched root JSON contracts.",
+  "watchedContractFiles": [
+    "agent-adapters-manifest.json",
+    "bootstrap-manifest.json",
+    "capability-manifest.json",
+    "compatibility-manifest.json",
+    "component-manifest.json",
+    "context-budget.json",
+    "deprecation-manifest.json",
+    "distribution-manifest.json",
+    "docs-index.json",
+    "invariants-manifest.json",
+    "lifecycle-manifest.json",
+    "os-capabilities.json",
+    "os-manifest.json",
+    "playbook-manifest.json",
+    "policies/autonomy-policy.json",
+    "recipe-manifest.json",
+    "runtime-budget.json",
+    "script-manifest.json",
+    "session-memory-manifest.json",
+    "skills-manifest.json",
+    "upgrade-manifest.json",
+    "workflow-manifest.json"
+  ],
+  "entries": [
+    {
+      "id": "contract-tracking-baseline-1-0-0",
+      "versionIntroduced": "1.0.0",
+      "summary": "Baseline tracking for root schemaVersion on all JSON contracts validated with verify-json-contracts plus session-memory and upgrade-manifest.",
+      "affectedFiles": [
+        "upgrade-manifest.json",
+        "schemas/upgrade-manifest.schema.json",
+        "docs/UPGRADE.md",
+        "tools/verify-upgrade-notes.ps1"
+      ],
+      "migrationSteps": "No downstream migration. Maintainers must append a new entry whenever any watched file schemaVersion increases, including upgrade-manifest.json and schemas/upgrade-manifest.schema.json structural changes.",
+      "rollbackGuidance": "Revert commits touching schemaVersion and upgrade-manifest entries; restore prior upgrade-manifest.json from git; run pwsh ./tools/verify-upgrade-notes.ps1 -Json -Strict.",
+      "validationCommand": "pwsh ./tools/verify-upgrade-notes.ps1 -Json -Strict",
+      "contractBumps": [
+        { "path": "agent-adapters-manifest.json", "schemaVersion": 1 },
+        { "path": "bootstrap-manifest.json", "schemaVersion": 1 },
+        { "path": "capability-manifest.json", "schemaVersion": 1 },
+        { "path": "compatibility-manifest.json", "schemaVersion": 1 },
+        { "path": "component-manifest.json", "schemaVersion": 1 },
+        { "path": "context-budget.json", "schemaVersion": 1 },
+        { "path": "deprecation-manifest.json", "schemaVersion": 1 },
+        { "path": "distribution-manifest.json", "schemaVersion": 1 },
+        { "path": "docs-index.json", "schemaVersion": 1 },
+        { "path": "invariants-manifest.json", "schemaVersion": 1 },
+        { "path": "lifecycle-manifest.json", "schemaVersion": 1 },
+        { "path": "os-capabilities.json", "schemaVersion": 1 },
+        { "path": "os-manifest.json", "schemaVersion": 1 },
+        { "path": "playbook-manifest.json", "schemaVersion": 1 },
+        { "path": "policies/autonomy-policy.json", "schemaVersion": 1 },
+        { "path": "recipe-manifest.json", "schemaVersion": 1 },
+        { "path": "runtime-budget.json", "schemaVersion": 1 },
+        { "path": "script-manifest.json", "schemaVersion": 1 },
+        { "path": "session-memory-manifest.json", "schemaVersion": 1 },
+        { "path": "skills-manifest.json", "schemaVersion": 1 },
+        { "path": "upgrade-manifest.json", "schemaVersion": 1 },
+        { "path": "workflow-manifest.json", "schemaVersion": 1 }
+      ]
+    }
+  ]
+}

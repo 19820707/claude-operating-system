@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "description": "Lifecycle contracts for Claude OS: install, init, update, repair, rollback, uninstall, and project bootstrap/update. Each command declares writes, backups, idempotency, rollback, and post-execution validation.",
+  "commands": [
+    {
+      "id": "global-install-windows",
+      "phase": "install",
+      "title": "Global install to ~/.claude (Windows PowerShell)",
+      "entrypoint": "powershell -ExecutionPolicy Bypass -File ./install.ps1 [-Target <path>] [-DryRun]",
+      "scriptPath": "install.ps1",
+      "writes": "Copies CLAUDE.md, policies/*.md, prompts/*.md, optional heuristics/*.md into the target tree (default %USERPROFILE%\\.claude); writes os-install.json with provenance (paths, optional git SHA). Uses Copy-Item -Force on existing same-path files.",
+      "backups": "No automatic snapshot. Installer does not delete arbitrary paths; risk is overwriting prior copies under the same relative paths. Archive ~/.claude before replacing a customized layout.",
+      "idempotency": "Documented safe to re-run: directory creation and file copies only; os-install.json is rewritten each successful non-dry run.",
+      "rollbackBehavior": "Restore a prior ~/.claude backup or delete the subtree and reinstall from a known-good OS repo revision; compare os-install.json sourceSha when auditing drift.",
+      "validationAfterExecution": "Open ~/.claude/os-install.json; from the OS repo run pwsh ./tools/verify-os-health.ps1; confirm a new agent session loads global CLAUDE.md and policies."
+    },
+    {
+      "id": "global-install-unix",
+      "phase": "install",
+      "title": "Global install to ~/.claude (Unix bash)",
+      "entrypoint": "bash ./install.sh [--target <path>] [--dry-run]",
+      "scriptPath": "install.sh",
+      "writes": "Same logical layout as install.ps1: copies CLAUDE.md, policies, prompts, heuristics into $HOME/.claude (or --target); writes os-install.json with provenance when not dry-run.",
+      "backups": "No automatic snapshot; same overwrite semantics as Windows install for identical destination paths.",
+      "idempotency": "Safe to re-run per install.sh header (copies only, no deletes of unrelated files).",
+      "rollbackBehavior": "Restore tarball/backup of ~/.claude or remove tree and reinstall from pinned OS revision.",
+      "validationAfterExecution": "Inspect ~/.claude/os-install.json; run pwsh ./tools/verify-os-health.ps1 from OS clone when pwsh is available; verify global policy files present."
+    },
+    {
+      "id": "repo-init-runtime",
+      "phase": "init",
+      "title": "Idempotent local OS checkout init",
+      "entrypoint": "pwsh ./tools/os-runtime.ps1 init [-Json] [-DryRun] [-SkipBashSyntax] [-NoValidation] [-FullHealth]",
+      "scriptPath": "tools/init-os-runtime.ps1",
+      "writes": "Creates OS_WORKSPACE_CONTEXT.md and OPERATOR_JOURNAL.md from templates when missing; creates logs/ when missing; invokes sync-agent-adapters.ps1 (may touch generated adapter paths under templates/adapters per that script). Optional write-validation-history.ps1 when -WriteHistory.",
+      "backups": "No automatic file backup; templates remain canonical. Operators may copy OS_WORKSPACE_CONTEXT.md before first edit if treating it as sensitive notes.",
+      "idempotency": "Existing OS_WORKSPACE_CONTEXT.md, OPERATOR_JOURNAL.md, and logs/ are left unchanged; safe to re-run for workspace repair.",
+      "rollbackBehavior": "Delete generated local-only files listed in .gitignore (e.g. OS_WORKSPACE_CONTEXT.md, OPERATOR_JOURNAL.md) and re-run init; revert adapter files via git when sync-agent-adapters modified tracked outputs.",
+      "validationAfterExecution": "Default path runs os-doctor (or verify-os-health with -FullHealth); expect envelope ok/warn per environment; run pwsh ./tools/verify-git-hygiene.ps1 -Json before commit when adapters changed."
+    },
+    {
+      "id": "repo-integrate-upstream",
+      "phase": "update",
+      "title": "Update OS repository from upstream (git)",
+      "entrypoint": "Follow GIT-RECOVERY.md (fetch first, rebase or merge, resolve conflicts); optional pwsh ./tools/git-recover-local.ps1 -Mode pull after stash",
+      "scriptPath": "GIT-RECOVERY.md",
+      "writes": "Git working tree and refs (.git/objects, refs); may modify tracked files after merge/rebase; git-recover-local -Mode stash writes stash entry only.",
+      "backups": "Git history is implicit backup; use branches or tags before risky rebases; stash is a stack backup for uncommitted work per git semantics.",
+      "idempotency": "Not idempotent overall: repeated pull changes HEAD; stash/pull sequence should be deliberate. git-recover-local -Mode validate is read-only.",
+      "rollbackBehavior": "git reset --hard/reflog or merge --abort / rebase --abort per GIT-RECOVERY.md; restore stashes with git stash pop when appropriate.",
+      "validationAfterExecution": "pwsh ./tools/verify-git-hygiene.ps1 -Json; pwsh ./tools/os-validate.ps1 -Profile quick -Json; run pwsh ./tools/sync-agent-adapters.ps1 -Json if templates/adapters changed."
+    },
+    {
+      "id": "repo-repair-git-local",
+      "phase": "repair",
+      "title": "Local Git repair helper (status, stash, pull, validate)",
+      "entrypoint": "pwsh ./tools/git-recover-local.ps1 -Mode status|stash|pull|validate [-SkipBashSyntax]",
+      "scriptPath": "tools/git-recover-local.ps1",
+      "writes": "-Mode stash: creates git stash; -Mode pull: updates refs and working tree from remote; other modes read-only aside from git metadata during pull.",
+      "backups": "Stash preserves working tree snapshot before pull; no extra OS-level backup files created.",
+      "idempotency": "status and validate are read-only; stash creates new stash entries if invoked repeatedly; pull is not blindly idempotent if remote moves.",
+      "rollbackBehavior": "Use git stash pop/drop and reflog per GIT-RECOVERY.md; abort in-flight merge/rebase with documented commands.",
+      "validationAfterExecution": "pwsh ./tools/git-recover-local.ps1 -Mode validate; pwsh ./tools/verify-git-hygiene.ps1 -Json; then pwsh ./tools/os-validate.ps1 -Profile quick -Json."
+    },
+    {
+      "id": "repo-rollback-policy",
+      "phase": "rollback",
+      "title": "Rollback and recovery policy (human-gated)",
+      "entrypoint": "Read GIT-RECOVERY.md and docs/GIT-RECOVERY.md; use git revert/reset/reflog and branch protection practices as appropriate",
+      "scriptPath": "GIT-RECOVERY.md",
+      "writes": "None by reading the policy; executing documented git commands changes repository state per chosen command.",
+      "backups": "Relies on git objects, stashes, tags, and external backups; policy describes fetch-first and abort paths.",
+      "idempotency": "Policy document is static; recovery commands are situational, not universally idempotent.",
+      "rollbackBehavior": "Policy itself is guidance; undo depends on chosen git command (e.g. reset --hard vs revert) and is documented in GIT-RECOVERY.md.",
+      "validationAfterExecution": "pwsh ./tools/verify-git-hygiene.ps1 -Json -WarnIfNoGit; pwsh ./tools/os-validate.ps1 -Profile standard -Json when tree should be clean for merge."
+    },
+    {
+      "id": "uninstall-global-claude",
+      "phase": "uninstall",
+      "title": "Remove global ~/.claude install (manual)",
+      "entrypoint": "Close agents using global files; archive or delete %USERPROFILE%\\.claude (Unix: $HOME/.claude) after confirming no other tools share that directory",
+      "writes": "Manual deletion or archival of the target directory; no bundled uninstall.ps1.",
+      "backups": "Operator should zip or rename ~/.claude before deletion if any custom policies or prompts must be preserved.",
+      "idempotency": "Deleting a missing directory is a no-op; partial deletes are not automatically reconciled.",
+      "rollbackBehavior": "Restore from backup archive; re-run install.ps1 / install.sh from a known OS revision.",
+      "validationAfterExecution": "Confirm directory absent or empty as intended; start a new shell and verify agents no longer load removed global policies."
+    },
+    {
+      "id": "uninstall-project-claude",
+      "phase": "uninstall",
+      "title": "Remove project-local Claude OS artifacts (manual)",
+      "entrypoint": "Delete or archive <ProjectPath>/.claude/, project adapter copies (AGENTS.md, .cursor/rules/*, .agent/*, .agents/* per project policy), and optional .claudeignore if project-owned",
+      "writes": "Manual filesystem changes only; do not delete application source outside declared OS artifact paths.",
+      "backups": "Archive .claude/ and tracked adapter files before removal if the project customized them beyond OS defaults.",
+      "idempotency": "Removing already-absent paths is a no-op; mixed manual steps require operator discipline.",
+      "rollbackBehavior": "Restore archive or re-run pwsh ./tools/os-runtime.ps1 bootstrap -ProjectPath <path> then pwsh ./tools/os-update-project.ps1 -ProjectPath <path> from a pinned OS clone.",
+      "validationAfterExecution": "Run application tests; confirm pwsh ./tools/query-docs-index.ps1 (if copied) missing or intentionally removed; verify no stale OS paths in CI."
+    },
+    {
+      "id": "project-bootstrap-windows",
+      "phase": "project-bootstrap",
+      "title": "Bootstrap a new application repo with full .claude tree (Windows)",
+      "entrypoint": "pwsh ./tools/os-runtime.ps1 bootstrap -ProjectPath <path> [-Profile name] [-DryRun] [-SkipGitInit]  (dispatches to init-project.ps1)",
+      "scriptPath": "init-project.ps1",
+      "writes": "Creates/updates .claude/** managed tree, templates-derived commands/agents/skills/policies, adapter files (AGENTS.md, .cursor, .agent, .agents per profile), optional git init; -Force refreshes selected managed markdown from templates.",
+      "backups": "No automatic full-project backup; use git status before run; -DryRun lists mutations. Archive existing .claude/ before destructive manual cleanup.",
+      "idempotency": "Re-runnable with stable managed paths; project-owned files skipped unless -Force for declared managed markdown; adapter template files refreshed per init-project rules.",
+      "rollbackBehavior": "git checkout -- paths or restore from branch; remove .claude/ if first bootstrap mistaken; document human approval for destructive reversions per CLAUDE.md.",
+      "validationAfterExecution": "pwsh ./tools/verify-bootstrap-manifest.ps1; pwsh ./tools/verify-bootstrap-examples.ps1; from project root run pwsh .claude/scripts/query-docs-index.ps1 -Query bootstrap when copied; optional pwsh ./tools/os-validate.ps1 -Profile quick -Json from OS repo."
+    },
+    {
+      "id": "project-update-managed",
+      "phase": "project-update",
+      "title": "Refresh managed Claude OS files in an existing project",
+      "entrypoint": "pwsh ./tools/os-runtime.ps1 update -ProjectPath <path> [-DryRun]  (dispatches to os-update-project.ps1)",
+      "scriptPath": "tools/os-update-project.ps1",
+      "writes": "Overwrites managed manifests and scripts under <ProjectPath>/.claude per allowlist; copies skills and policies directories; creates .claudeignore from template only if missing (project-owned thereafter).",
+      "backups": "No automatic per-file backup; operator should commit or snapshot .claude/ before update when drift review matters.",
+      "idempotency": "Re-running applies same copy rules; project-owned .claudeignore and existing project-only files outside managed set are preserved per script invariants.",
+      "rollbackBehavior": "git revert on tracked copies under app repo or restore branch; re-copy from previous OS export if OS-side only.",
+      "validationAfterExecution": "pwsh ./tools/verify-json-contracts.ps1 from OS repo; open updated manifests for diff review; run project CI; optionally pwsh ./tools/query-docs-index.ps1 -Query bootstrap using project-local script."
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "description": "Canonical Claude OS playbooks: human- and agent-executable runbooks with explicit risk, approvals, and evidence.",
+  "canonicalRoot": "playbooks/",
+  "playbooks": [
+    {
+      "id": "release",
+      "name": "Release",
+      "path": "playbooks/release.md",
+      "riskLevel": "critical",
+      "summary": "Ship a release candidate with strict validation, manifests, drift checks, and documented residual risk.",
+      "requiresApprovalFor": ["Release", "Production", "Critical"],
+      "relatedSkills": ["release-readiness", "runtime-economy"]
+    },
+    {
+      "id": "incident",
+      "name": "Incident response",
+      "path": "playbooks/incident.md",
+      "riskLevel": "critical",
+      "summary": "Stabilize production during incidents with minimal scope, approvals, evidence, and rollback.",
+      "requiresApprovalFor": ["Incident", "Production", "Critical"],
+      "relatedSkills": ["incident-safe-change", "production-safety"]
+    },
+    {
+      "id": "migration",
+      "name": "Data or platform migration",
+      "path": "playbooks/migration.md",
+      "riskLevel": "high",
+      "summary": "Plan and execute migrations with blast-radius control, rehearsal, and validation gates.",
+      "requiresApprovalFor": ["Migration", "Production", "Destructive"],
+      "relatedSkills": ["production-safety", "invariant-engineering"]
+    },
+    {
+      "id": "bootstrap-project",
+      "name": "Bootstrap project",
+      "path": "playbooks/bootstrap-project.md",
+      "riskLevel": "medium",
+      "summary": "Scaffold a new project tree from Claude OS templates with deterministic validation.",
+      "requiresApprovalFor": [],
+      "relatedSkills": ["bootstrap-governance", "adapter-drift"]
+    },
+    {
+      "id": "docs-contract-audit",
+      "name": "Documentation contract audit",
+      "path": "playbooks/docs-contract-audit.md",
+      "riskLevel": "medium",
+      "summary": "Align README, manifests, schemas, and validators without false-green language.",
+      "requiresApprovalFor": [],
+      "relatedSkills": ["doc-contract-audit"]
+    },
+    {
+      "id": "autonomous-repair",
+      "name": "Autonomous repair (bounded)",
+      "path": "playbooks/autonomous-repair.md",
+      "riskLevel": "medium",
+      "summary": "Validation-first bounded repair with rollback/diff discipline; escalate to steward approvals on risk transitions.",
+      "requiresApprovalFor": [],
+      "relatedSkills": ["autonomous-runtime", "runtime-economy", "doc-contract-audit"]
+    },
+    {
+      "id": "adapter-drift-repair",
+      "name": "Adapter drift repair",
+      "path": "playbooks/adapter-drift-repair.md",
+      "riskLevel": "high",
+      "summary": "Detect and repair drift between canonical sources and generated adapter copies using manifest-driven sync.",
+      "requiresApprovalFor": ["Release", "Migration", "Destructive"],
+      "relatedSkills": ["adapter-drift"]
+    }
+  ]
+}

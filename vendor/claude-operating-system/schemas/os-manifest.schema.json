@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claude OS Master Manifest",
+  "type": "object",
+  "required": ["schemaVersion", "manifests", "entrypoints", "managedProjectArtifacts", "validationPolicy"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "manifests": {
+      "type": "object",
+      "required": ["bootstrap", "docs", "capabilities", "workflow"],
+      "properties": {
+        "bootstrap": { "type": "string", "minLength": 1 },
+        "docs": { "type": "string", "minLength": 1 },
+        "capabilities": { "type": "string", "minLength": 1 },
+        "workflow": { "type": "string", "minLength": 1 },
+        "runtimeProfiles": { "type": "string", "minLength": 1, "description": "runtime-profiles.json path" },
+        "sessionMemory": { "type": "string", "minLength": 1, "description": "session-memory-manifest.json path" },
+        "gitRecoveryPolicy": { "type": "string", "minLength": 1, "description": "Human Git recovery policy (markdown)" },
+        "agentAdapters": { "type": "string", "minLength": 1, "description": "Multi-tool adapter manifest (JSON)" },
+        "skillsManifest": { "type": "string", "minLength": 1, "description": "Canonical skills manifest (JSON)" },
+        "playbooksManifest": { "type": "string", "minLength": 1, "description": "Playbook manifest (JSON)" },
+        "recipesManifest": { "type": "string", "minLength": 1, "description": "Recipe manifest (JSON)" }
+      },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "entrypoints": {
+      "type": "object",
+      "required": [
+        "health",
+        "gitHygiene",
+        "runtimeDispatcherVerify",
+        "doctor",
+        "validateAll",
+        "updateProject"
+      ],
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "managedProjectArtifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^(\\.claude/|AGENTS\\.md|\\.cursor/rules/|\\.agent/|\\.agents/)"
+      },
+      "uniqueItems": true
+    },
+    "validationPolicy": { "type": "object" }
+  }
+}

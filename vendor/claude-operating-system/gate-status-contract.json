@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "description": "Canonical validation and gate aggregate status vocabulary for Claude OS. Only ok unlocks pass semantics for merge/release aggregation.",
+  "onlyOkUnlocks": true,
+  "canonicalStatuses": [
+    "ok",
+    "warn",
+    "fail",
+    "skip",
+    "blocked",
+    "degraded",
+    "unknown",
+    "not_run"
+  ],
+  "passStatuses": ["ok"],
+  "runtimeBudgetNeverTreatAsPassedMustInclude": [
+    "skip",
+    "skipped",
+    "warn",
+    "unknown",
+    "not_run",
+    "degraded",
+    "blocked"
+  ],
+  "alignedSchemas": ["schemas/os-validator-envelope.schema.json"]
+}

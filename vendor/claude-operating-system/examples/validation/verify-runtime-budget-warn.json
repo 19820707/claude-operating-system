@@ -1,0 +1,23 @@
+{
+  "tool": "verify-runtime-budget",
+  "status": "warn",
+  "durationMs": 45,
+  "checks": [
+    {
+      "name": "runtime-budget-parse",
+      "status": "ok",
+      "detail": "runtime-budget.json + schema presence"
+    }
+  ],
+  "warnings": [
+    "quick profile should leave git/bash/clean-tree optional for local-first Windows"
+  ],
+  "failures": [],
+  "findings": [
+    {
+      "file": "runtime-budget.json",
+      "profiles": "quick,standard,strict"
+    }
+  ],
+  "actions": []
+}

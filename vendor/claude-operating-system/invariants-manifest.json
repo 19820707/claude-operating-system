@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "description": "Machine-readable index of Claude OS conservative invariants; normative prose in policies/invariants.md.",
+  "canonicalMarkdown": "policies/invariants.md",
+  "invariants": [
+    { "id": "I-001", "summary": "Non-ok validation statuses never count as passed" },
+    { "id": "I-002", "summary": "Generated adapter is never canonical source" },
+    { "id": "I-003", "summary": "Every generated target has declared canonical source" },
+    { "id": "I-004", "summary": "Strict/release must not depend on experimental without approved path" },
+    { "id": "I-005", "summary": "Autonomous write requires reversibility or rollback" },
+    { "id": "I-006", "summary": "Read-only is autonomous on critical surface when no mutation or secrets" },
+    { "id": "I-007", "summary": "Production/release/migration/secrets/destructive require human approval" },
+    { "id": "I-008", "summary": "Policy relaxation requires approval and auditable record" },
+    { "id": "I-009", "summary": "Central schema/manifest changes require bump or migration note" },
+    { "id": "I-010", "summary": "No secrets in logs, examples, repo context, or versioned templates" }
+  ]
+}

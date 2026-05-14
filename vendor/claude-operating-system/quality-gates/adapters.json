@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.adapters",
+  "title": "Adapter quality gate",
+  "description": "Multi-tool adapter templates and drift versus canonical sources.",
+  "domain": "adapters",
+  "requiredValidators": [
+    {
+      "id": "verify-agent-adapters",
+      "script": "tools/verify-agent-adapters.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-agent-adapter-drift",
+      "script": "tools/verify-agent-adapter-drift.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": ["adapter drift warning"],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "AGENTS.md and Cursor rules reference managed .claude artifacts",
+    "Drift tool JSON status ok or documented warn with owner"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 0,
+    "roles": ["platform-owner"],
+    "requiresMaintainerApproval": false
+  },
+  "strictModeBehavior": "With -Strict, evaluator passes -FailOnDrift to verify-agent-adapter-drift when supported; warn-only drift is not sufficient for release-bound adapter changes."
+}

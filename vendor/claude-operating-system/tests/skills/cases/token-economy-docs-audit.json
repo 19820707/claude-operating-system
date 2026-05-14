@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "token-economy-docs-audit",
+  "skillId": "token-economy",
+  "routeId": "route.docs-audit",
+  "scenario": "Documentation and index contract audit with bounded discovery; token-economy supports the read-only docs audit route.",
+  "inputSummary": "Task focuses on docs, INDEX, and false-green language; route.docs-audit matches; token-economy listed as relevant skill.",
+  "expectedOperatingMode": "read-only",
+  "expectedRequiredApprovals": ["none"],
+  "expectedValidators": [
+    "verify-doc-contract-consistency.ps1",
+    "verify-doc-manifest.ps1",
+    "verify-docs-index.ps1"
+  ],
+  "forbiddenActions": [
+    "verify-doc-contract-consistency",
+    "warn or skip with pass",
+    "bootstrap-manifest counts"
+  ],
+  "expectedRefusalOrAbortConditions": [
+    "verify-doc-contract-consistency",
+    "docs-index.json",
+    "INDEX summaries"
+  ],
+  "expectedSkillRiskLevel": "medium",
+  "expectedRouteRiskLevel": "medium"
+}

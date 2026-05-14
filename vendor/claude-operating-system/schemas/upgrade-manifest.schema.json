@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/upgrade-manifest.schema.json",
+  "title": "Claude OS upgrade notes manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "description",
+    "watchedContractFiles",
+    "entries"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Format version of upgrade-manifest.json; bump with structural changes and document in entries."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "watchedContractFiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9._/-]+\\.json$"
+      },
+      "description": "Must match the canonical verifier list (verify-upgrade-notes.ps1); root JSON contracts with integer schemaVersion."
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "versionIntroduced",
+          "summary",
+          "affectedFiles",
+          "migrationSteps",
+          "rollbackGuidance",
+          "validationCommand",
+          "contractBumps"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$"
+          },
+          "versionIntroduced": {
+            "type": "string",
+            "minLength": 1,
+            "description": "SemVer or release tag when the change ships."
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 10
+          },
+          "affectedFiles": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "migrationSteps": {
+            "type": "string",
+            "minLength": 20
+          },
+          "rollbackGuidance": {
+            "type": "string",
+            "minLength": 10
+          },
+          "validationCommand": {
+            "type": "string",
+            "minLength": 10
+          },
+          "contractBumps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "schemaVersion"],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "schemaVersion": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

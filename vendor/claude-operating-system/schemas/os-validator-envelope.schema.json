@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-validator-envelope",
+  "title": "Claude OS validator JSON envelope (New-OsValidatorEnvelope)",
+  "type": "object",
+  "required": ["tool", "status", "durationMs", "checks", "warnings", "failures", "findings", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "tool": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "warn", "fail", "skip", "blocked", "degraded", "unknown", "not_run"]
+    },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": {
+            "type": "string",
+            "enum": ["ok", "warn", "fail", "skip"]
+          },
+          "detail": { "type": "string" },
+          "latencyMs": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "failures": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "type": "object", "additionalProperties": true }
+    },
+    "actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

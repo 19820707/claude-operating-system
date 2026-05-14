@@ -1,0 +1,64 @@
+{
+  "INV-001": {
+    "name": "single-auth-boundary",
+    "spec": "Auth checks concentrated — verify policy still matches repo layout",
+    "status": "VERIFIED",
+    "last_verified": "2026-01-01T00:00:00Z",
+    "verified_by": "manual",
+    "verification_method": "pattern_count in server/middleware (see .claude/invariants/*.json engine specs)",
+    "evidence": "Template seed — replace watched_paths with your auth modules",
+    "staleness_risk": "LOW",
+    "watched_paths": ["CLAUDE.md", "templates/project-CLAUDE.md"],
+    "obsolescence_probe": {
+      "type": "multi_file_pattern",
+      "description": "If auth signals appear in more than one top-level server area, spec may need widening",
+      "patterns": ["requireAuth", "isAuthenticated", "getSession\\("],
+      "scope_globs": ["server/**/*.ts", "server/**/*.tsx"],
+      "obsolete_if_matching_files_gt": 1
+    },
+    "genealogy": {
+      "origin_heuristic": "H9",
+      "origin_incident": null,
+      "origin_conditions": [
+        {
+          "note": "Re-verify when middleware layout changes",
+          "still_relevant_if_path_exists": "templates/scripts"
+        }
+      ]
+    }
+  },
+  "INV-003": {
+    "name": "no-parallel-billing-path",
+    "spec": "Billing decision at a single orchestration point",
+    "status": "VERIFIED",
+    "last_verified": "2025-12-15T10:00:00Z",
+    "verified_by": "preflight scan (template)",
+    "verification_method": "manual architecture review",
+    "staleness_risk": "MEDIUM",
+    "watched_paths": ["server/billing/**/*.ts", "src/billing/**/*.ts"],
+    "action_required": "re-verify before any billing change",
+    "genealogy": {
+      "origin_incident": "INC-EXAMPLE-2025-12",
+      "origin_heuristic": null,
+      "origin_conditions": [
+        {
+          "note": "Incident assumed configurable rate_limit_threshold",
+          "probe_substring_in_repo": "rate_limit_threshold",
+          "if_absent_suggest": "Underlying condition may have changed — review INV-003 for removal or rewrite"
+        }
+      ]
+    }
+  },
+  "INV-007": {
+    "name": "correlation-id-all-paths",
+    "spec": "HTTP handlers attach or forward correlation / request id",
+    "status": "UNKNOWN",
+    "last_verified": null,
+    "verified_by": null,
+    "verification_method": "missing_pattern on server/**/routes (invariant engine)",
+    "watched_paths": [],
+    "genealogy": {
+      "origin_heuristic": "H10"
+    }
+  }
+}

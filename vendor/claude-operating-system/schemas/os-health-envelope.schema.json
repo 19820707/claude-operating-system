@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-health-envelope",
+  "title": "Claude OS verify-os-health JSON envelope (New-OsHealthEnvelope)",
+  "type": "object",
+  "required": ["name", "status", "strict", "checks", "warnings", "failures", "totalMs", "repo"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "warn", "fail"]
+    },
+    "strict": { "type": "boolean" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "latencyMs", "detail"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": {
+            "type": "string",
+            "enum": ["ok", "warn", "fail", "skip"]
+          },
+          "latencyMs": { "type": "integer", "minimum": 0 },
+          "detail": { "type": "string" },
+          "reason": { "type": "string", "maxLength": 2000 },
+          "impact": { "type": "string", "maxLength": 2000 },
+          "remediation": { "type": "string", "maxLength": 2000 },
+          "strictImpact": { "type": "string", "maxLength": 2000 },
+          "docsLink": { "type": "string", "maxLength": 500 }
+        }
+      }
+    },
+    "warnings": { "type": "integer", "minimum": 0 },
+    "failures": { "type": "integer", "minimum": 0 },
+    "totalMs": { "type": "integer", "minimum": 0 },
+    "repo": { "type": "string" }
+  }
+}

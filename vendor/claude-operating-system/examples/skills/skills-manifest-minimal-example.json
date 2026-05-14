@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "description": "Minimal illustrative skills manifest for docs and schema tests (not the repo canonical file).",
+  "canonicalRoot": "source/skills/",
+  "skills": [
+    {
+      "id": "example-docs-skill",
+      "name": "Example Docs Skill",
+      "path": "source/skills/example-docs-skill/SKILL.md",
+      "maturity": "experimental",
+      "status": "draft",
+      "summary": "Placeholder skill entry used only in examples/ to demonstrate manifest shape.",
+      "intendedUse": ["validation", "docs"],
+      "riskLevel": "low",
+      "requiresApprovalFor": [],
+      "allowedAgents": ["claude"],
+      "generatedTargets": [".claude/skills/example-docs-skill/SKILL.md"],
+      "contextBudget": { "maxLines": 200, "maxBytes": 16384 },
+      "dependencies": [],
+      "relatedPolicies": ["policies/multi-tool-adapters.md"],
+      "examples": [],
+      "tests": [],
+      "examplesExemptionReason": "Synthetic example manifest entry for documentation and verify-examples only."
+    }
+  ]
+}

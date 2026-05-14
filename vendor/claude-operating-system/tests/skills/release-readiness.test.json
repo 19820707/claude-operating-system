@@ -1,0 +1,8 @@
+{
+  "skillId": "release-readiness",
+  "kind": "smoke",
+  "expect": {
+    "manifestPath": "source/skills/release-readiness/SKILL.md",
+    "requiresApprovalInBody": true
+  }
+}

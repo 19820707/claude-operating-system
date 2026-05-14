@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "leases": [],
+  "shared_decisions": [
+    {
+      "id": "SD-EXAMPLE-001",
+      "decision": "Example shared constraint: align Session.orgId semantics across auth boundary and shared types before shipping.",
+      "made_by": "template",
+      "affects": ["server/auth/**", "shared/types/**", "client/hooks/**"],
+      "requires_acknowledgement_from": ["any session touching affected modules"],
+      "acknowledged_by": []
+    }
+  ]
+}

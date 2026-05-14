@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "tier": "advanced",
+  "description": "Reference files including stack profile + invariant-engine placeholders.",
+  "requiredPaths": [
+    "README.md",
+    "STRUCTURE.txt",
+    "session-memory-overview.md",
+    "example-manifest.json",
+    ".claude/stack-profile.sample.md",
+    ".claude/invariant-engine/README.txt",
+    ".claude/decision-log.sample.jsonl",
+    ".claude/session-state.md"
+  ],
+  "decisionLogSampleRelative": ".claude/decision-log.sample.jsonl"
+}
