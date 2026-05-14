@@ -1,0 +1,29 @@
+Example tree after init-project (minimal mental model). Paths are relative to project root.
+
+  CLAUDE.md
+  AGENTS.md
+  .gitignore                    (append rules for generated metrics, etc.)
+  .claude/
+    docs-index.json
+    os-capabilities.json
+    capability-manifest.json
+    workflow-manifest.json
+    settings.json
+    session-state.md
+    learning-log.md
+    decision-log.jsonl            (empty file created; samples in decision-log.sample.jsonl)
+    decision-log.schema.json
+    commands/                     (*.md from templates/commands)
+    agents/                       (*.md from templates/agents)
+    skills/<id>/SKILL.md          (mirrors source/skills)
+    policies/                     (*.md from policies/ + critical-surfaces)
+    scripts/                      (*.sh from bootstrap manifest list)
+    checklists/
+    contracts/
+    heuristics/
+    runbooks/
+    invariant-engine/             (optional .cjs bundles when built in OS repo)
+  .cursor/rules/claude-os-runtime.mdc
+  .agent/runtime.md, handoff.md, operating-contract.md
+  .agents/OPERATING_CONTRACT.md
+  .local/                       (optional ts-error-budget.json, etc.)

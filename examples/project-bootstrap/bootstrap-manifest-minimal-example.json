@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "description": "Minimal valid bootstrap manifest illustrating project bootstrap contract (synthetic counts).",
+  "skills": {
+    "exact": 1,
+    "categories": ["governance"]
+  },
+  "repoIntegrity": {
+    "example/surface": { "include": "*.md", "exact": 1 }
+  },
+  "projectBootstrap": {
+    "scripts": ["preflight.sh"],
+    "criticalPaths": ["CLAUDE.md", "AGENTS.md"]
+  }
+}

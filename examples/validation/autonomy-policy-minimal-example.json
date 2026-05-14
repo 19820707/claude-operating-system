@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "description": "Example autonomy policy body shape (subset of production file).",
+  "defaultAutonomyLevel": "A3",
+  "levels": {
+    "A0": { "label": "Manual", "summary": "Human executes." },
+    "A1": { "label": "Assisted", "summary": "Agent proposes." },
+    "A2": { "label": "Semi-autonomous", "summary": "Bounded execution." },
+    "A3": { "label": "Autonomous with gates", "summary": "Default reversible." },
+    "A4": { "label": "Fully autonomous closed loop", "summary": "Forbidden on steward surfaces." }
+  },
+  "allowedAutonomousActions": ["read", "validate", "dry-run"],
+  "requiresHumanApproval": {
+    "surfaces": [
+      "production",
+      "release_publish",
+      "destructive_write",
+      "migration",
+      "incident_external_impact",
+      "security_policy_change",
+      "secret_handling",
+      "validator_bypass",
+      "policy_relaxation",
+      "breaking_schema_change",
+      "file_removal",
+      "irreversible_action"
+    ]
+  },
+  "validationRules": {
+    "neverDowngradeFailToWarn": true,
+    "neverTreatSkippedValidationAsSuccess": true,
+    "neverBypassValidators": true,
+    "neverTreatNonOkEnvelopeAsSuccess": true
+  }
+}

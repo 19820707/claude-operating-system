@@ -1,0 +1,43 @@
+---
+description: Use Claude OS Runtime for governed engineering work
+alwaysApply: true
+---
+
+# Claude OS Runtime (Cursor)
+
+## Read first
+
+- **`CLAUDE.md`** — project policy and entry for Claude Code–aligned work.
+- **`.claude/session-state.md`** — live branch, risks, decisions, next steps.
+- **`.claude/workflow-manifest.json`** — progressive delivery gates.
+- **`.claude/os-capabilities.json`** — what automation and routing are allowed (`os.*`).
+- **`.claude/capability-manifest.json`** — task-kind intent routes (`route.*`) with approvals, evidence, and validators.
+
+Also keep **`AGENTS.md`** (repo root) aligned: it is the thin cross-tool contract for Codex/Cursor/others.
+
+## Behaviour
+
+- Prefer **lower risk and lower cost** paths when multiple options exist.
+- Prefer **`pwsh .claude/scripts/*.ps1`** for OS flows instead of inventing parallel scripts.
+- **Close sessions** with **`session-digest`** when finishing meaningful work (see `AGENTS.md` for the example invocation).
+
+## Token economy / surgical mode
+
+When the user names a file, a small file set, a commit, a failing test, or a concrete diff:
+
+- do **not** do broad repository discovery;
+- do **not** use sub-agents / wide scans by default;
+- read only target files, direct imports, direct tests, and immediate contracts;
+- use `git diff -- <paths>` instead of global diffs;
+- run targeted tests first;
+- keep output compact.
+
+Use broad discovery only for explicit repo-wide audit, architecture/security review, unknown incident scope, or user-approved exploration.
+
+## Destructive or high-blast-radius actions
+
+Do **not** run destructive git, filesystem, permission, CI, security, or production changes without **human approval required**.
+
+## Single runtime
+
+Operational truth lives only under **`.claude/`**. Do not create a parallel OS root (e.g. `.cursor-os/`).

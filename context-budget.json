@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "description": "Upper bounds for canonical prompt/policy files to discourage monolithic duplication.",
+  "maxBytes": {
+    "CLAUDE.md": 120000,
+    "AGENTS.md": 80000,
+    "SKILL.md": 60000
+  },
+  "maxLines": {
+    "CLAUDE.md": 450,
+    "AGENTS.md": 350,
+    "SKILL.md": 400
+  },
+  "skillGlob": "source/skills/*/SKILL.md",
+  "exemptPaths": [],
+  "notes": "Large policy belongs in policies/*.md and is referenced from CLAUDE.md; do not paste full policy bodies repeatedly."
+}

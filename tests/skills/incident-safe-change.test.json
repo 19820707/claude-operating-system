@@ -1,0 +1,8 @@
+{
+  "skillId": "incident-safe-change",
+  "kind": "smoke",
+  "expect": {
+    "manifestPath": "source/skills/incident-safe-change/SKILL.md",
+    "mustDeclare": ["rollback", "approval"]
+  }
+}

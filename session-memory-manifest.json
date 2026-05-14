@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "description": "Bounded local session memory contract inspired by Mycelium prime/absorb/digest. This is file-backed operational memory, not an external vector database.",
+  "cycle": [
+    {
+      "id": "prime",
+      "tool": "tools/session-prime.ps1",
+      "installedPath": ".claude/scripts/session-prime.ps1",
+      "mode": "read-only",
+      "purpose": "Build bounded startup context from session-state, learning-log, workflow, capabilities, and intent routes.",
+      "reads": [
+        ".claude/session-state.md",
+        ".claude/learning-log.md",
+        ".claude/workflow-manifest.json",
+        ".claude/os-capabilities.json",
+        ".claude/capability-manifest.json"
+      ],
+      "writes": [],
+      "maxInputChars": 6000
+    },
+    {
+      "id": "absorb",
+      "tool": "tools/session-absorb.ps1",
+      "installedPath": ".claude/scripts/session-absorb.ps1",
+      "mode": "append-only",
+      "purpose": "Append a bounded operational learning note during work.",
+      "reads": [],
+      "writes": [".claude/learning-log.md"],
+      "maxNoteChars": 1000
+    },
+    {
+      "id": "digest",
+      "tool": "tools/session-digest.ps1",
+      "installedPath": ".claude/scripts/session-digest.ps1",
+      "mode": "append-only",
+      "purpose": "Record end-of-session handoff facts into learning and decision logs.",
+      "reads": [],
+      "writes": [
+        ".claude/learning-log.md",
+        ".claude/decision-log.jsonl"
+      ],
+      "maxSummaryChars": 1200
+    }
+  ],
+  "safetyRules": [
+    "No external network calls.",
+    "No repository-wide scanning during prime.",
+    "No overwrite of existing session or learning history.",
+    "No raw stack traces, secrets, PII, or generated JSON dumps in user-facing summaries.",
+    "Append-only tools must keep entries human-readable and bounded."
+  ]
+}

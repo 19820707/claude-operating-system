@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-03T12:00:00.0000000Z",
+  "repoRootTail": "demo/claude-os",
+  "collector": {
+    "script": "tools/export-audit-evidence.ps1",
+    "powershellVersion": "7.4.0",
+    "powershellEdition": "Core"
+  },
+  "privacy": {
+    "environmentVariableValuesIncluded": false,
+    "dotEnvContentsIncluded": false,
+    "osWorkspaceContextFullTextIncluded": false,
+    "secretsEmitted": false,
+    "redactionNotes": "Illustrative manifest only; not generated from a real export."
+  },
+  "options": {
+    "includeStrictValidation": false,
+    "skipBashSyntax": false
+  },
+  "commandVersions": {
+    "pwsh": "PowerShell 7.4.0"
+  },
+  "sections": [
+    {
+      "id": "os-manifest",
+      "collected": true,
+      "artifactPointer": "/osManifestSummary"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "evidence-bundle.json",
+      "sha256": "ab000000000000000000000000000000000000000000000000000000000000cd",
+      "byteLength": 2
+    }
+  ]
+}

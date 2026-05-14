@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "description": "Section-first navigation index for Claude OS. Use this before brute-reading documentation files.",
+  "sections": [
+    {
+      "id": "root/mandate",
+      "path": "CLAUDE.md",
+      "title": "Global Operating Mandate",
+      "purpose": "Primary global policy loaded by Claude Code sessions.",
+      "tags": ["policy", "global", "session", "governance"]
+    },
+    {
+      "id": "root/navigation",
+      "path": "INDEX.md",
+      "title": "Navigation Map",
+      "purpose": "Human and agent map of repo components, counts, status, and where to go next.",
+      "tags": ["navigation", "docs", "index"]
+    },
+    {
+      "id": "docs/posicionamento-nao-e",
+      "path": "docs/POSICIONAMENTO-NAO-E.md",
+      "title": "O que o Claude OS não deve ser",
+      "purpose": "Limites explícitos em português: não CI/CD completo, não substituto de GitHub Actions ou revisão humana, não SaaS, não produção autónoma, não agentes sem supervisão em mudanças críticas.",
+      "tags": ["governance", "positioning", "portuguese", "non-goals", "ci"]
+    },
+    {
+      "id": "docs/capacidades-operacionais",
+      "path": "docs/CAPACIDADES-OPERACIONAIS.md",
+      "title": "Capacidades operacionais desejadas",
+      "purpose": "Fluxo §2–§11; competências §14; maturidade §15; resultado §16; autonomia A0–A4 e meta 95/5 §17 (executor vs aprovador, sem A4 em steward).",
+      "tags": ["governance", "portuguese", "onboarding", "init", "runtime"]
+    },
+    {
+      "id": "root/health",
+      "path": "tools/verify-os-health.ps1",
+      "title": "Aggregate OS Health",
+      "purpose": "Single health entrypoint for manifest, skills, docs, syntax, bootstrap, and Bash checks.",
+      "tags": ["health", "validation", "ci", "economy"],
+      "command": "pwsh ./tools/verify-os-health.ps1"
+    },
+    {
+      "id": "manifest/source-of-truth",
+      "path": "bootstrap-manifest.json",
+      "title": "Bootstrap Manifest Source of Truth",
+      "purpose": "Canonical counts, skill categories, script list, and bootstrap critical paths.",
+      "tags": ["manifest", "bootstrap", "drift", "source-of-truth"]
+    },
+    {
+      "id": "skills/canonical",
+      "path": "source/skills",
+      "title": "Canonical Skills",
+      "purpose": "Skill definitions copied into project scaffolds as .claude/skills artifacts.",
+      "tags": ["skills", "capabilities", "bootstrap", "maestro-pattern"]
+    },
+    {
+      "id": "skills/handbook",
+      "path": "docs/SKILLS.md",
+      "title": "Skills handbook",
+      "purpose": "Manifest-governed skills: canonical paths, sync, drift, validation profiles, maturity, and risk.",
+      "tags": ["skills", "manifest", "validation", "documentation"]
+    },
+    {
+      "id": "playbooks/index",
+      "path": "playbooks/README.md",
+      "title": "Operational playbooks",
+      "purpose": "Release, incident, migration, bootstrap, docs contract, and adapter drift runbooks validated by verify-playbooks.ps1.",
+      "tags": ["playbooks", "runbooks", "release", "incident", "validation"]
+    },
+    {
+      "id": "recipes/index",
+      "path": "recipes/README.md",
+      "title": "Command recipes",
+      "purpose": "Short copy-paste sequences for validate, init, skills, drift, and release; validated by verify-recipes.ps1.",
+      "tags": ["recipes", "commands", "validation", "bootstrap"]
+    },
+    {
+      "id": "bootstrap/windows-project",
+      "path": "init-project.ps1",
+      "title": "Windows Project Bootstrap",
+      "purpose": "Creates project .claude tree, installs commands, agents, skills, scripts, policies, local state, and validates critical paths.",
+      "tags": ["bootstrap", "powershell", "filesystem", "skills", "critical-paths"]
+    },
+    {
+      "id": "install/windows-global",
+      "path": "install.ps1",
+      "title": "Windows Global Install",
+      "purpose": "Installs global Claude OS files into ~/.claude on Windows.",
+      "tags": ["install", "powershell", "global"]
+    },
+    {
+      "id": "install/unix-global",
+      "path": "install.sh",
+      "title": "Unix Global Install",
+      "purpose": "Installs global Claude OS files into ~/.claude on Unix-like systems.",
+      "tags": ["install", "bash", "global"]
+    },
+    {
+      "id": "validators/manifest",
+      "path": "tools/verify-bootstrap-manifest.ps1",
+      "title": "Manifest Integrity Verifier",
+      "purpose": "Fails on repo tree, bootstrap scripts, unsafe paths, duplicates, or critical path drift.",
+      "tags": ["validation", "manifest", "drift", "security"]
+    },
+    {
+      "id": "validators/skills",
+      "path": "tools/verify-skills.ps1",
+      "title": "Skill Definition Verifier",
+      "purpose": "Validates source/skills frontmatter, categories, names, counts, and safe links.",
+      "tags": ["validation", "skills", "frontmatter"]
+    },
+    {
+      "id": "validators/docs",
+      "path": "tools/verify-doc-manifest.ps1",
+      "title": "Documentation Drift Verifier",
+      "purpose": "Fails when INDEX.md summaries diverge from bootstrap-manifest.json.",
+      "tags": ["validation", "docs", "drift"]
+    },
+    {
+      "id": "commands/session-lifecycle",
+      "path": "templates/commands",
+      "title": "Slash Commands",
+      "purpose": "User-invocable Claude commands for session start/end, classification, audits, invariants, incidents, and release readiness.",
+      "tags": ["commands", "workflow", "session"]
+    },
+    {
+      "id": "agents/specialists",
+      "path": "templates/agents",
+      "title": "Specialist Agents",
+      "purpose": "Role definitions for architecture, security, release, reliability, and QA work.",
+      "tags": ["agents", "roles", "delegation"]
+    },
+    {
+      "id": "scripts/lifecycle-hooks",
+      "path": "templates/scripts",
+      "title": "Lifecycle Hook Scripts",
+      "purpose": "Bash scripts for preflight, telemetry, risk, invariants, coordination, epistemic checks, learning, and context topology.",
+      "tags": ["scripts", "hooks", "bash", "automation"]
+    },
+    {
+      "id": "policies/operating-rules",
+      "path": "policies",
+      "title": "Operating Policies",
+      "purpose": "Binding rules for model selection, operating modes, production safety, token economy, rollback, and reporting.",
+      "tags": ["policies", "governance", "safety"]
+    },
+    {
+      "id": "policies/deprecation",
+      "path": "policies/deprecation.md",
+      "title": "Deprecation policy",
+      "purpose": "deprecation-manifest.json registry, strict enforcement surfaces, and optional upstream fork comparison.",
+      "tags": ["policies", "deprecation", "governance", "validation"]
+    },
+    {
+      "id": "policies/invariants",
+      "path": "policies/invariants.md",
+      "title": "Conservative invariants (I-001–I-010)",
+      "purpose": "Normative laws; paired with invariants-manifest.json and docs/DEGRADED-MODES.md.",
+      "tags": ["policies", "governance", "safety", "validation", "invariants"]
+    },
+    {
+      "id": "prompts/reusable",
+      "path": "prompts",
+      "title": "Reusable Prompts",
+      "purpose": "Reusable task prompts for session start, phase close, architecture review, release review, and incident triage.",
+      "tags": ["prompts", "workflow"]
+    },
+    {
+      "id": "invariant-engine/bundles",
+      "path": "templates/invariant-engine",
+      "title": "Invariant Engine Bundles",
+      "purpose": "TypeScript-derived .cjs bundles for invariant verification, semantic diff, and contract delta simulation.",
+      "tags": ["invariants", "typescript", "verification", "bundles"]
+    },
+    {
+      "id": "docs/quickstart",
+      "path": "docs/QUICKSTART.md",
+      "title": "Operator Quickstart",
+      "purpose": "Five-minute Windows path, Linux/CI strict path, project bootstrap, and troubleshooting Git/Bash/PowerShell.",
+      "tags": ["quickstart", "onboarding", "validation", "windows", "ci"]
+    },
+    {
+      "id": "docs/validation",
+      "path": "docs/VALIDATION.md",
+      "title": "Validation Profiles and Status Taxonomy",
+      "purpose": "Profiles (quick/standard/strict), JSON envelopes, false-green avoidance, and release gates.",
+      "tags": ["validation", "profiles", "json", "release", "governance"]
+    },
+    {
+      "id": "docs/autonomy",
+      "path": "docs/AUTONOMY.md",
+      "title": "Autonomy layer",
+      "purpose": "A0–A4 model, allowed vs steward-gated actions, os-autopilot, verify-autonomy-policy, repair loop, evidence, false-green rules.",
+      "tags": ["governance", "autonomy", "validation", "agents", "safety"]
+    },
+    {
+      "id": "docs/value-for-engineers",
+      "path": "docs/VALUE-FOR-ENGINEERS.md",
+      "title": "Value for development engineers",
+      "purpose": "Why Claude OS: continuity, less micromanagement, gates, no false green, bootstrap, multi-tool discipline, skills, pre-CI validation, traceability — 17 concrete outcomes.",
+      "tags": ["governance", "onboarding", "autonomy", "validation", "documentation", "portuguese"]
+    },
+    {
+      "id": "docs/workflow-states",
+      "path": "docs/WORKFLOW-STATES.md",
+      "title": "Workflow states and transitions",
+      "purpose": "Phase diagram: DISCOVER through CLOSE; forbidden jumps; transition table vs critical surfaces, validate, repair, release, deploy.",
+      "tags": ["governance", "workflow", "validation", "agents", "documentation"]
+    },
+    {
+      "id": "docs/risk-energy",
+      "path": "docs/RISK-ENERGY.md",
+      "title": "Risk energy heuristic",
+      "purpose": "Conserved-quantity metaphor for manifests/schemas/statuses; simple riskEnergy score and merge/release threshold; future calculate-risk-energy script.",
+      "tags": ["governance", "risk", "validation", "documentation"]
+    },
+    {
+      "id": "docs/repo-boundaries",
+      "path": "docs/REPO-BOUNDARIES.md",
+      "title": "Repository field boundaries",
+      "purpose": "Map regions (policies, schemas, tools, skills, templates, .agent) to risk, required validation, and approval; escalation for agents.",
+      "tags": ["governance", "risk", "validation", "documentation", "onboarding"]
+    },
+    {
+      "id": "docs/degraded-modes",
+      "path": "docs/DEGRADED-MODES.md",
+      "title": "Degraded modes and validation semantics",
+      "purpose": "Non-passing statuses including degraded; I-001; honest partial failure vs success; CI and agent rules.",
+      "tags": ["governance", "validation", "documentation", "safety"]
+    },
+    {
+      "id": "docs/hazards",
+      "path": "docs/HAZARDS.md",
+      "title": "Hazard register (STPA-lite)",
+      "purpose": "Hazard → cause → control → evidence → residual risk → if control fails; false green, drift, autonomy, production gates; links to I-001–I-010.",
+      "tags": ["safety", "governance", "risk", "validation", "documentation"]
+    },
+    {
+      "id": "docs/fmea-lite",
+      "path": "docs/FMEA-LITE.md",
+      "title": "FMEA-lite (failure modes)",
+      "purpose": "Failure mode, effect, severity, detection, mitigation; proportional critical engineering without heavy formal frameworks.",
+      "tags": ["safety", "risk", "validation", "documentation"]
+    },
+    {
+      "id": "docs/assurance-case",
+      "path": "docs/ASSURANCE-CASE.md",
+      "title": "Assurance case (claims and evidence)",
+      "purpose": "Claim → argument → evidence → known gaps for false-green boundaries, autonomy vs critical surfaces, canonical vs generated, components, secrets, contract bumps.",
+      "tags": ["safety", "governance", "assurance", "validation", "documentation"]
+    },
+    {
+      "id": "docs/compatibility",
+      "path": "docs/COMPATIBILITY.md",
+      "title": "Platform compatibility matrix",
+      "purpose": "Windows PS 5.1 vs pwsh, Linux/macOS pwsh, Bash/Git Bash/WSL, GitHub Actions; compatibility-manifest.json and verify-compatibility.ps1.",
+      "tags": ["compatibility", "platforms", "ci", "validation", "documentation"]
+    },
+    {
+      "id": "docs/lifecycle",
+      "path": "docs/LIFECYCLE.md",
+      "title": "Install, init, update, rollback, and project lifecycle",
+      "purpose": "lifecycle-manifest.json: writes, backups, idempotency, rollback, validation after install/init/update/repair/uninstall/bootstrap.",
+      "tags": ["lifecycle", "bootstrap", "install", "validation", "documentation"]
+    },
+    {
+      "id": "docs/distribution",
+      "path": "docs/DISTRIBUTION.md",
+      "title": "Distribution zip packaging",
+      "purpose": "distribution-manifest.json, build-distribution.ps1, verify-distribution.ps1; include/exclude rules for portable packs.",
+      "tags": ["distribution", "packaging", "release", "validation", "documentation"]
+    },
+    {
+      "id": "docs/contract-tests",
+      "path": "docs/CONTRACT-TESTS.md",
+      "title": "Cross-surface contract tests",
+      "purpose": "run-contract-tests.ps1 rules: manifests, docs commands, capabilities, gates, adapters, release evidence mapping, and strict-profile maturity.",
+      "tags": ["validation", "contracts", "manifests", "ci", "documentation"]
+    },
+    {
+      "id": "docs/safe-apply",
+      "path": "docs/SAFE-APPLY.md",
+      "title": "Safe apply for mutating scripts",
+      "purpose": "Dry-run, WhatIf, manifest writes/safeApply, invoke-safe-apply.ps1, and verify-script-manifest strict rules for writeRisk.",
+      "tags": ["validation", "scripts", "safety", "ci", "documentation"]
+    },
+    {
+      "id": "docs/components",
+      "path": "docs/COMPONENTS.md",
+      "title": "Component maturity registry",
+      "purpose": "component-manifest.json tiers, verify-components.ps1 coverage and strict/release surface rules, allowlist.",
+      "tags": ["validation", "governance", "manifests", "ci", "documentation"]
+    },
+    {
+      "id": "docs/operator-journal",
+      "path": "docs/OPERATOR-JOURNAL.md",
+      "title": "Operator journal (local)",
+      "purpose": "Gitignored OPERATOR_JOURNAL.md for audits, validation failures, and local notes; init-os-runtime creation; no secrets.",
+      "tags": ["operators", "audit", "validation", "documentation", "local"]
+    },
+    {
+      "id": "docs/security-lint",
+      "path": "docs/SECURITY-LINT.md",
+      "title": "Secret and credential lint",
+      "purpose": "verify-no-secrets.ps1: tracked .env, PEM blocks, provider key shapes, markdown examples, OS_WORKSPACE_CONTEXT.template.md, examples/, and .gitignore /logs/; warn vs strict.",
+      "tags": ["security", "secrets", "validation", "ci", "documentation"]
+    },
+    {
+      "id": "docs/examples",
+      "path": "docs/EXAMPLES.md",
+      "title": "Runtime JSON Examples",
+      "purpose": "Representative validator and health envelopes, manifest fixtures, schema map, and verify-examples.",
+      "tags": ["validation", "json", "schemas", "examples", "documentation"]
+    },
+    {
+      "id": "docs/audit-evidence",
+      "path": "docs/AUDIT-EVIDENCE.md",
+      "title": "Audit Evidence Export",
+      "purpose": "Sanitized export-audit-evidence bundle, manifest schema, privacy invariants, and parameters.",
+      "tags": ["audit", "validation", "compliance", "json", "documentation"]
+    },
+    {
+      "id": "docs/troubleshooting",
+      "path": "docs/TROUBLESHOOTING.md",
+      "title": "Troubleshooting",
+      "purpose": "Common failures: Git, Bash on Windows, PowerShell version, adapter and skill drift, JSON schemas, runtime-release docs, generated files.",
+      "tags": ["troubleshooting", "validation", "windows", "git", "documentation"]
+    },
+    {
+      "id": "docs/project-bootstrap",
+      "path": "docs/PROJECT-BOOTSTRAP.md",
+      "title": "Project Bootstrap (init-project)",
+      "purpose": "init-project.ps1 contract, .claude layout, adapters, decision log, and examples/project-bootstrap reference trees.",
+      "tags": ["bootstrap", "init-project", "documentation", "examples"]
+    },
+    {
+      "id": "docs/capabilities",
+      "path": "docs/CAPABILITIES.md",
+      "title": "Capabilities and intent routing",
+      "purpose": "os-capabilities vs capability-manifest routes, route-capability.ps1 usage, approval tiers, and required route ids.",
+      "tags": ["capabilities", "routing", "validation", "playbooks", "documentation"]
+    },
+    {
+      "id": "docs/quality-gates",
+      "path": "docs/QUALITY-GATES.md",
+      "title": "Manifest-governed quality gates",
+      "purpose": "quality-gates/*.json contracts, verify-quality-gates, evaluate-quality-gate, and release false-green rules.",
+      "tags": ["quality", "validation", "release", "manifest", "documentation"]
+    },
+    {
+      "id": "docs/release-readiness",
+      "path": "docs/RELEASE-READINESS.md",
+      "title": "Release Readiness Evidence",
+      "purpose": "Strict validation commands, clean-state checklist, and optional JSONL evidence before merge or tag.",
+      "tags": ["release", "validation", "ci", "governance"]
+    },
+    {
+      "id": "docs/upgrade",
+      "path": "docs/UPGRADE.md",
+      "title": "Contract upgrades and migrations",
+      "purpose": "Human workflow and upgrade-manifest.json contract for documented schemaVersion bumps; verify-upgrade-notes gate.",
+      "tags": ["upgrade", "release", "contracts", "manifest"],
+      "command": "pwsh ./tools/verify-upgrade-notes.ps1 -Json -Strict"
+    },
+    {
+      "id": "docs/approvals",
+      "path": "docs/APPROVALS.md",
+      "title": "Human approval ledger",
+      "purpose": "Steward-class playbook sign-off via logs/approval-log.jsonl; append-approval-log and verify-approval-log; not used for routine os-validate.",
+      "tags": ["approvals", "governance", "playbooks", "audit", "documentation"],
+      "command": "pwsh ./tools/verify-approval-log.ps1 -Json"
+    }
+  ]
+}

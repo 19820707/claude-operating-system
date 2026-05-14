@@ -1,0 +1,260 @@
+{
+    "schemaVersion":  1,
+    "description":  "Platform support matrix for Claude OS validators; keys align with docs/COMPATIBILITY.md.",
+    "platformCatalog":  [
+                            {
+                                "id":  "win-ps-5.1",
+                                "label":  "Windows PowerShell 5.1",
+                                "rationale":  "Legacy powershell.exe host; orchestrators may spawn pwsh child processes."
+                            },
+                            {
+                                "id":  "win-pwsh",
+                                "label":  "PowerShell 7 on Windows",
+                                "rationale":  "Primary Windows target for repo tooling."
+                            },
+                            {
+                                "id":  "linux-pwsh",
+                                "label":  "PowerShell 7 on Linux",
+                                "rationale":  "CI and developer Linux shells using pwsh."
+                            },
+                            {
+                                "id":  "macos-pwsh",
+                                "label":  "PowerShell 7 on macOS",
+                                "rationale":  "Developer macOS with PowerShell Core."
+                            },
+                            {
+                                "id":  "bash-on-path",
+                                "label":  "POSIX Bash on PATH",
+                                "rationale":  "Native bash (Linux/macOS) or bash available without Git-Bash-specific paths."
+                            },
+                            {
+                                "id":  "git-bash",
+                                "label":  "Git for Windows Bash",
+                                "rationale":  "MINGW64/MSYS bash from Git for Windows."
+                            },
+                            {
+                                "id":  "wsl",
+                                "label":  "WSL Linux distro",
+                                "rationale":  "Validators run from pwsh on Windows against Linux userland via WSL."
+                            },
+                            {
+                                "id":  "gha-ubuntu",
+                                "label":  "GitHub Actions ubuntu-latest",
+                                "rationale":  "Typical Linux CI agent with pwsh and bash packages."
+                            },
+                            {
+                                "id":  "gha-windows",
+                                "label":  "GitHub Actions windows-latest",
+                                "rationale":  "Typical Windows CI agent with pwsh; bash optional."
+                            }
+                        ],
+    "defaultSupport":  {
+                           "win-ps-5.1":  "best-effort",
+                           "win-pwsh":  "supported",
+                           "linux-pwsh":  "supported",
+                           "macos-pwsh":  "supported",
+                           "bash-on-path":  "not-applicable",
+                           "git-bash":  "not-applicable",
+                           "wsl":  "not-applicable",
+                           "gha-ubuntu":  "supported",
+                           "gha-windows":  "supported"
+                       },
+    "validators":  [
+                       {
+                           "id":  "evaluate-quality-gate"
+                       },
+                       {
+                           "id":  "os-doctor",
+                           "overrides":  {
+                                             "bash-on-path":  "best-effort",
+                                             "git-bash":  "best-effort",
+                                             "wsl":  "best-effort"
+                                         }
+                       },
+                       {
+                           "id":  "os-autopilot",
+                           "overrides":  {
+                                             "bash-on-path":  "best-effort",
+                                             "git-bash":  "best-effort",
+                                             "wsl":  "best-effort"
+                                         }
+                       },
+                       {
+                           "id":  "os-validate",
+                           "overrides":  {
+                                             "bash-on-path":  "best-effort",
+                                             "git-bash":  "best-effort",
+                                             "wsl":  "best-effort"
+                                         }
+                       },
+                       {
+                           "id":  "os-validate-all",
+                           "overrides":  {
+                                             "bash-on-path":  "best-effort",
+                                             "git-bash":  "best-effort",
+                                             "wsl":  "best-effort"
+                                         }
+                       },
+                       {
+                           "id":  "run-contract-tests"
+                       },
+                       {
+                           "id":  "sync-generated-targets"
+                       },
+                       {
+                           "id":  "test-skills"
+                       },
+                       {
+                           "id":  "verify-agent-adapter-drift"
+                       },
+                       {
+                           "id":  "verify-agent-adapters"
+                       },
+                       {
+                           "id":  "verify-autonomy-policy"
+                       },
+                       {
+                           "id":  "append-approval-log"
+                       },
+                       {
+                           "id":  "autonomous-commit-gate"
+                       },
+                       {
+                           "id":  "verify-approval-log"
+                       },
+                       {
+                           "id":  "verify-bootstrap-examples"
+                       },
+                       {
+                           "id":  "verify-bootstrap-manifest"
+                       },
+                       {
+                           "id":  "verify-capabilities"
+                       },
+                       {
+                           "id":  "verify-checklists"
+                       },
+                       {
+                           "id":  "verify-claudeignore"
+                       },
+                       {
+                           "id":  "verify-compatibility"
+                       },
+                       {
+                           "id":  "verify-components"
+                       },
+                       {
+                           "id":  "verify-context-economy"
+                       },
+                       {
+                           "id":  "verify-critical-systems"
+                       },
+                       {
+                           "id":  "verify-deprecations"
+                       },
+                       {
+                           "id":  "verify-doc-contract-consistency"
+                       },
+                       {
+                           "id":  "verify-distribution"
+                       },
+                       {
+                           "id":  "verify-doc-manifest"
+                       },
+                       {
+                           "id":  "verify-docs-index"
+                       },
+                       {
+                           "id":  "verify-examples"
+                       },
+                       {
+                           "id":  "classify-change"
+                       },
+                       {
+                           "id":  "verify-gate-results"
+                       },
+                       {
+                           "id":  "verify-generated-drift"
+                       },
+                       {
+                           "id":  "verify-manifest-graph"
+                       },
+                       {
+                           "id":  "verify-git-hygiene"
+                       },
+                       {
+                           "id":  "verify-json-contracts"
+                       },
+                       {
+                           "id":  "verify-lifecycle"
+                       },
+                       {
+                           "id":  "verify-no-secrets"
+                       },
+                       {
+                           "id":  "verify-os-health",
+                           "overrides":  {
+                                             "bash-on-path":  "best-effort",
+                                             "git-bash":  "best-effort",
+                                             "wsl":  "best-effort"
+                                         }
+                       },
+                       {
+                           "id":  "verify-os-invariants"
+                       },
+                       {
+                           "id":  "verify-playbooks"
+                       },
+                       {
+                           "id":  "verify-quality-gates"
+                       },
+                       {
+                           "id":  "verify-recipes"
+                       },
+                       {
+                           "id":  "verify-runtime-budget"
+                       },
+                       {
+                           "id":  "verify-runtime-dispatcher"
+                       },
+                       {
+                           "id":  "verify-runtime-profiles"
+                       },
+                       {
+                           "id":  "verify-runtime-release"
+                       },
+                       {
+                           "id":  "verify-script-manifest"
+                       },
+                       {
+                           "id":  "verify-security-policy"
+                       },
+                       {
+                           "id":  "verify-session-memory"
+                       },
+                       {
+                           "id":  "verify-skills"
+                       },
+                       {
+                           "id":  "verify-skills-drift"
+                       },
+                       {
+                           "id":  "verify-skills-economy"
+                       },
+                       {
+                           "id":  "verify-skills-manifest"
+                       },
+                       {
+                           "id":  "verify-skills-structure"
+                       },
+                       {
+                           "id":  "verify-token-economy-policy"
+                       },
+                       {
+                           "id":  "verify-upgrade-notes"
+                       },
+                       {
+                           "id":  "verify-workflow-manifest"
+                       }
+                   ]
+}

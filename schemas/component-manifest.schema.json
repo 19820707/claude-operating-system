@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-component-manifest",
+  "title": "Claude OS component maturity registry",
+  "type": "object",
+  "required": ["schemaVersion", "description", "components", "strictReleaseExperimentalAllowlist"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "strictReleaseExperimentalAllowlist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["toolIds", "componentIds"],
+      "properties": {
+        "toolIds": {
+          "type": "array",
+          "description": "script-manifest tool ids allowed on strict/release surfaces while mapped to an experimental component",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "componentIds": {
+          "type": "array",
+          "description": "Component ids whose experimental/deprecated maturity is tolerated on strict/release surfaces",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "maturity", "members"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "title": { "type": "string", "minLength": 4 },
+          "maturity": {
+            "type": "string",
+            "enum": ["core", "stable", "experimental", "internal", "deprecated"]
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind"],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": ["tool", "shell", "skill", "playbook", "policy", "manifest", "gateValidator"]
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "tool, shell, skill, or playbook id"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 3,
+                  "description": "manifest or policy path relative to repo root (forward slashes)"
+                },
+                "gateId": { "type": "string", "minLength": 1 },
+                "validatorId": { "type": "string", "minLength": 1 }
+              },
+              "allOf": [
+                {
+                  "if": { "properties": { "kind": { "const": "tool" } } },
+                  "then": { "required": ["id"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "shell" } } },
+                  "then": { "required": ["id"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "skill" } } },
+                  "then": { "required": ["id"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "playbook" } } },
+                  "then": { "required": ["id"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "policy" } } },
+                  "then": { "required": ["path"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "manifest" } } },
+                  "then": { "required": ["path"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "gateValidator" } } },
+                  "then": { "required": ["gateId", "validatorId"] }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

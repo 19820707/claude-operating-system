@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "description": "Machine-readable autonomy contract: A3 default for reversible local engineering; human gates for steward risk transitions.",
+  "defaultAutonomyLevel": "A3",
+  "targetAutonomousFraction": {
+    "designNote": "Approximate share of autonomous steps on reversible non-critical work; not a contractual SLA.",
+    "value": 0.95
+  },
+  "levels": {
+    "A0": { "label": "Manual", "summary": "Human executes the chain." },
+    "A1": { "label": "Assisted", "summary": "Agent proposes; human applies." },
+    "A2": { "label": "Semi-autonomous", "summary": "Bounded execution with checkpoints." },
+    "A3": { "label": "Autonomous with gates", "summary": "Default for reversible work; stops at steward boundaries." },
+    "A4": { "label": "Fully autonomous closed loop", "summary": "Forbidden on critical surfaces." }
+  },
+  "allowedAutonomousActions": [
+    "read",
+    "analyze",
+    "plan",
+    "dry-run",
+    "validate",
+    "format_docs",
+    "update_indexes",
+    "sync_generated_adapters",
+    "repair_reversible_drift",
+    "create_examples",
+    "create_tests",
+    "update_manifests_schema_compatible",
+    "generate_evidence",
+    "rerun_validation",
+    "summarize_residual_risk"
+  ],
+  "requiresHumanApproval": {
+    "surfaces": [
+      "production",
+      "release_publish",
+      "destructive_write",
+      "migration",
+      "incident_external_impact",
+      "security_policy_change",
+      "secret_handling",
+      "validator_bypass",
+      "policy_relaxation",
+      "breaking_schema_change",
+      "file_removal",
+      "irreversible_action"
+    ]
+  },
+  "forbiddenPatternsInAllowedActions": [
+    "bypass",
+    "publish",
+    "production_write",
+    "force_push",
+    "secret",
+    "migrate_prod",
+    "relax_policy",
+    "disable_validator",
+    "validator_bypass"
+  ],
+  "validationRules": {
+    "neverDowngradeFailToWarn": true,
+    "neverTreatSkippedValidationAsSuccess": true,
+    "neverBypassValidators": true,
+    "neverTreatNonOkEnvelopeAsSuccess": true
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.security",
+  "title": "Security quality gate",
+  "description": "Policy surfaces, ignore rules, and critical-systems posture before high-risk change.",
+  "domain": "security",
+  "requiredValidators": [
+    {
+      "id": "verify-security-policy",
+      "script": "tools/verify-security-policy.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-claudeignore",
+      "script": "tools/verify-claudeignore.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-critical-systems",
+      "script": "tools/verify-critical-systems.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    },
+    {
+      "id": "verify-no-secrets",
+      "script": "tools/verify-no-secrets.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": [],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "Security policy verifier green or tracked waiver with security reviewer",
+    "Critical-systems JSON envelope ok for scope of change",
+    ".claudeignore and secret hygiene respected in diffs"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 1,
+    "roles": ["security", "maintainer"],
+    "requiresSecuritySignOff": true,
+    "requiresMaintainerApproval": true
+  },
+  "strictModeBehavior": "Evaluator treats any non-ok JSON status from verify-critical-systems or verify-no-secrets as failure; exit-code-only tools must return zero."
+}

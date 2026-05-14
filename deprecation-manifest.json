@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "description": "Single source of truth for deprecated scripts, skills, docs, manifest keys, and slash commands. Strict validation and release gates must not rely on entries where allowedInStrictMode is false.",
+  "upstreamReference": {
+    "note": "Optional comparison clone: git clone https://github.com/19820707/claude-operating-system.git extern-reference/upstream-19820707 (ignored by git; see policies/deprecation.md).",
+    "url": "https://github.com/19820707/claude-operating-system"
+  },
+  "deprecatedScripts": [],
+  "deprecatedSkills": [],
+  "deprecatedDocs": [],
+  "deprecatedManifestFields": [],
+  "deprecatedCommands": []
+}

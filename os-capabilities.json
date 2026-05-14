@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "description": "Declarative Claude OS capability registry. Use this before selecting commands, skills, scripts, or validation paths.",
+  "defaults": {
+    "namespace": "os",
+    "routingPolicy": "prefer cheapest safe capability; escalate on critical surfaces",
+    "humanApprovalRequiredFor": ["security", "production", "filesystem", "ci", "permissions", "secrets", "network"]
+  },
+  "capabilities": [
+    {
+      "id": "os.health",
+      "title": "Aggregate OS Health",
+      "intent": "Check whether the Claude OS repository is internally consistent and bootstrappable.",
+      "skill": "bootstrap-governance",
+      "risk": "medium",
+      "cost": "low",
+      "tags": ["health", "validation", "ci", "bootstrap"],
+      "entrypoint": "pwsh ./tools/verify-os-health.ps1",
+      "validations": ["pwsh ./tools/verify-os-health.ps1"],
+      "docs": ["root/health", "validators/manifest", "validators/docs"],
+      "requiresHumanApproval": true
+    },
+    {
+      "id": "os.bootstrap-project",
+      "title": "Project Bootstrap",
+      "intent": "Create or validate a project .claude scaffold with commands, agents, skills, policies, scripts, local docs index, and critical paths.",
+      "skill": "bootstrap-governance",
+      "risk": "high",
+      "cost": "medium",
+      "tags": ["bootstrap", "filesystem", "skills", "critical-paths"],
+      "entrypoint": "pwsh ./init-project.ps1 -ProjectPath <path> -SkipGitInit",
+      "validations": ["pwsh ./tools/verify-bootstrap-manifest.ps1", "pwsh ./init-project.ps1 -ProjectPath <tmp> -DryRun -SkipGitInit"],
+      "docs": ["bootstrap/windows-project", "manifest/source-of-truth", "skills/canonical"],
+      "requiresHumanApproval": true
+    },
+    {
+      "id": "os.production-safety",
+      "title": "Production Safety Gate",
+      "intent": "Assess risky work touching auth, billing, PII, secrets, deployments, permissions, network, CI, or irreversible mutation.",
+      "skill": "production-safety",
+      "risk": "critical",
+      "cost": "medium",
+      "tags": ["production", "security", "approval", "rollback", "pii"],
+      "entrypoint": "/production-guard",
+      "validations": ["bash .claude/scripts/policy-compliance.sh", "bash .claude/scripts/decision-audit.sh"],
+      "docs": ["policies/operating-rules"],
+      "requiresHumanApproval": true
+    },
+    {
+      "id": "os.token-economy",
+      "title": "Token Economy Routing",
+      "intent": "Find the cheapest safe path through docs, commands, skills, and validators without brute-reading the repository.",
+      "skill": "token-economy",
+      "risk": "low",
+      "cost": "low",
+      "tags": ["economy", "routing", "docs", "retrieval"],
+      "entrypoint": "pwsh ./tools/query-docs-index.ps1 -Query <topic>",
+      "validations": ["pwsh ./tools/verify-docs-index.ps1", "pwsh ./tools/query-docs-index.ps1 -Query health -Limit 1 -Json"],
+      "docs": ["root/navigation", "root/health"]
+    },
+    {
+      "id": "os.invariants",
+      "title": "Invariant Verification",
+      "intent": "Define, validate, or evolve invariants, semantic diffs, contract deltas, and verification gates.",
+      "skill": "invariant-engineering",
+      "risk": "high",
+      "cost": "medium",
+      "tags": ["invariants", "verification", "semantic-diff", "contracts"],
+      "entrypoint": "bash .claude/scripts/invariant-verify.sh",
+      "validations": ["bash .claude/scripts/invariant-verify.sh", "bash .claude/scripts/semantic-diff-analyze.sh"],
+      "docs": ["invariant-engine/bundles"],
+      "requiresHumanApproval": true
+    },
+    {
+      "id": "os.coordination",
+      "title": "Multi-Agent Coordination",
+      "intent": "Coordinate work across agents, sessions, worktrees, leases, intentions, and shared decisions.",
+      "skill": "multi-agent-coordination",
+      "risk": "medium",
+      "cost": "low",
+      "tags": ["coordination", "agents", "leases", "worktrees"],
+      "entrypoint": "bash .claude/scripts/coordination-check.sh",
+      "validations": ["bash .claude/scripts/coordination-check.sh"],
+      "docs": ["agents/specialists", "scripts/lifecycle-hooks"]
+    },
+    {
+      "id": "os.epistemic-review",
+      "title": "Epistemic Review",
+      "intent": "Separate known facts from assumptions, unknowns, disputed evidence, and decision debt before acting.",
+      "skill": "epistemic-discipline",
+      "risk": "medium",
+      "cost": "low",
+      "tags": ["epistemic", "assumptions", "unknowns", "decision-debt"],
+      "entrypoint": "bash .claude/scripts/epistemic-check.sh --gate",
+      "validations": ["bash .claude/scripts/epistemic-check.sh --summary"],
+      "docs": ["scripts/lifecycle-hooks"]
+    },
+    {
+      "id": "os.security-review",
+      "title": "Security Review",
+      "intent": "Review attack surface, secrets, permissions, authz/authn, sensitive logs, and unsafe filesystem or network behavior.",
+      "skill": "production-safety",
+      "risk": "critical",
+      "cost": "medium",
+      "tags": ["security", "secrets", "permissions", "filesystem", "network"],
+      "entrypoint": "/architecture-review + /production-guard",
+      "validations": ["bash .claude/scripts/risk-surface-scan.sh", "bash .claude/scripts/policy-compliance.sh"],
+      "docs": ["policies/operating-rules"],
+      "requiresHumanApproval": true
+    }
+  ]
+}

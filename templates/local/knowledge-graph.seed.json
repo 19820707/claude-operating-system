@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "updated": "",
+  "nodes": {},
+  "edges": [],
+  "invariants": [],
+  "open_questions": [],
+  "note": "Refreshed by context-topology.sh from architecture-graph + complexity-map. Edit sparingly; prefer regenerating."
+}

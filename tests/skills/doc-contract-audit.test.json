@@ -1,0 +1,8 @@
+{
+  "skillId": "doc-contract-audit",
+  "kind": "smoke",
+  "expect": {
+    "manifestPath": "source/skills/doc-contract-audit/SKILL.md",
+    "mustDeclare": ["verify-doc-contract"]
+  }
+}

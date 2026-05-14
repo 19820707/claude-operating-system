@@ -1,0 +1,1395 @@
+{
+    "schemaVersion":  1,
+    "description":  "Canonical Claude OS skills: manifest-governed, validated, portable across agents.",
+    "canonicalRoot":  "source/skills/",
+    "releaseProfileIds":  [
+                              "strict"
+                          ],
+    "skills":  [
+                   {
+                       "id":  "bootstrap-governance",
+                       "name":  "Bootstrap Governance",
+                       "path":  "source/skills/bootstrap-governance/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Governance patterns for bootstrapping Claude OS projects and adapters.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/bootstrap-governance/SKILL.md",
+                                                ".cursor/skills/bootstrap-governance/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/multi-tool-adapters.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Legacy skill: examples and procedures are embedded in SKILL.md until split to examples/ and tests/."
+                   },
+                   {
+                       "id":  "production-safety",
+                       "name":  "Production Safety",
+                       "path":  "source/skills/production-safety/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "High-risk production, auth, secrets, and no-false-green execution discipline.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "critical",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/production-safety/SKILL.md",
+                                                ".cursor/skills/production-safety/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Legacy skill: examples and procedures are embedded in SKILL.md until split to examples/ and tests/."
+                   },
+                   {
+                       "id":  "token-economy",
+                       "name":  "Token Economy",
+                       "path":  "source/skills/token-economy/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Context and validation cost control; surgical mode and bounded discovery.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/token-economy/SKILL.md",
+                                                ".cursor/skills/token-economy/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/token-economy.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Legacy skill: examples and procedures are embedded in SKILL.md until split to examples/ and tests/."
+                   },
+                   {
+                       "id":  "invariant-engineering",
+                       "name":  "Invariant Engineering",
+                       "path":  "source/skills/invariant-engineering/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Invariant bundles, semantic diff, and contract simulation discipline.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "high",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/invariant-engineering/SKILL.md",
+                                                ".cursor/skills/invariant-engineering/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/scope-control.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Legacy skill: examples and procedures are embedded in SKILL.md until split to examples/ and tests/."
+                   },
+                   {
+                       "id":  "multi-agent-coordination",
+                       "name":  "Multi-Agent Coordination",
+                       "path":  "source/skills/multi-agent-coordination/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Coordination, delegation, and evidence across agents without drift.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "high",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/multi-agent-coordination/SKILL.md",
+                                                ".cursor/skills/multi-agent-coordination/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/engineering-governance.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Legacy skill: examples and procedures are embedded in SKILL.md until split to examples/ and tests/."
+                   },
+                   {
+                       "id":  "epistemic-discipline",
+                       "name":  "Epistemic Discipline",
+                       "path":  "source/skills/epistemic-discipline/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Evidence quality, confidence labeling, and honest unknowns.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/epistemic-discipline/SKILL.md",
+                                                ".cursor/skills/epistemic-discipline/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/reporting-format.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Legacy skill: examples and procedures are embedded in SKILL.md until split to examples/ and tests/."
+                   },
+                   {
+                       "id":  "runtime-economy",
+                       "name":  "Runtime Economy",
+                       "path":  "source/skills/runtime-economy/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Cheapest sufficient validation path; quick before strict; no false green.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/runtime-economy/SKILL.md",
+                                                ".cursor/skills/runtime-economy/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/runtime-economy.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/runtime-economy.test.json"
+                                 ]
+                   },
+                   {
+                       "id":  "release-readiness",
+                       "name":  "Release Readiness",
+                       "path":  "source/skills/release-readiness/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Strict validation, manifests, clean Git, drift, docs contract, residual risk.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "critical",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/release-readiness/SKILL.md",
+                                                ".cursor/skills/release-readiness/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/release-readiness.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/release-readiness.test.json"
+                                 ]
+                   },
+                   {
+                       "id":  "adapter-drift",
+                       "name":  "Adapter Drift",
+                       "path":  "source/skills/adapter-drift/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Canonical sources vs generated Claude/Cursor/Codex adapter copies.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "high",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/adapter-drift/SKILL.md",
+                                                ".cursor/skills/adapter-drift/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/multi-tool-adapters.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/adapter-drift.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/adapter-drift.test.json"
+                                 ]
+                   },
+                   {
+                       "id":  "autonomous-runtime",
+                       "name":  "Autonomous runtime",
+                       "path":  "source/skills/autonomous-runtime/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "A3 bounded autonomy: autopilot orchestration, dry-run, validation loops, evidence; blocks steward transitions without human approval.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/autonomous-runtime/SKILL.md",
+                                                ".cursor/skills/autonomous-runtime/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  360,
+                                             "maxBytes":  48000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/autonomy.md",
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/autonomous-runtime.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/autonomous-runtime.test.json"
+                                 ]
+                   },
+                   {
+                       "id":  "doc-contract-audit",
+                       "name":  "Doc Contract Audit",
+                       "path":  "source/skills/doc-contract-audit/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "README, ARCHITECTURE, manifests, schemas, and validators stay aligned.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/doc-contract-audit/SKILL.md",
+                                                ".cursor/skills/doc-contract-audit/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/multi-tool-adapters.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/doc-contract-audit.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/doc-contract-audit.test.json"
+                                 ]
+                   },
+                   {
+                       "id":  "incident-safe-change",
+                       "name":  "Incident Safe Change",
+                       "path":  "source/skills/incident-safe-change/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Minimal scope, rollback, approval, evidence, post-validation during incidents.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "critical",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/incident-safe-change/SKILL.md",
+                                                ".cursor/skills/incident-safe-change/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  380,
+                                             "maxBytes":  50000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+                                        "examples/skills/incident-safe-change.md"
+                                    ],
+                       "tests":  [
+                                     "tests/skills/incident-safe-change.test.json"
+                                 ]
+                   },
+                   {
+                       "id":  "security-lint",
+                       "name":  "Security lint",
+                       "path":  "source/skills/security-lint/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Secret and credential lint via verify-no-secrets and SECURITY-LINT.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/security-lint/SKILL.md",
+                                                ".cursor/skills/security-lint/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "contract-testing",
+                       "name":  "Contract testing",
+                       "path":  "source/skills/contract-testing/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Cross-manifest contracts via run-contract-tests and verify-json-contracts.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/contract-testing/SKILL.md",
+                                                ".cursor/skills/contract-testing/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "quality-gate-evaluator",
+                       "name":  "Quality gate evaluator",
+                       "path":  "source/skills/quality-gate-evaluator/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "quality-gates JSON, schema, and evaluate-quality-gate usage.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/quality-gate-evaluator/SKILL.md",
+                                                ".cursor/skills/quality-gate-evaluator/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "bootstrap-auditor",
+                       "name":  "Bootstrap auditor",
+                       "path":  "source/skills/bootstrap-auditor/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "bootstrap-manifest counts, critical paths, init-project alignment.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/bootstrap-auditor/SKILL.md",
+                                                ".cursor/skills/bootstrap-auditor/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "session-memory-auditor",
+                       "name":  "Session memory auditor",
+                       "path":  "source/skills/session-memory-auditor/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "session-memory-manifest and session scripts contract.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/session-memory-auditor/SKILL.md",
+                                                ".cursor/skills/session-memory-auditor/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "safe-apply",
+                       "name":  "Safe apply",
+                       "path":  "source/skills/safe-apply/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "script-manifest writes, ShouldProcess/DryRun, verify-script-manifest strict.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "high",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Destructive",
+                                                   "Release"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/safe-apply/SKILL.md",
+                                                ".cursor/skills/safe-apply/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "deprecation-manager",
+                       "name":  "Deprecation manager",
+                       "path":  "source/skills/deprecation-manager/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "deprecation-manifest and verify-deprecations strict surfaces.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/deprecation-manager/SKILL.md",
+                                                ".cursor/skills/deprecation-manager/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "evidence-export",
+                       "name":  "Evidence export",
+                       "path":  "source/skills/evidence-export/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "export-audit-evidence and AUDIT-EVIDENCE bundle discipline.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "high",
+                       "requiresApprovalFor":  [
+                                                   "Release",
+                                                   "Production"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/evidence-export/SKILL.md",
+                                                ".cursor/skills/evidence-export/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "compatibility-auditor",
+                       "name":  "Compatibility auditor",
+                       "path":  "source/skills/compatibility-auditor/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "compatibility-manifest vs script-manifest and COMPATIBILITY.md.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/compatibility-auditor/SKILL.md",
+                                                ".cursor/skills/compatibility-auditor/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "lifecycle-manager",
+                       "name":  "Lifecycle manager",
+                       "path":  "source/skills/lifecycle-manager/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "lifecycle-manifest commands and verify-lifecycle.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/lifecycle-manager/SKILL.md",
+                                                ".cursor/skills/lifecycle-manager/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "distribution-builder",
+                       "name":  "Distribution builder",
+                       "path":  "source/skills/distribution-builder/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "distribution-manifest, build-distribution, verify-distribution.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "high",
+                       "requiresApprovalFor":  [
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/distribution-builder/SKILL.md",
+                                                ".cursor/skills/distribution-builder/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "upgrade-planner",
+                       "name":  "Upgrade planner",
+                       "path":  "source/skills/upgrade-planner/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "upgrade-manifest entries, verify-upgrade-notes strict, docs/UPGRADE.md.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+                                                   "Release",
+                                                   "Migration"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/upgrade-planner/SKILL.md",
+                                                ".cursor/skills/upgrade-planner/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "operator-journal",
+                       "name":  "Operator journal",
+                       "path":  "source/skills/operator-journal/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "gitignored OPERATOR_JOURNAL local notes without secrets.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "low",
+                       "requiresApprovalFor":  [
+
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/operator-journal/SKILL.md",
+                                                ".cursor/skills/operator-journal/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "approval-ledger",
+                       "name":  "Approval ledger",
+                       "path":  "source/skills/approval-ledger/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "Human approval JSONL append-approval-log and verify-approval-log for steward playbooks.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "critical",
+                       "requiresApprovalFor":  [
+                                                   "Production",
+                                                   "Critical",
+                                                   "Incident",
+                                                   "Migration",
+                                                   "Release",
+                                                   "Destructive"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/approval-ledger/SKILL.md",
+                                                ".cursor/skills/approval-ledger/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   },
+                   {
+                       "id":  "component-maturity",
+                       "name":  "Component maturity",
+                       "path":  "source/skills/component-maturity/SKILL.md",
+                       "maturity":  "stable",
+                       "status":  "active",
+                       "owners":  [
+
+                                  ],
+                       "summary":  "component-manifest tiers, allowlists, verify-components strict.",
+                       "intendedUse":  [
+                                           "validation",
+                                           "release",
+                                           "bootstrap",
+                                           "docs",
+                                           "audit",
+                                           "incident",
+                                           "migration"
+                                       ],
+                       "riskLevel":  "medium",
+                       "requiresApprovalFor":  [
+                                                   "Release"
+                                               ],
+                       "allowedAgents":  [
+                                             "claude",
+                                             "cursor",
+                                             "codex"
+                                         ],
+                       "generatedTargets":  [
+                                                ".claude/skills/component-maturity/SKILL.md",
+                                                ".cursor/skills/component-maturity/SKILL.md"
+                                            ],
+                       "contextBudget":  {
+                                             "maxLines":  280,
+                                             "maxBytes":  45000
+                                         },
+                       "dependencies":  [
+
+                                        ],
+                       "relatedPolicies":  [
+                                               "policies/production-safety.md"
+                                           ],
+                       "examples":  [
+
+                                    ],
+                       "tests":  [
+
+                                 ],
+                       "examplesExemptionReason":  "Operational skill: compact SKILL.md; examples deferred."
+                   }
+               ]
+}

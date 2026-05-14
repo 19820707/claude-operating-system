@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-recipe-manifest",
+  "title": "Claude OS recipe manifest",
+  "type": "object",
+  "required": ["schemaVersion", "canonicalRoot", "recipes"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "canonicalRoot": { "type": "string", "minLength": 2 },
+    "recipes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "path", "summary"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "name": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 8 },
+          "summary": { "type": "string", "minLength": 8 },
+          "relatedPlaybook": { "type": "string" },
+          "relatedDocs": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 4 }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}
