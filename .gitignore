@@ -18,4 +18,5 @@
 .claude/semantic-diff-report.json
 .claude/learning-loop-report.json
 .claude/policy-audit-report.json
+/logs/
 

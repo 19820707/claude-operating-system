@@ -134,7 +134,7 @@ Reusable starting points for new projects. Copy and fill in project-specific con
 
 ### templates/commands/
 
-Commands to copy into `.claude/commands/` of each project. Canonical count: **18/18** from `bootstrap-manifest.json`.
+Commands to copy into `.claude/commands/` of each project. Canonical count: **19/19** from `bootstrap-manifest.json`.
 
 | File | Purpose | Trigger |
 |------|---------|---------|
@@ -159,7 +159,7 @@ Commands to copy into `.claude/commands/` of each project. Canonical count: **18
 
 ### templates/scripts/
 
-Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**. Canonical count: **38/38** from `bootstrap-manifest.json`; `init-project.ps1` consumes that manifest list directly.
+Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**. Canonical count: **40/40** from `bootstrap-manifest.json`; `init-project.ps1` consumes that manifest list directly.
 
 | File | Purpose | Hook |
 |------|---------|------|
@@ -191,7 +191,7 @@ Session lifecycle hooks. Copy to `.claude/scripts/` — **must remain LF-only**.
 
 For the complete script list, use `bootstrap-manifest.json` → `projectBootstrap.scripts`; CI verifies every listed script exists and parses with `bash -n`.
 
-Manifest-only script entries: `agent-coordinator.sh`, `consolidate-runbook.sh`, `context-allocator.sh`, `context-builder.sh`, `contract-delta.sh`, `decision-audit.sh`, `epistemic-state.sh`, `invariant-engine.sh`, `knowledge-graph.sh`, `policy-compliance.sh`, `runbook-inject.sh`, `salience-score.sh`, `simulate-change.sh`.
+Manifest-only script entries: `agent-coordinator.sh`, `consolidate-runbook.sh`, `context-allocator.sh`, `context-builder.sh`, `contract-delta.sh`, `decision-audit.sh`, `deploy-check.sh`, `epistemic-state.sh`, `invariant-engine.sh`, `knowledge-graph.sh`, `policy-compliance.sh`, `runbook-inject.sh`, `salience-score.sh`, `secret-redact.sh`, `simulate-change.sh`.
 
 ### templates/invariant-engine/
 
@@ -319,8 +319,8 @@ Policy background: **`policies/multi-tool-adapters.md`**.
 | source/skills/ | 27/27 — manifest verified and bootstrapped to `.claude/skills/` |
 | policies/ | 8/8 — complete |
 | prompts/ | 7/7 — complete |
-| templates/commands/ | 18/18 — manifest verified |
-| templates/scripts/ | 38/38 — manifest verified; health check runs `bash -n` |
+| templates/commands/ | 19/19 — manifest verified |
+| templates/scripts/ | 40/40 — manifest verified; health check runs `bash -n` |
 | templates/invariant-engine/dist/ | 3/3 — invariant-engine, semantic-diff, simulate-contract-delta |
 | templates/profiles/ | 2/2 — node-ts-service, react-vite-app |
 | templates/agents/ | 5/5 — principal architect, QA strategist, release manager, reliability engineer, security engineer |
