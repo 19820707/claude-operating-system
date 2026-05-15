@@ -50,7 +50,7 @@ foreach ($file in $toolScripts) {
     try {
         $src = Get-Content -LiteralPath $file.FullName -Raw -Encoding utf8
     } catch {
-        [void]$warnings.Add("Could not read $rel: $($_.Exception.Message)")
+        [void]$warnings.Add("Could not read ${rel}: $($_.Exception.Message)")
         continue
     }
 

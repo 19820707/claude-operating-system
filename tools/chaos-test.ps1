@@ -26,7 +26,7 @@ function Add-ScenarioResult {
     param([string]$Id, [string]$Status, [string]$Detail)
     [void]$results.Add([ordered]@{ id = $Id; status = $Status; detail = $Detail })
     [void]$checks.Add([ordered]@{ name = $Id; status = $Status; detail = $Detail })
-    if ($Status -eq 'fail') { [void]$failures.Add("$Id: $Detail") }
+    if ($Status -eq 'fail') { [void]$failures.Add("${Id}: $Detail") }
     if (-not $Json) {
         $pfx = $Status.ToUpper().PadRight(4)
         Write-Host "  $pfx $Id - $Detail"
@@ -43,9 +43,9 @@ function Invoke-Tool {
 function Test-StaleLastExitCodeAdapters {
     $result = & pwsh -NoProfile -Command "
         cmd /c exit 1
-        \`$before = \`$LASTEXITCODE
+        `$before = `$LASTEXITCODE
         & (Join-Path '$RepoRoot' 'tools/verify-agent-adapters.ps1')
-        exit \`$LASTEXITCODE
+        exit `$LASTEXITCODE
     " 2>$null
     $exit = $LASTEXITCODE
     if ($exit -eq 0) {
@@ -60,7 +60,7 @@ function Test-StaleLastExitCodeDoctor {
     $exit = & pwsh -NoProfile -Command "
         cmd /c exit 1
         & (Join-Path '$RepoRoot' 'tools/os-doctor.ps1') -SkipBashSyntax
-        exit \`$LASTEXITCODE
+        exit `$LASTEXITCODE
     " 2>$null
     $exit = $LASTEXITCODE
     if ($exit -eq 0) {
@@ -75,7 +75,7 @@ function Test-StaleLastExitCodeInit {
     $null = & pwsh -NoProfile -Command "
         cmd /c exit 1
         & (Join-Path '$RepoRoot' 'tools/init-os-runtime.ps1') -SkipBashSyntax
-        exit \`$LASTEXITCODE
+        exit `$LASTEXITCODE
     " 2>$null
     $exit = $LASTEXITCODE
     if ($exit -eq 0) {
@@ -90,7 +90,7 @@ function Test-StaleLastExitCodeRuntime {
     $null = & pwsh -NoProfile -Command "
         cmd /c exit 1
         & (Join-Path '$RepoRoot' 'tools/os-runtime.ps1') 'help'
-        exit \`$LASTEXITCODE
+        exit `$LASTEXITCODE
     " 2>$null
     $exit = $LASTEXITCODE
     if ($exit -eq 0) {
@@ -120,10 +120,10 @@ function Test-MissingTemplate {
         # Run init-os-runtime in a context where OS_WORKSPACE_CONTEXT.template.md is absent
         # We do this by pointing ProjectPath at tmpDir which has no OS_WORKSPACE_CONTEXT.template.md
         $null = & pwsh -NoProfile -Command "
-            \`$ErrorActionPreference = 'Stop'
-            \`$tpl = Join-Path '$tmpDir' 'OS_WORKSPACE_CONTEXT.template.md'
-            \`$ctx = Join-Path '$tmpDir' 'OS_WORKSPACE_CONTEXT.md'
-            if (-not (Test-Path -LiteralPath \`$tpl)) {
+            `$ErrorActionPreference = 'Stop'
+            `$tpl = Join-Path '$tmpDir' 'OS_WORKSPACE_CONTEXT.template.md'
+            `$ctx = Join-Path '$tmpDir' 'OS_WORKSPACE_CONTEXT.md'
+            if (-not (Test-Path -LiteralPath `$tpl)) {
                 Write-Host 'CHAOS: template missing as expected'
                 exit 1
             }
@@ -148,7 +148,7 @@ function Test-CorruptManifest {
     Set-Content -LiteralPath $fakeManifest -Value '{ "broken": true, invalid json }' -Encoding utf8
     try {
         $null = & pwsh -NoProfile -Command "
-            \`$ErrorActionPreference = 'Stop'
+            `$ErrorActionPreference = 'Stop'
             try {
                 Get-Content -LiteralPath '$fakeManifest' -Raw | ConvertFrom-Json | Out-Null
                 exit 0
