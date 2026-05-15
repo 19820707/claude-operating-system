@@ -51,3 +51,13 @@ jobs:
           } else {
             & $env:GITHUB_WORKSPACE/tools/os-validate-all.ps1 -Strict
           }
+
+      - name: CI repair advisor (on failure)
+        if: failure()
+        shell: pwsh
+        run: |
+          $j = Join-Path $env:GITHUB_WORKSPACE 'validate-quick.json'
+          $repairArgs = @()
+          if (Test-Path -LiteralPath $j) { $repairArgs += @('-QuickJson', $j) }
+          & $env:GITHUB_WORKSPACE/tools/ci-repair.ps1 @repairArgs
+          exit 0

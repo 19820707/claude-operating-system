@@ -130,6 +130,21 @@
       "status": "UNKNOWN",
       "last_verified": null,
       "staleness_risk": "LOW"
+    },
+    {
+      "id": "INV-011",
+      "name": "powershell-exit-code-isolation",
+      "description": "All tools/*.ps1 must have explicit exit 0 on success path; $LASTEXITCODE must not be inherited from prior commands via null propagation",
+      "heuristic_ref": "H15",
+      "check": {
+        "type": "tool_exit_code_hygiene",
+        "tool": "verify-exit-codes.ps1",
+        "scope": "tools/*.ps1"
+      },
+      "violation_severity": "HIGH",
+      "status": "ACTIVE",
+      "last_verified": null,
+      "staleness_risk": "LOW"
     }
   ]
 }

@@ -348,6 +348,7 @@ Invoke-HealthStep -Name 'capability-router' -Script { Test-CapabilityRouter }
 Invoke-HealthStep -Name 'workflow' -Script { & (Join-Path $RepoRoot 'tools/verify-workflow-manifest.ps1') }
 Invoke-HealthStep -Name 'workflow-status' -Script { Test-WorkflowStatus }
 Invoke-HealthStep -Name 'runtime-dispatcher' -Script { Test-RuntimeDispatcher }
+Invoke-HealthStep -Name 'exit-code-hygiene' -Script { & (Join-Path $RepoRoot 'tools/verify-exit-codes.ps1') }
 Invoke-HealthStep -Name 'checklists' -Script { & (Join-Path $RepoRoot 'tools/verify-checklists.ps1') }
 Invoke-HealthStepWithBudget -Name 'doctor' -WarnMs 10000 -FailMs 30000 -Script {
     $doctorParams = @{ Json = $true }

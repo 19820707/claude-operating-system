@@ -18,6 +18,8 @@
 .claude/semantic-diff-report.json
 .claude/learning-loop-report.json
 .claude/policy-audit-report.json
+.claude/script-graph.json
+.claude/ci-repair-report.json
 /logs/
 /validate-quick.json
 OPERATOR_JOURNAL.md

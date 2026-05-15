@@ -40,6 +40,14 @@ Update when a new pattern is confirmed across at least one real incident.
 
 ---
 
+### H15 — PowerShell `$null -ne 0` is `True`: scripts without `exit 0` propagate stale `$LASTEXITCODE`
+
+**Evidence:** `verify-agent-adapters.ps1` succeeded but had no `exit 0`. After calling it via `&`, `$LASTEXITCODE` stayed `$null`. `sync-agent-adapters.ps1` then evaluated `$null -ne 0` → `True` (PowerShell null comparison semantics) → falsely treated a successful step as failed → exited 1. Similarly, `os-doctor.ps1` only had `exit 0` inside the `-Json` branch; the non-Json path fell off the end, leaving `$LASTEXITCODE` stale at 1 from the prior call. This triggered a cascade: `init-os-runtime.ps1` → `runtime-dispatcher` health check → CI failure.
+**Rule:** Every `tools/*.ps1` that has any failure path (`exit 1`, `throw`, `exit [int]$code`) must have an explicit `exit 0` at the end of its success path. Do not assume a script that "runs fine" leaves `$LASTEXITCODE=0` — it only does if `exit 0` is called explicitly.
+**Apply:** Run `pwsh ./tools/verify-exit-codes.ps1` before committing new tools scripts. Add `exit 0` as the last line of any script with a failure path. INV-011 formalises this invariant.
+
+---
+
 ## Security & Validation
 
 ### H3 — Transitive DB imports break in test/middleware load
