@@ -1348,6 +1348,20 @@
                              "safeToRunInCI":  true
                          },
                          {
+                             "path":  "templates/scripts/deploy-check.sh",
+                             "id":  "deploy-check",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "fail",
+                             "safeToRunInCI":  true
+                         },
+                         {
                              "path":  "templates/scripts/drift-detect.sh",
                              "id":  "drift-detect",
                              "maturity":  "stable",
@@ -1630,6 +1644,20 @@
                          {
                              "path":  "templates/scripts/salience-score.sh",
                              "id":  "salience-score",
+                             "maturity":  "stable",
+                             "defaultEnabled":  false,
+                             "requires":  [
+                                              "bash"
+                                          ],
+                             "writes":  [
+
+                                        ],
+                             "exitPolicy":  "informational",
+                             "safeToRunInCI":  true
+                         },
+                         {
+                             "path":  "templates/scripts/secret-redact.sh",
+                             "id":  "secret-redact",
                              "maturity":  "stable",
                              "defaultEnabled":  false,
                              "requires":  [
