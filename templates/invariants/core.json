@@ -115,6 +115,21 @@
       "status": "UNKNOWN",
       "last_verified": null,
       "staleness_risk": "UNKNOWN"
+    },
+    {
+      "id": "INV-010",
+      "name": "dockerfile-is-critical-surface",
+      "description": "Dockerfile must be declared as a critical surface in CLAUDE.md",
+      "heuristic_ref": "H13",
+      "check": {
+        "type": "file_contains",
+        "file": "CLAUDE.md",
+        "required": ["Dockerfile"]
+      },
+      "violation_severity": "HIGH",
+      "status": "UNKNOWN",
+      "last_verified": null,
+      "staleness_risk": "LOW"
     }
   ]
 }

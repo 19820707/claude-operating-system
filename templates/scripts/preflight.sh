@@ -67,4 +67,10 @@ if [ -f "${SCRIPTS_DIR}/os-telemetry.sh" ]; then
   bash "${SCRIPTS_DIR}/os-telemetry.sh" || true
 fi
 
+if [ -f "${SCRIPTS_DIR}/secret-redact.sh" ]; then
+  git ls-files 2>/dev/null | grep -E "\.env" | while read -r f; do
+    bash "${SCRIPTS_DIR}/secret-redact.sh" --check "$f" && echo "  ok: $f clean" || echo "  WARN: $f may contain secrets"
+  done
+fi
+
 exit 0

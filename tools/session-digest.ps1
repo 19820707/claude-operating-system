@@ -62,3 +62,14 @@ if (-not (Test-Path -LiteralPath $DecisionPath)) { New-Item -ItemType File -Path
 Add-Content -LiteralPath $LearningPath -Value $markdown -Encoding utf8
 Add-Content -LiteralPath $DecisionPath -Value (($record | ConvertTo-Json -Compress -Depth 4)) -Encoding utf8
 Write-Host 'Session digest recorded in .claude/learning-log.md and .claude/decision-log.jsonl'
+
+# Auto-contribute to cross-project evidence if OS repo is reachable
+if ($Outcome -eq 'passed') {
+    $osRepo = "C:\Users\pqjs2\claude\claude-operating-system"
+    $syncScript = ".claude\scripts\cross-project-sync.sh"
+    if ((Test-Path $osRepo) -and (Test-Path $syncScript)) {
+        Write-Host '[OS] Contributing session learnings to cross-project evidence...'
+        $osUnix = $osRepo -replace '\\', '/'
+        & bash $syncScript --contribute $osUnix 2>&1 | ForEach-Object { Write-Host "  $_" }
+    }
+}
