@@ -23,7 +23,7 @@ The following are **autonomous on any surface**, including files or configuratio
 
 **Rule — gated per matrix (`policies/auto-approve-matrix.md`) and `policies/autonomy-policy.json`:**
 
-The following always require explicit human approval **or** an approved steward path **before** execution, never “silent autonomy”:
+The following always require explicit human approval **or** an approved steward path **before** execution, never "silent autonomy":
 
 - **write** / **apply** / **delete** / **migrate** / **deploy** / **commit** / **push** / **release**
 - **secret handling** / **policy relaxation** / **validator bypass**

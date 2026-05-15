@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "description": "Each requiredEvidence line in quality-gates/release.json must match at least one keyword tied to a requiredValidators id.",
+  "gateFile": "quality-gates/release.json",
+  "mappings": [
+    {
+      "validatorId": "verify-distribution",
+      "keywords": ["verify-distribution", "distribution-manifest", "packaging"]
+    },
+    {
+      "validatorId": "verify-quality-gates",
+      "keywords": ["verify-quality-gates", "quality-gates", "structural manifest"]
+    },
+    {
+      "validatorId": "verify-deprecations",
+      "keywords": ["verify-deprecations", "deprecations", "deprecated"]
+    },
+    {
+      "validatorId": "verify-upgrade-notes",
+      "keywords": ["verify-upgrade-notes", "upgrade-manifest", "schemaVersion bumps", "contract"]
+    },
+    {
+      "validatorId": "os-validate-strict",
+      "keywords": ["os-validate", "strict profile", "os-validate-all", "aggregate"]
+    }
+  ],
+  "humanOnlyEvidenceSubstrings": [
+    "release checklist",
+    "decision-log",
+    "residual risk"
+  ]
+}

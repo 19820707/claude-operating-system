@@ -1,0 +1,21 @@
+{
+  "tool": "os-validate",
+  "status": "warn",
+  "durationMs": 22400,
+  "checks": [
+    { "name": "verify-runtime-budget", "status": "ok", "detail": "" },
+    { "name": "verify-context-economy", "status": "ok", "detail": "" },
+    { "name": "verify-script-manifest", "status": "ok", "detail": "" },
+    { "name": "verify-doc-contract-consistency", "status": "warn", "detail": "" },
+    { "name": "verify-skills-manifest", "status": "ok", "detail": "" },
+    { "name": "verify-agent-adapter-drift", "status": "warn", "detail": "" },
+    { "name": "os-doctor", "status": "ok", "detail": "" }
+  ],
+  "warnings": [
+    "verify-doc-contract-consistency status=warn (not treated as passed)",
+    "adapter drift warning"
+  ],
+  "failures": [],
+  "findings": [{ "profile": "standard" }],
+  "actions": []
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "description": "Section-first navigation index for Claude OS. Use this before brute-reading documentation files.",
+  "sections": [
+    {
+      "id": "root/mandate",
+      "path": "CLAUDE.md",
+      "title": "Global Operating Mandate",
+      "purpose": "Primary global policy loaded by Claude Code sessions.",
+      "tags": ["policy", "global", "session", "governance"]
+    },
+    {
+      "id": "root/navigation",
+      "path": "INDEX.md",
+      "title": "Navigation Map",
+      "purpose": "Human and agent map of repo components, counts, status, and where to go next.",
+      "tags": ["navigation", "docs", "index"]
+    },
+    {
+      "id": "root/health",
+      "path": "tools/verify-os-health.ps1",
+      "title": "Aggregate OS Health",
+      "purpose": "Single health entrypoint for manifest, skills, docs, syntax, bootstrap, and Bash checks.",
+      "tags": ["health", "validation", "ci", "economy"],
+      "command": "pwsh ./tools/verify-os-health.ps1"
+    },
+    {
+      "id": "manifest/source-of-truth",
+      "path": "bootstrap-manifest.json",
+      "title": "Bootstrap Manifest Source of Truth",
+      "purpose": "Canonical counts, skill categories, script list, and bootstrap critical paths.",
+      "tags": ["manifest", "bootstrap", "drift", "source-of-truth"]
+    },
+    {
+      "id": "skills/canonical",
+      "path": "source/skills",
+      "title": "Canonical Skills",
+      "purpose": "Skill definitions copied into project scaffolds as .claude/skills artifacts.",
+      "tags": ["skills", "capabilities", "bootstrap", "maestro-pattern"]
+    },
+    {
+      "id": "bootstrap/windows-project",
+      "path": "init-project.ps1",
+      "title": "Windows Project Bootstrap",
+      "purpose": "Creates project .claude tree, installs commands, agents, skills, scripts, policies, local state, and validates critical paths.",
+      "tags": ["bootstrap", "powershell", "filesystem", "skills", "critical-paths"]
+    },
+    {
+      "id": "install/windows-global",
+      "path": "install.ps1",
+      "title": "Windows Global Install",
+      "purpose": "Installs global Claude OS files into ~/.claude on Windows.",
+      "tags": ["install", "powershell", "global"]
+    },
+    {
+      "id": "install/unix-global",
+      "path": "install.sh",
+      "title": "Unix Global Install",
+      "purpose": "Installs global Claude OS files into ~/.claude on Unix-like systems.",
+      "tags": ["install", "bash", "global"]
+    },
+    {
+      "id": "validators/manifest",
+      "path": "tools/verify-bootstrap-manifest.ps1",
+      "title": "Manifest Integrity Verifier",
+      "purpose": "Fails on repo tree, bootstrap scripts, unsafe paths, duplicates, or critical path drift.",
+      "tags": ["validation", "manifest", "drift", "security"]
+    },
+    {
+      "id": "validators/skills",
+      "path": "tools/verify-skills.ps1",
+      "title": "Skill Definition Verifier",
+      "purpose": "Validates source/skills frontmatter, categories, names, counts, and safe links.",
+      "tags": ["validation", "skills", "frontmatter"]
+    },
+    {
+      "id": "validators/docs",
+      "path": "tools/verify-doc-manifest.ps1",
+      "title": "Documentation Drift Verifier",
+      "purpose": "Fails when INDEX.md summaries diverge from bootstrap-manifest.json.",
+      "tags": ["validation", "docs", "drift"]
+    },
+    {
+      "id": "commands/session-lifecycle",
+      "path": "templates/commands",
+      "title": "Slash Commands",
+      "purpose": "User-invocable Claude commands for session start/end, classification, audits, invariants, incidents, and release readiness.",
+      "tags": ["commands", "workflow", "session"]
+    },
+    {
+      "id": "agents/specialists",
+      "path": "templates/agents",
+      "title": "Specialist Agents",
+      "purpose": "Role definitions for architecture, security, release, reliability, and QA work.",
+      "tags": ["agents", "roles", "delegation"]
+    },
+    {
+      "id": "scripts/lifecycle-hooks",
+      "path": "templates/scripts",
+      "title": "Lifecycle Hook Scripts",
+      "purpose": "Bash scripts for preflight, telemetry, risk, invariants, coordination, epistemic checks, learning, and context topology.",
+      "tags": ["scripts", "hooks", "bash", "automation"]
+    },
+    {
+      "id": "policies/operating-rules",
+      "path": "policies",
+      "title": "Operating Policies",
+      "purpose": "Binding rules for model selection, operating modes, production safety, token economy, rollback, and reporting.",
+      "tags": ["policies", "governance", "safety"]
+    },
+    {
+      "id": "prompts/reusable",
+      "path": "prompts",
+      "title": "Reusable Prompts",
+      "purpose": "Reusable task prompts for session start, phase close, architecture review, release review, and incident triage.",
+      "tags": ["prompts", "workflow"]
+    },
+    {
+      "id": "invariant-engine/bundles",
+      "path": "templates/invariant-engine",
+      "title": "Invariant Engine Bundles",
+      "purpose": "TypeScript-derived .cjs bundles for invariant verification, semantic diff, and contract delta simulation.",
+      "tags": ["invariants", "typescript", "verification", "bundles"]
+    }
+  ]
+}

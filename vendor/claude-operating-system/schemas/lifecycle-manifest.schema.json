@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/lifecycle-manifest.schema.json",
+  "title": "Claude OS lifecycle manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "description", "commands"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "phase",
+          "title",
+          "entrypoint",
+          "writes",
+          "backups",
+          "idempotency",
+          "rollbackBehavior",
+          "validationAfterExecution"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Stable kebab-case identifier"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "install",
+              "init",
+              "update",
+              "repair",
+              "rollback",
+              "uninstall",
+              "project-bootstrap",
+              "project-update"
+            ]
+          },
+          "title": { "type": "string", "minLength": 4 },
+          "entrypoint": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Human copy-paste command or route (may reference docs)"
+          },
+          "scriptPath": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Repo-relative file (e.g. tools/*.ps1, install.ps1, GIT-RECOVERY.md). Omit for manual-only flows."
+          },
+          "writes": { "type": "string", "minLength": 12 },
+          "backups": { "type": "string", "minLength": 8 },
+          "idempotency": { "type": "string", "minLength": 12 },
+          "rollbackBehavior": { "type": "string", "minLength": 12 },
+          "validationAfterExecution": { "type": "string", "minLength": 12 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "description": "Intent routes: map task kinds to operating mode, risk, approvals, skills, playbooks, validators, evidence expectations, and forbidden shortcuts. Complements os-capabilities.json (fine-grained capability registry).",
+  "defaults": {
+    "whenAmbiguous": "Prefer the strictest matching route; escalate requiredApproval before execution.",
+    "registryCapabilityHint": "Cross-check os-capabilities.json for additional os.* entrypoints when a route spans multiple surfaces."
+  },
+  "routes": [
+    {
+      "id": "route.release",
+      "title": "Release gate",
+      "summary": "Ship or tag with strict validation, playbook evidence, and documented residual risk.",
+      "keywords": ["release", "ship", "tag", "version", "candidate", "merge gate"],
+      "tags": ["release", "validation", "ci"],
+      "operatingMode": "release-gate",
+      "riskLevel": "critical",
+      "requiredApproval": "maintainer",
+      "relevantSkills": ["release-readiness", "runtime-economy", "production-safety"],
+      "relevantPlaybooks": ["release"],
+      "validators": [
+        "pwsh ./tools/os-validate.ps1 -Profile strict",
+        "pwsh ./tools/verify-os-health.ps1",
+        "pwsh ./tools/verify-bootstrap-manifest.ps1",
+        "pwsh ./tools/verify-playbooks.ps1 -Strict"
+      ],
+      "expectedEvidence": [
+        "Green os-validate strict profile (or recorded waiver with owner)",
+        "Playbook release.md evidence sections satisfied",
+        "docs/RELEASE-READINESS.md checklist or equivalent JSONL envelope"
+      ],
+      "forbiddenShortcuts": [
+        "Merging on quick profile alone for production-bound work",
+        "Skipping verify-examples when examples/schemas changed",
+        "Declaring release-ready while verify-playbooks -Strict fails"
+      ],
+      "docs": ["docs/release-readiness", "docs/validation", "playbooks/index"]
+    },
+    {
+      "id": "route.incident",
+      "title": "Incident response",
+      "summary": "Stabilize production with narrow blast radius, explicit approvals, and rollback-ready evidence.",
+      "keywords": ["incident", "outage", "sev", "rollback", "hotfix", "triage", "on-call"],
+      "tags": ["incident", "production", "reliability"],
+      "operatingMode": "break-glass",
+      "riskLevel": "critical",
+      "requiredApproval": "incident-command",
+      "relevantSkills": ["incident-safe-change", "production-safety", "epistemic-discipline"],
+      "relevantPlaybooks": ["incident"],
+      "validators": [
+        "pwsh ./tools/verify-os-health.ps1",
+        "pwsh ./tools/verify-security-policy.ps1"
+      ],
+      "expectedEvidence": [
+        "Incident playbook incident.md followed with timestamps and scope boundaries",
+        "Decision log entries for mitigations and rollbacks",
+        "Post-incident validation plan captured before closing"
+      ],
+      "forbiddenShortcuts": [
+        "Undocumented production config or secret edits",
+        "Broad refactors during active incident",
+        "Skipping rollback criteria from the incident playbook"
+      ],
+      "docs": ["playbooks/index", "policies/operating-rules", "docs/troubleshooting"]
+    },
+    {
+      "id": "route.migration",
+      "title": "Migration",
+      "summary": "Plan and execute data or platform migrations with rehearsal, blast-radius limits, and validation gates.",
+      "keywords": ["migration", "cutover", "database", "platform", "rehearsal", "backfill"],
+      "tags": ["migration", "data", "destructive"],
+      "operatingMode": "controlled-change",
+      "riskLevel": "high",
+      "requiredApproval": "maintainer",
+      "relevantSkills": ["production-safety", "invariant-engineering", "epistemic-discipline"],
+      "relevantPlaybooks": ["migration"],
+      "validators": [
+        "pwsh ./tools/os-validate.ps1 -Profile standard",
+        "pwsh ./tools/verify-bootstrap-manifest.ps1",
+        "pwsh ./tools/verify-json-contracts.ps1"
+      ],
+      "expectedEvidence": [
+        "migration.md preflight and validation steps executed or explicitly waived with approver",
+        "Rehearsal or dry-run notes for destructive steps",
+        "Contract checks when schemas or manifests change"
+      ],
+      "forbiddenShortcuts": [
+        "One-shot production migration without documented rollback",
+        "Skipping json contract checks after manifest edits",
+        "Running strict profile gates only after merge without prior rehearsal"
+      ],
+      "docs": ["playbooks/index", "docs/validation", "invariant-engine/bundles"]
+    },
+    {
+      "id": "route.bootstrap",
+      "title": "Project bootstrap",
+      "summary": "Scaffold or refresh .claude project artifacts from Claude OS templates with deterministic checks.",
+      "keywords": ["bootstrap", "init-project", "scaffold", "new project", ".claude"],
+      "tags": ["bootstrap", "filesystem", "skills"],
+      "operatingMode": "controlled-change",
+      "riskLevel": "high",
+      "requiredApproval": "maintainer",
+      "relevantSkills": ["bootstrap-governance", "adapter-drift", "token-economy"],
+      "relevantPlaybooks": ["bootstrap-project"],
+      "validators": [
+        "pwsh ./tools/verify-bootstrap-manifest.ps1",
+        "pwsh ./tools/verify-bootstrap-examples.ps1",
+        "pwsh ./tools/verify-skills.ps1"
+      ],
+      "expectedEvidence": [
+        "bootstrap-manifest critical paths satisfied after init-project",
+        "docs/PROJECT-BOOTSTRAP.md alignment for operators",
+        "Adapter copies refreshed when templates drift"
+      ],
+      "forbiddenShortcuts": [
+        "Hand-editing generated adapter copies without syncing from templates",
+        "Skipping verify-bootstrap-manifest after changing projectBootstrap lists",
+        "Omitting capability-manifest or os-capabilities from managed .claude copies"
+      ],
+      "docs": ["bootstrap/windows-project", "docs/project-bootstrap", "manifest/source-of-truth"]
+    },
+    {
+      "id": "route.docs-audit",
+      "title": "Documentation contract audit",
+      "summary": "Align README, manifests, schemas, and validators without false-green language.",
+      "keywords": ["docs", "documentation", "contract", "audit", "false-green", "INDEX"],
+      "tags": ["docs", "validation", "drift"],
+      "operatingMode": "read-only",
+      "riskLevel": "medium",
+      "requiredApproval": "none",
+      "relevantSkills": ["doc-contract-audit", "token-economy"],
+      "relevantPlaybooks": ["docs-contract-audit"],
+      "validators": [
+        "pwsh ./tools/verify-doc-contract-consistency.ps1",
+        "pwsh ./tools/verify-doc-manifest.ps1",
+        "pwsh ./tools/verify-docs-index.ps1"
+      ],
+      "expectedEvidence": [
+        "verify-doc-contract-consistency green after doc or manifest edits",
+        "docs-index.json references valid paths for touched sections"
+      ],
+      "forbiddenShortcuts": [
+        "Marking docs verified without running verify-doc-contract-consistency",
+        "Approving wording that equates warn or skip with pass",
+        "Changing INDEX summaries without updating bootstrap-manifest counts"
+      ],
+      "docs": ["validators/docs", "root/navigation", "docs/validation"]
+    },
+    {
+      "id": "route.adapter-drift",
+      "title": "Adapter drift",
+      "summary": "Detect and repair drift between canonical adapter sources and generated copies.",
+      "keywords": ["adapter", "drift", "cursor", "agents.md", "sync-skills", "multi-tool"],
+      "tags": ["adapters", "drift", "ci"],
+      "operatingMode": "controlled-change",
+      "riskLevel": "high",
+      "requiredApproval": "peer",
+      "relevantSkills": ["adapter-drift", "bootstrap-governance"],
+      "relevantPlaybooks": ["adapter-drift-repair"],
+      "validators": [
+        "pwsh ./tools/verify-agent-adapters.ps1",
+        "pwsh ./tools/verify-agent-adapter-drift.ps1"
+      ],
+      "expectedEvidence": [
+        "verify-agent-adapters and drift checks recorded before merge",
+        "sync-agent-adapters.ps1 or equivalent when templates change"
+      ],
+      "forbiddenShortcuts": [
+        "Silencing adapter checks instead of syncing sources",
+        "Editing templates/adapters without running drift verification",
+        "Shipping rules that omit os-capabilities or route-capability references"
+      ],
+      "docs": ["docs/troubleshooting", "policies/operating-rules", "agents/specialists"]
+    },
+    {
+      "id": "route.skill-authoring",
+      "title": "Skill authoring",
+      "summary": "Add or change canonical skills under source/skills with manifest, structure, and economy checks.",
+      "keywords": ["skill", "skills", "SKILL.md", "frontmatter", "authoring", "sync-skills"],
+      "tags": ["skills", "authoring", "economy"],
+      "operatingMode": "standard",
+      "riskLevel": "medium",
+      "requiredApproval": "peer",
+      "relevantSkills": ["bootstrap-governance", "token-economy", "runtime-economy"],
+      "relevantPlaybooks": [],
+      "validators": [
+        "pwsh ./tools/verify-skills.ps1",
+        "pwsh ./tools/verify-skills-structure.ps1",
+        "pwsh ./tools/verify-skills-manifest.ps1",
+        "pwsh ./tools/verify-skills-drift.ps1"
+      ],
+      "expectedEvidence": [
+        "skills-manifest and bootstrap skill counts updated when adding skills",
+        "SKILL.md frontmatter passes verify-skills-structure",
+        "docs/SKILLS.md or handbook alignment when behavior changes"
+      ],
+      "forbiddenShortcuts": [
+        "Editing only .claude/skills in a project without updating source/skills in OS repo",
+        "Skipping verify-skills-drift after changing canonical skill bodies",
+        "Bypassing category or naming rules in skills-manifest"
+      ],
+      "docs": ["skills/canonical", "skills/handbook", "validators/skills"]
+    },
+    {
+      "id": "route.strict-validation",
+      "title": "Strict validation profile",
+      "summary": "Run full local validation stack including strict profiles and aggregate gates.",
+      "keywords": ["strict", "validation", "ci", "os-validate", "gates", "false-green"],
+      "tags": ["validation", "ci", "strict"],
+      "operatingMode": "strict",
+      "riskLevel": "high",
+      "requiredApproval": "peer",
+      "relevantSkills": ["invariant-engineering", "runtime-economy", "release-readiness"],
+      "relevantPlaybooks": [],
+      "validators": [
+        "pwsh ./tools/os-validate.ps1 -Profile strict",
+        "pwsh ./tools/os-validate-all.ps1"
+      ],
+      "expectedEvidence": [
+        "os-validate strict and os-validate-all envelopes green (or documented skips with reason)",
+        "Bash syntax checks satisfied when bash is available and required"
+      ],
+      "forbiddenShortcuts": [
+        "Treating warnings as merge blockers without classification (see docs/VALIDATION.md)",
+        "Running only verify-os-health while skipping os-validate strict for release-bound work",
+        "Ignoring verify-examples failures when JSON examples changed"
+      ],
+      "docs": ["docs/validation", "root/health", "docs/examples", "docs/capabilities"]
+    },
+    {
+      "id": "route.security-review",
+      "title": "Security review",
+      "summary": "Review attack surface, secrets posture, permissions, and adapter boundaries before high-risk change.",
+      "keywords": ["security", "secrets", "permissions", "threat", "review", "authz"],
+      "tags": ["security", "secrets", "permissions"],
+      "operatingMode": "read-only",
+      "riskLevel": "critical",
+      "requiredApproval": "security",
+      "relevantSkills": ["production-safety", "epistemic-discipline", "adapter-drift"],
+      "relevantPlaybooks": [],
+      "validators": [
+        "pwsh ./tools/verify-security-policy.ps1",
+        "pwsh ./tools/verify-agent-adapters.ps1",
+        "pwsh ./tools/verify-claudeignore.ps1"
+      ],
+      "expectedEvidence": [
+        "Security policy verifier output archived for the change",
+        "Risk surface notes tied to decision log or playbook evidence",
+        "Adapter rules reviewed when execution or network scope changes"
+      ],
+      "forbiddenShortcuts": [
+        "Committing secrets, tokens, or personal paths into examples or manifests",
+        "Disabling verify-security-policy to unblock CI",
+        "Approving network or filesystem expansion without production-safety skill review"
+      ],
+      "docs": ["policies/operating-rules", "docs/troubleshooting", "docs/audit-evidence"]
+    }
+  ]
+}

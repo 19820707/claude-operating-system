@@ -1,0 +1,13 @@
+Includes everything from ../minimal/STRUCTURE.txt, plus typically:
+
+  .claude/stack-profile.md          (when -Profile is set; content from templates/profiles/<name>.md)
+  .claude/invariant-engine/
+    invariant-engine.cjs            (when built in OS repo before init)
+    semantic-diff.cjs
+    simulate-contract-delta.cjs
+  .claude/invariants/               (optional *.json packs)
+  .claude/decision-log.schema.json (from templates/local)
+  .claude/knowledge-graph.json
+  .claude/epistemic-state.json
+  .claude/agent-state.json
+  .local/ts-error-budget.json     (TypeScript profile local artifact)

@@ -1,0 +1,60 @@
+[
+  {
+    "id": "INV-001",
+    "name": "single-auth-boundary",
+    "description": "Auth decision signals in middleware — per-file density bounded (tune expected for your router)",
+    "check": {
+      "type": "pattern_count",
+      "pattern": "req\\.user|isAuthenticated|requireAuth|checkPermission|getSession\\(",
+      "scope": "server/middleware",
+      "operator": "<=",
+      "expected": 6,
+      "aggregate": "per_file_max",
+      "match_extensions": [".ts", ".tsx"]
+    },
+    "violation_severity": "WARN",
+    "heuristic_ref": "H9"
+  },
+  {
+    "id": "INV-002",
+    "name": "fail-closed-entitlement",
+    "description": "Entitlement / tier switches must have explicit deny default (AST: SwitchStatement default clause)",
+    "check": {
+      "type": "fail_closed_switch",
+      "target_globs": [
+        "**/*entitlement*",
+        "**/*Entitlement*",
+        "**/*tierGat*",
+        "**/*TierGat*"
+      ]
+    },
+    "violation_severity": "CRITICAL"
+  },
+  {
+    "id": "INV-003",
+    "name": "no-secrets-in-logs",
+    "description": "Console / logger sinks must not receive obvious secret-bearing identifiers in arguments (AST)",
+    "check": {
+      "type": "sensitive_logger",
+      "scope": "server",
+      "sink_substrings": ["console.log", "console.debug", "console.info", "logger.debug", "logger.info"],
+      "forbidden_arg_substrings": ["password", "secret", "token", "apiKey", "api_key", "webhook", "stripe"]
+    },
+    "violation_severity": "CRITICAL"
+  },
+  {
+    "id": "INV-004",
+    "name": "correlation-id-routes",
+    "description": "Route modules should reference correlation / request id (heuristic WARN)",
+    "check": {
+      "type": "missing_pattern",
+      "scope": "server",
+      "path_substring": "/routes",
+      "must_contain": ["correlationId", "x-request-id", "X-Request-Id", "requestId"],
+      "extensions": [".ts", ".tsx"],
+      "sample_limit": 25
+    },
+    "violation_severity": "WARN",
+    "heuristic_ref": "H10"
+  }
+]

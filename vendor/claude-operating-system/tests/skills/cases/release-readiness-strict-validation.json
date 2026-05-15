@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "release-readiness-strict-validation",
+  "skillId": "release-readiness",
+  "routeId": "route.strict-validation",
+  "scenario": "Running the strict validation stack before merge; release-readiness skill is bound to the strict validation route.",
+  "inputSummary": "CI or maintainer runs strict profile checks; route.strict-validation; release-readiness in relevantSkills.",
+  "expectedOperatingMode": "strict",
+  "expectedRequiredApprovals": ["peer", "Release"],
+  "expectedValidators": [
+    "os-validate.ps1",
+    "os-validate-all.ps1"
+  ],
+  "forbiddenActions": [
+    "verify-os-health while skipping os-validate strict",
+    "verify-examples failures",
+    "warnings as merge"
+  ],
+  "expectedRefusalOrAbortConditions": [
+    "os-validate strict",
+    "Bash syntax",
+    "verify-os-health"
+  ],
+  "expectedSkillRiskLevel": "critical",
+  "expectedRouteRiskLevel": "high"
+}

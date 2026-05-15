@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/compatibility-manifest.schema.json",
+  "title": "Claude OS compatibility manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "description", "platformCatalog", "defaultSupport", "validators"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platformCatalog": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "rationale"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "defaultSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "win-ps-5.1",
+        "win-pwsh",
+        "linux-pwsh",
+        "macos-pwsh",
+        "bash-on-path",
+        "git-bash",
+        "wsl",
+        "gha-ubuntu",
+        "gha-windows"
+      ],
+      "properties": {
+        "win-ps-5.1": { "$ref": "#/$defs/supportLevel" },
+        "win-pwsh": { "$ref": "#/$defs/supportLevel" },
+        "linux-pwsh": { "$ref": "#/$defs/supportLevel" },
+        "macos-pwsh": { "$ref": "#/$defs/supportLevel" },
+        "bash-on-path": { "$ref": "#/$defs/supportLevel" },
+        "git-bash": { "$ref": "#/$defs/supportLevel" },
+        "wsl": { "$ref": "#/$defs/supportLevel" },
+        "gha-ubuntu": { "$ref": "#/$defs/supportLevel" },
+        "gha-windows": { "$ref": "#/$defs/supportLevel" }
+      }
+    },
+    "validators": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Must match script-manifest.json tool id"
+          },
+          "notes": { "type": "string" },
+          "overrides": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "win-ps-5.1": { "$ref": "#/$defs/supportLevel" },
+              "win-pwsh": { "$ref": "#/$defs/supportLevel" },
+              "linux-pwsh": { "$ref": "#/$defs/supportLevel" },
+              "macos-pwsh": { "$ref": "#/$defs/supportLevel" },
+              "bash-on-path": { "$ref": "#/$defs/supportLevel" },
+              "git-bash": { "$ref": "#/$defs/supportLevel" },
+              "wsl": { "$ref": "#/$defs/supportLevel" },
+              "gha-ubuntu": { "$ref": "#/$defs/supportLevel" },
+              "gha-windows": { "$ref": "#/$defs/supportLevel" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "supportLevel": {
+      "type": "string",
+      "enum": ["supported", "best-effort", "not-applicable", "unsupported"],
+      "description": "supported = intended; best-effort = works with caveats; not-applicable = dimension irrelevant; unsupported = known bad"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "description": "Short Claude OS recipes: copy-paste command sequences with expectations and failure follow-ups.",
+  "canonicalRoot": "recipes/",
+  "recipes": [
+    {
+      "id": "validate-local-quick",
+      "name": "Validate local (quick)",
+      "path": "recipes/validate-local-quick.md",
+      "summary": "Fast local validation gate before sharing a branch or opening a PR.",
+      "relatedDocs": ["docs/VALIDATION.md"]
+    },
+    {
+      "id": "validate-release-strict",
+      "name": "Validate release (strict)",
+      "path": "recipes/validate-release-strict.md",
+      "summary": "Release-style validation including strict skills, playbooks, and aggregate health.",
+      "relatedPlaybook": "release",
+      "relatedDocs": ["docs/VALIDATION.md", "docs/RELEASE-READINESS.md"]
+    },
+    {
+      "id": "initialize-project",
+      "name": "Initialize a new project",
+      "path": "recipes/initialize-project.md",
+      "summary": "Scaffold .claude and adapters from this repo with dry-run first.",
+      "relatedPlaybook": "bootstrap-project",
+      "relatedDocs": ["docs/QUICKSTART.md"]
+    },
+    {
+      "id": "add-new-skill",
+      "name": "Add a new skill",
+      "path": "recipes/add-new-skill.md",
+      "summary": "Manifest, canonical SKILL.md, sync, and validation checklist for a new skill.",
+      "relatedDocs": ["docs/SKILLS.md"]
+    },
+    {
+      "id": "sync-skills",
+      "name": "Sync skills to adapters",
+      "path": "recipes/sync-skills.md",
+      "summary": "Regenerate .claude and .cursor skill copies from canonical source.",
+      "relatedDocs": ["docs/SKILLS.md"]
+    },
+    {
+      "id": "repair-adapter-drift",
+      "name": "Repair adapter drift",
+      "path": "recipes/repair-adapter-drift.md",
+      "summary": "Skills and multi-tool adapter drift repair using manifest-driven sync.",
+      "relatedPlaybook": "adapter-drift-repair",
+      "relatedDocs": ["docs/SKILLS.md", "policies/multi-tool-adapters.md"]
+    },
+    {
+      "id": "prepare-release",
+      "name": "Prepare a release",
+      "path": "recipes/prepare-release.md",
+      "summary": "Commands and gates before tagging; pair with playbooks/release.md.",
+      "relatedPlaybook": "release",
+      "relatedDocs": ["docs/RELEASE-READINESS.md", "policies/production-safety.md"]
+    }
+  ]
+}

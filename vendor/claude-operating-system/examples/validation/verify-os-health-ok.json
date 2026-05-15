@@ -1,0 +1,29 @@
+{
+  "name": "verify-os-health",
+  "status": "ok",
+  "strict": false,
+  "checks": [
+    {
+      "name": "verify-json-contracts",
+      "status": "ok",
+      "latencyMs": 120,
+      "detail": ""
+    },
+    {
+      "name": "verify-skills-manifest",
+      "status": "ok",
+      "latencyMs": 95,
+      "detail": ""
+    },
+    {
+      "name": "verify-bootstrap-manifest",
+      "status": "ok",
+      "latencyMs": 40,
+      "detail": ""
+    }
+  ],
+  "warnings": 0,
+  "failures": 0,
+  "totalMs": 842,
+  "repo": "D:/example/claude-os-repo"
+}

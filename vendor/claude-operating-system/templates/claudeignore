@@ -1,0 +1,40 @@
+# .claudeignore — agent scope-control defaults
+# Same intent as .gitignore, but for Claude OS agent discovery/context generation.
+# This is not a security boundary; it prevents routine over-reading and token waste.
+
+# Secrets / credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+credentials/
+
+# Dependencies / generated output
+node_modules/
+vendor/
+dist/
+build/
+out/
+coverage/
+reports/
+.cache/
+.local/
+
+# Runtime/generated Claude OS reports
+.claude/*.tmp
+.claude/*-report.json
+.claude/os-metrics.json
+.claude/risk-surfaces.json
+.claude/session-index.json
+.claude/architecture-graph.json
+.claude/subgraph-*.json
+
+# Knowledge graph caches / local-only artifacts
+graphify-out/cache/
+graphify-out/manifest.json
+graphify-out/cost.json

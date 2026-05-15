@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "next_hypothesis_seq": 1,
+  "note": "Incremented by autonomous-learning-loop.sh for H-AUTO-NNN ids. Safe to commit in app repos if you want stable numbering."
+}

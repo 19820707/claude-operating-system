@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-runtime-budget",
+  "title": "Claude OS runtime validation budgets",
+  "type": "object",
+  "required": ["schemaVersion", "profiles", "ordering", "neverTreatAsPassed"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "description": { "type": "string" },
+    "profiles": {
+      "type": "object",
+      "required": ["quick", "standard", "strict"],
+      "properties": {
+        "quick": { "$ref": "#/$defs/profile" },
+        "standard": { "$ref": "#/$defs/profile" },
+        "strict": { "$ref": "#/$defs/profile" }
+      },
+      "additionalProperties": false
+    },
+    "ordering": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "string", "enum": ["quick", "standard", "strict"] }
+    },
+    "approvalRequiredFor": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "neverTreatAsPassed": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "required": ["targetSeconds", "maxFilesScanned", "requireGit", "requireBash", "requireCleanWorkingTree"],
+      "properties": {
+        "targetSeconds": { "type": "integer", "minimum": 1 },
+        "maxFilesScanned": { "type": "integer", "minimum": 1 },
+        "requireGit": { "type": "boolean" },
+        "requireBash": { "type": "boolean" },
+        "requireCleanWorkingTree": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

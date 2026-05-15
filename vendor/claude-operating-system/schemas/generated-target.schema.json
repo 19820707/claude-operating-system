@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/generated-target.schema.json",
+  "title": "Claude OS generated target (canonical source → derived copy)",
+  "description": "Used to validate entries under agent-adapters-manifest.generatedTargets and similar arrays. Generated trees must be reproducible from source; manual edits are drift.",
+  "type": "object",
+  "required": ["path", "source"],
+  "additionalProperties": true,
+  "properties": {
+    "agent": {
+      "type": "string",
+      "description": "Optional consumer label (e.g. claude, cursor, codex)."
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repo-relative generated directory or file."
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repo-relative canonical directory or file."
+    },
+    "syncCommand": {
+      "type": "string",
+      "description": "Optional pwsh-invoked sync tool id (informational)."
+    }
+  }
+}

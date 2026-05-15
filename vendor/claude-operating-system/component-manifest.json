@@ -1,0 +1,926 @@
+{
+  "schemaVersion": 1,
+  "description": "Maps Claude OS scripts, skills, manifests, gates, shell templates, and policies into maturity-tiered components. strict/release surfaces must not resolve to experimental (or deprecated) components unless allowlisted.",
+  "strictReleaseExperimentalAllowlist": {
+    "toolIds": [],
+    "componentIds": []
+  },
+  "components": [
+    {
+      "id": "core-orchestration",
+      "title": "Release-path orchestration and primary contracts",
+      "maturity": "core",
+      "members": [
+        {
+          "kind": "tool",
+          "id": "os-validate"
+        },
+        {
+          "kind": "tool",
+          "id": "os-validate-all"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-os-health"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-script-manifest"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-json-contracts"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-deprecations"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-quality-gates"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-runtime-budget"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-gate-results"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-autonomy-policy"
+        },
+        {
+          "kind": "tool",
+          "id": "classify-change"
+        },
+        {
+          "kind": "tool",
+          "id": "os-autopilot"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-context-economy"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-doc-contract-consistency"
+        },
+        {
+          "kind": "manifest",
+          "path": "bootstrap-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "capability-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "component-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "deprecation-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "os-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "script-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "skills-manifest.json"
+        }
+      ]
+    },
+    {
+      "id": "stable-delivery",
+      "title": "Validators, operators, mutations, and secondary manifests",
+      "maturity": "stable",
+      "members": [
+        {
+          "kind": "tool",
+          "id": "build-distribution"
+        },
+        {
+          "kind": "tool",
+          "id": "evaluate-quality-gate"
+        },
+        {
+          "kind": "tool",
+          "id": "export-audit-evidence"
+        },
+        {
+          "kind": "tool",
+          "id": "git-recover-local"
+        },
+        {
+          "kind": "tool",
+          "id": "init-os-runtime"
+        },
+        {
+          "kind": "tool",
+          "id": "invoke-safe-apply"
+        },
+        {
+          "kind": "tool",
+          "id": "os-doctor"
+        },
+        {
+          "kind": "tool",
+          "id": "os-runtime"
+        },
+        {
+          "kind": "tool",
+          "id": "os-update-project"
+        },
+        {
+          "kind": "tool",
+          "id": "query-docs-index"
+        },
+        {
+          "kind": "tool",
+          "id": "route-capability"
+        },
+        {
+          "kind": "tool",
+          "id": "run-contract-tests"
+        },
+        {
+          "kind": "tool",
+          "id": "runtime-profile"
+        },
+        {
+          "kind": "tool",
+          "id": "session-absorb"
+        },
+        {
+          "kind": "tool",
+          "id": "session-digest"
+        },
+        {
+          "kind": "tool",
+          "id": "session-prime"
+        },
+        {
+          "kind": "tool",
+          "id": "sync-agent-adapters"
+        },
+        {
+          "kind": "tool",
+          "id": "sync-skills"
+        },
+        {
+          "kind": "tool",
+          "id": "sync-generated-targets"
+        },
+        {
+          "kind": "tool",
+          "id": "autonomous-commit-gate"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-generated-drift"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-manifest-graph"
+        },
+        {
+          "kind": "tool",
+          "id": "test-skills"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-agent-adapter-drift"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-agent-adapters"
+        },
+        {
+          "kind": "tool",
+          "id": "append-approval-log"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-approval-log"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-bootstrap-examples"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-bootstrap-manifest"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-lifecycle"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-capabilities"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-checklists"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-components"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-compatibility"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-claudeignore"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-critical-systems"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-distribution"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-doc-manifest"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-docs-index"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-examples"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-git-hygiene"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-no-secrets"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-os-invariants"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-playbooks"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-recipes"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-runtime-dispatcher"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-runtime-profiles"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-runtime-release"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-security-policy"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-session-memory"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-skills"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-skills-drift"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-skills-economy"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-skills-manifest"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-skills-structure"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-token-economy-policy"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-upgrade-notes"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-workflow-manifest"
+        },
+        {
+          "kind": "tool",
+          "id": "workflow-status"
+        },
+        {
+          "kind": "tool",
+          "id": "write-validation-history"
+        },
+        {
+          "kind": "skill",
+          "id": "adapter-drift"
+        },
+        {
+          "kind": "skill",
+          "id": "bootstrap-governance"
+        },
+        {
+          "kind": "skill",
+          "id": "doc-contract-audit"
+        },
+        {
+          "kind": "skill",
+          "id": "epistemic-discipline"
+        },
+        {
+          "kind": "skill",
+          "id": "incident-safe-change"
+        },
+        {
+          "kind": "skill",
+          "id": "invariant-engineering"
+        },
+        {
+          "kind": "skill",
+          "id": "multi-agent-coordination"
+        },
+        {
+          "kind": "skill",
+          "id": "production-safety"
+        },
+        {
+          "kind": "skill",
+          "id": "release-readiness"
+        },
+        {
+          "kind": "skill",
+          "id": "runtime-economy"
+        },
+        {
+          "kind": "skill",
+          "id": "token-economy"
+        },
+        {
+          "kind": "skill",
+          "id": "approval-ledger"
+        },
+        {
+          "kind": "skill",
+          "id": "autonomous-runtime"
+        },
+        {
+          "kind": "skill",
+          "id": "bootstrap-auditor"
+        },
+        {
+          "kind": "skill",
+          "id": "compatibility-auditor"
+        },
+        {
+          "kind": "skill",
+          "id": "component-maturity"
+        },
+        {
+          "kind": "skill",
+          "id": "contract-testing"
+        },
+        {
+          "kind": "skill",
+          "id": "deprecation-manager"
+        },
+        {
+          "kind": "skill",
+          "id": "distribution-builder"
+        },
+        {
+          "kind": "skill",
+          "id": "evidence-export"
+        },
+        {
+          "kind": "skill",
+          "id": "lifecycle-manager"
+        },
+        {
+          "kind": "skill",
+          "id": "operator-journal"
+        },
+        {
+          "kind": "skill",
+          "id": "quality-gate-evaluator"
+        },
+        {
+          "kind": "skill",
+          "id": "safe-apply"
+        },
+        {
+          "kind": "skill",
+          "id": "security-lint"
+        },
+        {
+          "kind": "skill",
+          "id": "session-memory-auditor"
+        },
+        {
+          "kind": "skill",
+          "id": "upgrade-planner"
+        },
+        {
+          "kind": "playbook",
+          "id": "adapter-drift-repair"
+        },
+        {
+          "kind": "playbook",
+          "id": "autonomous-repair"
+        },
+        {
+          "kind": "playbook",
+          "id": "bootstrap-project"
+        },
+        {
+          "kind": "playbook",
+          "id": "docs-contract-audit"
+        },
+        {
+          "kind": "playbook",
+          "id": "incident"
+        },
+        {
+          "kind": "playbook",
+          "id": "migration"
+        },
+        {
+          "kind": "playbook",
+          "id": "release"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/autonomy.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/auto-approve-matrix.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/invariants.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/critical-invariants.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/deprecation.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/engineering-governance.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/model-selection.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/multi-tool-adapters.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/operating-modes.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/production-safety.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/reporting-format.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/rollback-policy.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/scope-control.md"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/token-economy.md"
+        },
+        {
+          "kind": "manifest",
+          "path": "policies/autonomy-policy.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "agent-adapters-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "context-budget.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "docs-index.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "invariants-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "session-memory-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "upgrade-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "os-capabilities.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "playbook-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/adapters.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/bootstrap.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/docs.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/release.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/security.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/skills.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "quality-gates/strict.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "recipe-manifest.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "gate-status-contract.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "runtime-budget.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "runtime-profiles.json"
+        },
+        {
+          "kind": "manifest",
+          "path": "workflow-manifest.json"
+        },
+        {
+          "kind": "shell",
+          "id": "agent-coordinator"
+        },
+        {
+          "kind": "shell",
+          "id": "autonomous-learning-loop"
+        },
+        {
+          "kind": "shell",
+          "id": "causal-trace"
+        },
+        {
+          "kind": "shell",
+          "id": "consolidate-runbook"
+        },
+        {
+          "kind": "shell",
+          "id": "context-allocator"
+        },
+        {
+          "kind": "shell",
+          "id": "context-builder"
+        },
+        {
+          "kind": "shell",
+          "id": "context-topology"
+        },
+        {
+          "kind": "shell",
+          "id": "contract-delta"
+        },
+        {
+          "kind": "shell",
+          "id": "coordination-check"
+        },
+        {
+          "kind": "shell",
+          "id": "cross-project-sync"
+        },
+        {
+          "kind": "shell",
+          "id": "decision-append"
+        },
+        {
+          "kind": "shell",
+          "id": "decision-audit"
+        },
+        {
+          "kind": "shell",
+          "id": "drift-detect"
+        },
+        {
+          "kind": "shell",
+          "id": "epistemic-check"
+        },
+        {
+          "kind": "shell",
+          "id": "epistemic-state"
+        },
+        {
+          "kind": "shell",
+          "id": "heuristic-ratchet"
+        },
+        {
+          "kind": "shell",
+          "id": "invariant-engine"
+        },
+        {
+          "kind": "shell",
+          "id": "invariant-lifecycle"
+        },
+        {
+          "kind": "shell",
+          "id": "invariant-verify"
+        },
+        {
+          "kind": "shell",
+          "id": "knowledge-graph"
+        },
+        {
+          "kind": "shell",
+          "id": "living-arch-graph"
+        },
+        {
+          "kind": "shell",
+          "id": "module-complexity"
+        },
+        {
+          "kind": "shell",
+          "id": "os-telemetry"
+        },
+        {
+          "kind": "shell",
+          "id": "policy-compliance"
+        },
+        {
+          "kind": "shell",
+          "id": "policy-compliance-audit"
+        },
+        {
+          "kind": "shell",
+          "id": "post-compact"
+        },
+        {
+          "kind": "shell",
+          "id": "pre-compact"
+        },
+        {
+          "kind": "shell",
+          "id": "preflight"
+        },
+        {
+          "kind": "shell",
+          "id": "probabilistic-risk-model"
+        },
+        {
+          "kind": "shell",
+          "id": "promote-heuristics"
+        },
+        {
+          "kind": "shell",
+          "id": "risk-surface-scan"
+        },
+        {
+          "kind": "shell",
+          "id": "runbook-inject"
+        },
+        {
+          "kind": "shell",
+          "id": "salience-score"
+        },
+        {
+          "kind": "shell",
+          "id": "semantic-diff-analyze"
+        },
+        {
+          "kind": "shell",
+          "id": "session-end"
+        },
+        {
+          "kind": "shell",
+          "id": "session-index"
+        },
+        {
+          "kind": "shell",
+          "id": "simulate-change"
+        },
+        {
+          "kind": "shell",
+          "id": "ts-error-budget"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.adapters",
+          "validatorId": "verify-agent-adapters"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.adapters",
+          "validatorId": "verify-agent-adapter-drift"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.bootstrap",
+          "validatorId": "verify-bootstrap-manifest"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.bootstrap",
+          "validatorId": "verify-bootstrap-examples"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.bootstrap",
+          "validatorId": "verify-lifecycle"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.docs",
+          "validatorId": "verify-docs-index"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.docs",
+          "validatorId": "verify-doc-manifest"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.docs",
+          "validatorId": "verify-doc-contract-consistency"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.docs",
+          "validatorId": "verify-compatibility"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.release",
+          "validatorId": "verify-distribution"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.release",
+          "validatorId": "verify-quality-gates"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.release",
+          "validatorId": "verify-deprecations"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.release",
+          "validatorId": "verify-upgrade-notes"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.release",
+          "validatorId": "os-validate-strict"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.strict",
+          "validatorId": "verify-gate-results"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.strict",
+          "validatorId": "verify-runtime-budget"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.strict",
+          "validatorId": "verify-quality-gates"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.security",
+          "validatorId": "verify-security-policy"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.security",
+          "validatorId": "verify-claudeignore"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.security",
+          "validatorId": "verify-critical-systems"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.security",
+          "validatorId": "verify-no-secrets"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.skills",
+          "validatorId": "verify-skills-manifest"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.skills",
+          "validatorId": "verify-skills-structure"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.skills",
+          "validatorId": "verify-skills"
+        },
+        {
+          "kind": "gateValidator",
+          "gateId": "gate.skills",
+          "validatorId": "verify-skills-drift"
+        }
+      ]
+    },
+    {
+      "id": "internal-libraries",
+      "title": "Dot-sourced libraries (not standalone entrypoints)",
+      "maturity": "internal",
+      "members": [
+        {
+          "kind": "tool",
+          "id": "lib-safe-output"
+        },
+        {
+          "kind": "tool",
+          "id": "lib-validation-envelope"
+        },
+        {
+          "kind": "tool",
+          "id": "lib-os-remediation-guidance"
+        }
+      ]
+    },
+    {
+      "id": "experimental-reserved",
+      "title": "Reserved bucket for future experimental surfaces (empty until used)",
+      "maturity": "experimental",
+      "members": []
+    }
+  ]
+}

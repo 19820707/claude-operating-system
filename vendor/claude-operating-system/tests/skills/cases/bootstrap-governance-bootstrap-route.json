@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bootstrap-governance-bootstrap-route",
+  "skillId": "bootstrap-governance",
+  "routeId": "route.bootstrap",
+  "scenario": "Scaffolding or refreshing a project .claude tree; bootstrap governance skill is on the controlled-change bootstrap route.",
+  "inputSummary": "init-project or bootstrap manifest work; route.bootstrap; bootstrap-governance in relevantSkills.",
+  "expectedOperatingMode": "controlled-change",
+  "expectedRequiredApprovals": ["maintainer"],
+  "expectedValidators": [
+    "verify-bootstrap-manifest.ps1",
+    "verify-bootstrap-examples.ps1",
+    "verify-skills.ps1"
+  ],
+  "forbiddenActions": [
+    "Hand-editing generated adapter",
+    "verify-bootstrap-manifest",
+    "capability-manifest or os-capabilities"
+  ],
+  "expectedRefusalOrAbortConditions": [
+    "bootstrap-manifest",
+    "PROJECT-BOOTSTRAP",
+    "Adapter copies"
+  ],
+  "expectedSkillRiskLevel": "medium",
+  "expectedRouteRiskLevel": "high"
+}

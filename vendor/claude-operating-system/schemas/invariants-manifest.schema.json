@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-os.local/schemas/invariants-manifest.schema.json",
+  "title": "Claude OS invariants manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "description", "canonicalMarkdown", "invariants"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Bump when the JSON shape or invariant id set changes materially."
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "canonicalMarkdown": {
+      "type": "string",
+      "const": "policies/invariants.md",
+      "description": "Single prose source of truth for invariant text."
+    },
+    "invariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "summary"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^I-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})$"
+          },
+          "summary": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

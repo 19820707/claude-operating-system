@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "tier": "minimal",
+  "description": "Sanitized reference files for post-init-project layout (minimal set).",
+  "requiredPaths": [
+    "README.md",
+    "STRUCTURE.txt",
+    "adapters-after-init.md",
+    "example-manifest.json",
+    ".claude/session-state.md",
+    ".claude/learning-log.md",
+    ".claude/decision-log.sample.jsonl",
+    ".claude/commands/session-start.preview.md",
+    ".claude/policies/README.md",
+    ".claude/skills/README.md"
+  ],
+  "decisionLogSampleRelative": ".claude/decision-log.sample.jsonl"
+}

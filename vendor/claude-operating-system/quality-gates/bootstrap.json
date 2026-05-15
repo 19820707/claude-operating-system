@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "gate.bootstrap",
+  "title": "Bootstrap quality gate",
+  "description": "Bootstrap manifest integrity and reference examples for init-project outputs.",
+  "domain": "bootstrap",
+  "requiredValidators": [
+    {
+      "id": "verify-bootstrap-manifest",
+      "script": "tools/verify-bootstrap-manifest.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-bootstrap-examples",
+      "script": "tools/verify-bootstrap-examples.ps1",
+      "emitJson": false
+    },
+    {
+      "id": "verify-lifecycle",
+      "script": "tools/verify-lifecycle.ps1",
+      "arguments": ["-Json"],
+      "emitJson": true
+    }
+  ],
+  "allowedWarnings": [],
+  "blockingWarnings": ["*"],
+  "requiredEvidence": [
+    "projectBootstrap.criticalPaths remain consistent with on-disk layout",
+    "Bootstrap example trees validate when examples change",
+    "verify-lifecycle JSON ok (lifecycle-manifest vs install/init/update paths)"
+  ],
+  "approvalRequirements": {
+    "minHumanApprovers": 0,
+    "roles": ["bootstrap-owner"],
+    "requiresMaintainerApproval": true
+  },
+  "strictModeBehavior": "Treat any validator non-zero exit as gate failure; bootstrap manifest edits require maintainer review before merge."
+}

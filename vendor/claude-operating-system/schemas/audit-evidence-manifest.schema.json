@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "os-audit-evidence-manifest",
+  "title": "Claude OS audit evidence export manifest",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "collector",
+    "privacy",
+    "sections",
+    "artifacts"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "generatedAt": { "type": "string", "minLength": 10, "description": "UTC ISO-8601 timestamp" },
+    "repoRootTail": {
+      "type": "string",
+      "description": "Last path segments of repo root only (no home prefix)"
+    },
+    "collector": {
+      "type": "object",
+      "required": ["script", "powershellVersion", "powershellEdition"],
+      "additionalProperties": false,
+      "properties": {
+        "script": { "type": "string", "minLength": 4 },
+        "powershellVersion": { "type": "string", "minLength": 1 },
+        "powershellEdition": { "type": "string", "minLength": 1 },
+        "pwshPathLeaf": { "type": "string", "description": "File name of pwsh executable only" }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": [
+        "environmentVariableValuesIncluded",
+        "dotEnvContentsIncluded",
+        "osWorkspaceContextFullTextIncluded",
+        "secretsEmitted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "environmentVariableValuesIncluded": { "type": "boolean", "enum": [false] },
+        "dotEnvContentsIncluded": { "type": "boolean", "enum": [false] },
+        "osWorkspaceContextFullTextIncluded": { "type": "boolean", "enum": [false] },
+        "secretsEmitted": { "type": "boolean", "enum": [false] },
+        "redactionNotes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "commandVersions": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "maxLength": 400 }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeStrictValidation": { "type": "boolean" },
+        "skipBashSyntax": { "type": "boolean" }
+      }
+    },
+    "commandVersions": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Sanitized version strings only (e.g. git --version first line)"
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "collected"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "os-manifest",
+              "runtime-profiles",
+              "validation-quick",
+              "validation-strict",
+              "skills-manifest",
+              "adapter-drift",
+              "git-hygiene",
+              "powershell-runtime",
+              "bash-availability",
+              "os-summary",
+              "workspace-context-metadata",
+              "dotenv-presence"
+            ]
+          },
+          "collected": { "type": "boolean" },
+          "exitCode": { "type": "integer" },
+          "artifactPointer": {
+            "type": "string",
+            "description": "JSON Pointer into evidence-bundle.json when present"
+          },
+          "error": { "type": "string", "maxLength": 2000 }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "sha256", "byteLength"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "byteLength": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}
