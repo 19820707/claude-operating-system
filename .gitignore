@@ -19,4 +19,8 @@
 .claude/learning-loop-report.json
 .claude/policy-audit-report.json
 /logs/
+/validate-quick.json
+OPERATOR_JOURNAL.md
+OS_WORKSPACE_CONTEXT.md
+templates/invariant-engine/node_modules/
 
