@@ -668,6 +668,10 @@
         },
         {
           "kind": "shell",
+          "id": "deploy-check"
+        },
+        {
+          "kind": "shell",
           "id": "drift-detect"
         },
         {
@@ -749,6 +753,10 @@
         {
           "kind": "shell",
           "id": "salience-score"
+        },
+        {
+          "kind": "shell",
+          "id": "secret-redact"
         },
         {
           "kind": "shell",
