@@ -247,3 +247,4 @@ if ($Json) {
 if ($script:AdapterFails.Count -gt 0) {
     throw "Agent adapter verification failed: $($script:AdapterFails.Count) issue(s)."
 }
+exit 0

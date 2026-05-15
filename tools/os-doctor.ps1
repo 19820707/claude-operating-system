@@ -298,3 +298,4 @@ Write-Host ("  {0,-18} {1}" -f 'repo.dirty', $doctorRepo.dirty)
 if ($failures.Count -gt 0) {
     throw 'Claude OS doctor found blocking environment issues.'
 }
+exit 0
