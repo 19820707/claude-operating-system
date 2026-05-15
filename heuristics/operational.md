@@ -89,3 +89,37 @@ Update when a new pattern is confirmed across at least one real incident.
 **Evidence:** CREATE_DRAFT had two parallel code paths enforcing the same email-verification rule: one in middleware, one in the entitlement engine. Future divergence is a real risk.
 **Rule:** A critical boundary must have a single decision point. Two parallel paths with the same semantics are security tech debt — they will diverge.
 **Apply:** When consolidating (e.g. B3-class work), eliminate the duplicate path rather than adding a third. One source of truth per boundary.
+
+---
+
+## Deployment & Infrastructure
+
+### H11 — docker-vite-env-injection
+
+**Evidence:** VITE_* vars defined only in Railway/CI environment were not embedded in the built assets — Vite requires them at build time, not runtime.
+**Rule:** VITE_* variables require `ARG` + `ENV` in the Dockerfile to be embedded by Vite at build time. Defining them only in the platform CI/environment is insufficient.
+**Apply:** Pattern: `ARG VITE_X` then `ENV VITE_X=$VITE_X` before `RUN pnpm build`. Every VITE_* var consumed by the app must have a corresponding ARG+ENV pair.
+
+---
+
+### H12 — envsubst-nginx-filter
+
+**Evidence:** `envsubst` without an explicit filter replaced nginx internal variables (`$uri`, `$request_uri`, etc.), corrupting the nginx config and causing 500s.
+**Rule:** Always pass an explicit variable filter to `envsubst`. Without it, all shell-style variables in the template are substituted, including nginx's own.
+**Apply:** `envsubst '$PORT' < nginx.conf.template > /etc/nginx/conf.d/default.conf` — single quotes are mandatory (passes the literal string `$PORT` to envsubst, not the shell value).
+
+---
+
+### H13 — dockerfile-node-version-match
+
+**Evidence:** Node version in `FROM node:XX` diverged from `engines.node` in `package.json`, causing dependency resolution failures at runtime that did not appear in local dev.
+**Rule:** The Node version in `FROM node:XX` must match the `engines.node` field in the root `package.json`. Divergence causes runtime dependency failures.
+**Apply:** After any Node upgrade, update both. Add a CI lint step or Dockerfile comment linking to `package.json engines.node`.
+
+---
+
+### H14 — vite-external-dependencies
+
+**Evidence:** UI and i18n dependencies marked as `external` in `rollupOptions.external` were missing from the built bundle, causing runtime crashes in production.
+**Rule:** UI libraries and i18n dependencies must never be listed in `rollupOptions.external`. Only native bridges (e.g. `@capacitor/core`) that are guaranteed to exist in the host environment should be external.
+**Apply:** Audit `rollupOptions.external` on every Vite config change. Flag any non-native dependency as a defect.

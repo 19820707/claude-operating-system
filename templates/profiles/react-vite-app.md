@@ -77,3 +77,13 @@ Same baseline as Node profile: `npx tsc`, `eslint`, `vitest`, `playwright`, `npm
 3. **Code splitting** não expõe rotas admin sem lazy + guard.
 4. **A11y + SEO** críticos para páginas públicas; regressões tratadas como bugs P1.
 5. **CSP e headers** alinhados com integrações (scripts terceiros documentados).
+
+---
+
+## Railway + Docker deployment
+
+- Dockerfile deve usar `node:20-alpine` ou superior
+- VITE_* vars: declarar `ARG VITE_X` + `ENV VITE_X=$VITE_X` antes do `RUN pnpm build` — definir apenas no Railway não é suficiente (H11)
+- nginx: usar `envsubst '$PORT'` com single quotes para evitar corrupção de variáveis nginx (H12)
+- `railway.json`: não declarar `startCommand` quando o Dockerfile já tem `CMD`
+- `pnpm-lock.yaml`: usar `--frozen-lockfile` no CI
