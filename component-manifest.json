@@ -1,4 +1,4 @@
-{
+﻿{
   "schemaVersion": 1,
   "description": "Maps Claude OS scripts, skills, manifests, gates, shell templates, and policies into maturity-tiered components. strict/release surfaces must not resolve to experimental (or deprecated) components unless allowlisted.",
   "strictReleaseExperimentalAllowlist": {
@@ -970,6 +970,30 @@
         {
           "kind": "tool",
           "id": "sync-manifests"
+        },
+        {
+          "kind": "tool",
+          "id": "architectural-fitness"
+        },
+        {
+          "kind": "tool",
+          "id": "change-velocity-gate"
+        },
+        {
+          "kind": "tool",
+          "id": "policy-completeness"
+        },
+        {
+          "kind": "tool",
+          "id": "security-posture"
+        },
+        {
+          "kind": "tool",
+          "id": "slo-budget"
+        },
+        {
+          "kind": "policy",
+          "path": "policies/commit-boundaries.md"
         }
       ]
     },

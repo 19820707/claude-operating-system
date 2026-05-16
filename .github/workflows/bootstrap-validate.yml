@@ -55,6 +55,18 @@ jobs:
           name: validate-quick-${{ matrix.os }}
           path: validate-quick.json
 
+      - name: Security posture + architectural fitness (advisory)
+        shell: pwsh
+        run: |
+          # Advisory only — scores reported for visibility; hard-fail enabled once OS reaches steady-state
+          & $env:GITHUB_WORKSPACE/tools/security-posture.ps1 -Json | ConvertFrom-Json | ForEach-Object {
+            Write-Host "security-posture: $($_.status) score=$($_.findings[0].score)/100 grade=$($_.findings[0].grade)"
+          }
+          & $env:GITHUB_WORKSPACE/tools/architectural-fitness.ps1 -Json | ConvertFrom-Json | ForEach-Object {
+            Write-Host "architectural-fitness: $($_.status) score=$($_.findings[0].fitnessScore)/100 grade=$($_.findings[0].fitnessGrade) cycles=$($_.findings[0].cycles)"
+          }
+          exit 0
+
       - name: Claude OS strict validation
         shell: pwsh
         run: |

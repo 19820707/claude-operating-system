@@ -485,6 +485,67 @@ if ($Profile -eq 'strict') {
         Add-Step -Name 'decision-audit-engine' -Status 'warn' -Detail "exit $daCode"
     } else { Add-Step -Name 'decision-audit-engine' -Status 'ok' }
 
+    # Security posture score
+    $spCode = Invoke-PwshTool -RelativeTool 'tools/security-posture.ps1' -ArgList @('-Json')
+    if ($spCode -ne 0) {
+        [void]$failures.Add('security-posture exit non-zero')
+        Add-Step -Name 'security-posture' -Status 'fail' -Detail "exit $spCode"
+    } else {
+        $spSt = Get-OsToolJsonStatus -RelativeTool 'tools/security-posture.ps1' -ArgList @('-Json')
+        if ($spSt -eq 'fail') {
+            [void]$failures.Add('security-posture reported fail')
+            Add-Step -Name 'security-posture' -Status 'fail'
+        } elseif (Test-OsEnvelopeNonPass $spSt) {
+            [void]$warnings.Add("security-posture status=$spSt")
+            Add-Step -Name 'security-posture' -Status $spSt
+        } else { Add-Step -Name 'security-posture' -Status 'ok' }
+    }
+
+    # Policy completeness
+    $pcCode = Invoke-PwshTool -RelativeTool 'tools/policy-completeness.ps1' -ArgList @('-Json')
+    if ($pcCode -ne 0) {
+        [void]$failures.Add('policy-completeness exit non-zero')
+        Add-Step -Name 'policy-completeness' -Status 'fail' -Detail "exit $pcCode"
+    } else {
+        $pcSt = Get-OsToolJsonStatus -RelativeTool 'tools/policy-completeness.ps1' -ArgList @('-Json')
+        if ($pcSt -eq 'fail') {
+            [void]$failures.Add('policy-completeness reported fail')
+            Add-Step -Name 'policy-completeness' -Status 'fail'
+        } elseif (Test-OsEnvelopeNonPass $pcSt) {
+            [void]$warnings.Add("policy-completeness status=$pcSt")
+            Add-Step -Name 'policy-completeness' -Status $pcSt
+        } else { Add-Step -Name 'policy-completeness' -Status 'ok' }
+    }
+
+    # Architectural fitness functions
+    $afCode = Invoke-PwshTool -RelativeTool 'tools/architectural-fitness.ps1' -ArgList @('-Json')
+    if ($afCode -ne 0) {
+        [void]$failures.Add('architectural-fitness exit non-zero')
+        Add-Step -Name 'architectural-fitness' -Status 'fail' -Detail "exit $afCode"
+    } else {
+        $afSt = Get-OsToolJsonStatus -RelativeTool 'tools/architectural-fitness.ps1' -ArgList @('-Json')
+        if ($afSt -eq 'fail') {
+            [void]$failures.Add('architectural-fitness reported fail')
+            Add-Step -Name 'architectural-fitness' -Status 'fail'
+        } elseif (Test-OsEnvelopeNonPass $afSt) {
+            [void]$warnings.Add("architectural-fitness status=$afSt")
+            Add-Step -Name 'architectural-fitness' -Status $afSt
+        } else { Add-Step -Name 'architectural-fitness' -Status 'ok' }
+    }
+
+    # Change velocity gate (advisory in strict — blocks only at BLOCK threshold)
+    $cvCode = Invoke-PwshTool -RelativeTool 'tools/change-velocity-gate.ps1' -ArgList @('-Json')
+    if ($cvCode -ne 0) {
+        [void]$warnings.Add('change-velocity-gate blocked — elevated risk score')
+        Add-Step -Name 'change-velocity-gate' -Status 'warn'
+    } else {
+        $cvSt = Get-OsToolJsonStatus -RelativeTool 'tools/change-velocity-gate.ps1' -ArgList @('-Json')
+        if (Test-OsEnvelopeNonPass $cvSt) {
+            [void]$warnings.Add("change-velocity-gate status=$cvSt")
+            Add-Step -Name 'change-velocity-gate' -Status $cvSt
+        } else { Add-Step -Name 'change-velocity-gate' -Status 'ok' }
+    }
+
     $va = @('-Strict')
     if ($Json) { $va += '-Json' }
     if ($SkipBashSyntax) { $va += '-SkipBashSyntax' }

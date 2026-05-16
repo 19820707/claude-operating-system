@@ -1281,6 +1281,76 @@
       "writes": [],
       "exitPolicy": "exit0-always",
       "safeToRunInCI": false
+    },
+    {
+      "path": "tools/architectural-fitness.ps1",
+      "id": "architectural-fitness",
+      "description": "architectural-fitness.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/change-velocity-gate.ps1",
+      "id": "change-velocity-gate",
+      "description": "change-velocity-gate.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/policy-completeness.ps1",
+      "id": "policy-completeness",
+      "description": "policy-completeness.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/security-posture.ps1",
+      "id": "security-posture",
+      "description": "security-posture.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/slo-budget.ps1",
+      "id": "slo-budget",
+      "description": "slo-budget.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
     }
   ],
   "templateShell": {

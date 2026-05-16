@@ -36,10 +36,12 @@ if (-not $Json) {
     Write-Host ''
 }
 
-Invoke-Check -Name 'token-economy-policy' -ScriptName 'verify-token-economy-policy.ps1'
-Invoke-Check -Name 'security-policy' -ScriptName 'verify-security-policy.ps1'
+Invoke-Check -Name 'token-economy-policy'    -ScriptName 'verify-token-economy-policy.ps1'
+Invoke-Check -Name 'security-policy'         -ScriptName 'verify-security-policy.ps1'
 Invoke-Check -Name 'claudeignore-scope-control' -ScriptName 'verify-claudeignore.ps1'
-Invoke-Check -Name 'agent-adapters' -ScriptName 'verify-agent-adapters.ps1'
+Invoke-Check -Name 'agent-adapters'          -ScriptName 'verify-agent-adapters.ps1'
+Invoke-Check -Name 'security-posture'        -ScriptName 'security-posture.ps1'
+Invoke-Check -Name 'policy-completeness'     -ScriptName 'policy-completeness.ps1'
 
 $status = if ($script:Fails.Count -gt 0) { 'fail' } else { 'ok' }
 $out = [ordered]@{
