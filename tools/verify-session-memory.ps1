@@ -1,4 +1,4 @@
-# verify-session-memory.ps1 — Validate bounded local session memory contract
+﻿# verify-session-memory.ps1 — Validate bounded local session memory contract
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-session-memory.ps1
 
@@ -88,3 +88,4 @@ foreach ($term in @('No external network calls', 'No repository-wide scanning', 
 if ($failed) { throw 'Session memory verification failed.' }
 Write-Host ''
 Write-Host 'Session memory checks passed.'
+exit 0

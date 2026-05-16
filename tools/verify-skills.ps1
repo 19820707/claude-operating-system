@@ -1,4 +1,4 @@
-# verify-skills.ps1 — Validate Claude OS source/skills definitions
+﻿# verify-skills.ps1 — Validate Claude OS source/skills definitions
 # Run from repo root or any cwd (uses script location):
 #   pwsh ./tools/verify-skills.ps1
 
@@ -121,3 +121,4 @@ if ($failed) {
 
 Write-Host ""
 Write-Host "All skill checks passed."
+exit 0

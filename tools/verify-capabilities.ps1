@@ -1,4 +1,4 @@
-# verify-capabilities.ps1 — Validate os-capabilities.json + capability-manifest.json routing contracts
+﻿# verify-capabilities.ps1 — Validate os-capabilities.json + capability-manifest.json routing contracts
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-capabilities.ps1
 
@@ -188,3 +188,4 @@ if ($failed) { throw 'Capability registry verification failed.' }
 
 Write-Host ''
 Write-Host "Capability checks passed ($count capabilities, $routeCount intent routes)."
+exit 0

@@ -1,4 +1,4 @@
-# os-update-project.ps1 — Refresh managed Claude OS artifacts in an existing project
+﻿# os-update-project.ps1 — Refresh managed Claude OS artifacts in an existing project
 # Usage:
 #   pwsh ./tools/os-update-project.ps1 -ProjectPath ../my-app
 #   pwsh ./tools/os-update-project.ps1 -ProjectPath ../my-app -DryRun
@@ -136,3 +136,4 @@ if (-not $DryRun) {
 
 Write-Host ''
 Write-Host 'Managed project artifacts refreshed.'
+exit 0

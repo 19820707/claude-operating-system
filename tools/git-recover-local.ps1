@@ -1,4 +1,4 @@
-# git-recover-local.ps1 — Safely recover a stale local clone before pulling Runtime updates
+﻿# git-recover-local.ps1 — Safely recover a stale local clone before pulling Runtime updates
 # Usage from repo root:
 #   pwsh ./tools/git-recover-local.ps1 -Mode status
 #   pwsh ./tools/git-recover-local.ps1 -Mode stash
@@ -107,3 +107,4 @@ switch ($Mode) {
     'pull' { Pull-Latest }
     'validate' { Validate-Runtime }
 }
+exit 0

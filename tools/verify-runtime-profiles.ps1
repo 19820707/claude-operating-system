@@ -1,4 +1,4 @@
-# verify-runtime-profiles.ps1 — Validate runtime-profiles.json
+﻿# verify-runtime-profiles.ps1 — Validate runtime-profiles.json
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-runtime-profiles.ps1
 
@@ -45,3 +45,4 @@ if (-not $seen.ContainsKey('strict')) { Fail 'missing strict profile' }
 if ($failed) { throw 'Runtime profile verification failed.' }
 Write-Host ''
 Write-Host 'Runtime profile checks passed.'
+exit 0

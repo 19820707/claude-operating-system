@@ -1,4 +1,4 @@
-# verify-runtime-release.ps1 — Validate Claude OS Runtime release metadata (manifest-driven contract text)
+﻿# verify-runtime-release.ps1 — Validate Claude OS Runtime release metadata (manifest-driven contract text)
 #   pwsh ./tools/verify-runtime-release.ps1
 
 $ErrorActionPreference = 'Stop'
@@ -77,3 +77,4 @@ if ($failed) { throw 'Runtime release metadata verification failed.' }
 
 Write-Host ''
 Write-Host "Runtime release metadata checks passed ($version)."
+exit 0

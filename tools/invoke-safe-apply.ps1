@@ -88,4 +88,5 @@ else {
     Write-Host "invoke-safe-apply: $($summary.targetToolId) exit $($summary.childExitCode) (dryRun=$($summary.dryRunOrWhatIfRequested))"
 }
 
-exit $code
+if ($code -ne 0) { exit $code }
+exit 0

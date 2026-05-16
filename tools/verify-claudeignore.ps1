@@ -1,4 +1,4 @@
-# verify-claudeignore.ps1 — Scope-control template verifier
+﻿# verify-claudeignore.ps1 — Scope-control template verifier
 #   pwsh ./tools/verify-claudeignore.ps1
 #   pwsh ./tools/verify-claudeignore.ps1 -Json
 
@@ -61,3 +61,4 @@ if ($Json) {
 if ($script:Fails.Count -gt 0) {
     throw "Claudeignore verification failed: $($script:Fails.Count) issue(s)."
 }
+exit 0

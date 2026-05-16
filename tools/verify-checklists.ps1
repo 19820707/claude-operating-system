@@ -1,4 +1,4 @@
-# verify-checklists.ps1 — Validate safety/release checklist gate contracts
+﻿# verify-checklists.ps1 — Validate safety/release checklist gate contracts
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-checklists.ps1
 
@@ -63,3 +63,4 @@ if ($failed) { throw 'Checklist verification failed.' }
 
 Write-Host ''
 Write-Host 'Checklist checks passed.'
+exit 0

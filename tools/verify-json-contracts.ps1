@@ -1,4 +1,4 @@
-# verify-json-contracts.ps1 — Validate JSON manifests, schemas, and master references without external deps
+﻿# verify-json-contracts.ps1 — Validate JSON manifests, schemas, and master references without external deps
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-json-contracts.ps1
 
@@ -151,3 +151,4 @@ if ($failed) { throw 'JSON contract verification failed.' }
 
 Write-Host ''
 Write-Host 'JSON contract checks passed.'
+exit 0

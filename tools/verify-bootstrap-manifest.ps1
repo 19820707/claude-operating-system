@@ -1,4 +1,4 @@
-# verify-bootstrap-manifest.ps1 — Fail if template tree drifts from bootstrap-manifest.json
+﻿# verify-bootstrap-manifest.ps1 — Fail if template tree drifts from bootstrap-manifest.json
 # Run from repo root or any cwd (uses script location):
 #   pwsh ./tools/verify-bootstrap-manifest.ps1
 
@@ -171,3 +171,4 @@ if ($failed) {
 
 Write-Host ""
 Write-Host "All bootstrap manifest checks passed."
+exit 0

@@ -1,4 +1,4 @@
-# verify-docs-index.ps1 — Validate docs-index.json section navigation contract
+﻿# verify-docs-index.ps1 — Validate docs-index.json section navigation contract
 # Run from repo root or any cwd (uses script location):
 #   pwsh ./tools/verify-docs-index.ps1
 
@@ -113,3 +113,4 @@ if ($failed) {
 
 Write-Host ''
 Write-Host "Docs index checks passed ($sectionCount sections)."
+exit 0

@@ -1,4 +1,4 @@
-# verify-security-policy.ps1 — Critical-systems security/no-false-green policy verifier
+﻿# verify-security-policy.ps1 — Critical-systems security/no-false-green policy verifier
 #   pwsh ./tools/verify-security-policy.ps1
 #   pwsh ./tools/verify-security-policy.ps1 -Json
 
@@ -65,3 +65,4 @@ if ($Json) {
 if ($script:Fails.Count -gt 0) {
     throw "Security policy verification failed: $($script:Fails.Count) issue(s)."
 }
+exit 0

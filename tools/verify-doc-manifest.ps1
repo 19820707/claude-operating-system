@@ -1,4 +1,4 @@
-# verify-doc-manifest.ps1 — Fail if INDEX.md summary drifts from bootstrap-manifest.json
+﻿# verify-doc-manifest.ps1 — Fail if INDEX.md summary drifts from bootstrap-manifest.json
 # Run from repo root or any cwd (uses script location):
 #   pwsh ./tools/verify-doc-manifest.ps1
 
@@ -88,3 +88,4 @@ if ($failed) {
 
 Write-Host ""
 Write-Host "INDEX.md is aligned with bootstrap-manifest.json."
+exit 0

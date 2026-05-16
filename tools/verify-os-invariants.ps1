@@ -1,4 +1,4 @@
-# verify-os-invariants.ps1 — Read-only architectural invariants (no mutations)
+﻿# verify-os-invariants.ps1 — Read-only architectural invariants (no mutations)
 #   pwsh ./tools/verify-os-invariants.ps1
 #   pwsh ./tools/verify-os-invariants.ps1 -Json
 
@@ -86,3 +86,4 @@ if ($Json) {
 if ($script:InvFails.Count -gt 0) {
     throw "OS invariant verification failed: $($script:InvFails.Count) issue(s)."
 }
+exit 0

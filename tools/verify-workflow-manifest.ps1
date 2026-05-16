@@ -1,4 +1,4 @@
-# verify-workflow-manifest.ps1 — Validate workflow-manifest.json progressive delivery contract
+﻿# verify-workflow-manifest.ps1 — Validate workflow-manifest.json progressive delivery contract
 # Run from repo root or any cwd:
 #   pwsh ./tools/verify-workflow-manifest.ps1
 
@@ -87,3 +87,4 @@ if ($failed) { throw 'Workflow manifest verification failed.' }
 
 Write-Host ''
 Write-Host "Workflow manifest checks passed ($(@($workflow.phases).Count) phases)."
+exit 0

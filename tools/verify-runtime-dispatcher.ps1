@@ -1,4 +1,4 @@
-# verify-runtime-dispatcher.ps1 — Contract tests for tools/os-runtime.ps1 (read-only)
+﻿# verify-runtime-dispatcher.ps1 — Contract tests for tools/os-runtime.ps1 (read-only)
 #   pwsh ./tools/verify-runtime-dispatcher.ps1
 
 $ErrorActionPreference = 'Stop'
@@ -65,3 +65,4 @@ $dig = Invoke-RT @('digest')
 if ($dig.Exit -eq 0) { throw 'dispatcher: digest without -Summary must fail (non-zero)' }
 
 Write-Host 'verify-runtime-dispatcher: OK'
+exit 0

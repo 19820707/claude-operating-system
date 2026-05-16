@@ -1,4 +1,4 @@
-# verify-critical-systems.ps1 — Senior/critical-systems policy verifier
+﻿# verify-critical-systems.ps1 — Senior/critical-systems policy verifier
 #   pwsh ./tools/verify-critical-systems.ps1
 #   pwsh ./tools/verify-critical-systems.ps1 -Json
 
@@ -60,3 +60,4 @@ if ($Json) {
 if ($script:Fails.Count -gt 0) {
     throw "Critical-systems verification failed: $($script:Fails.Count) issue(s)."
 }
+exit 0

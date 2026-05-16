@@ -1,4 +1,4 @@
-# verify-token-economy-policy.ps1 — Enforce surgical token economy and no-false-green contracts
+﻿# verify-token-economy-policy.ps1 — Enforce surgical token economy and no-false-green contracts
 #   pwsh ./tools/verify-token-economy-policy.ps1
 #   pwsh ./tools/verify-token-economy-policy.ps1 -Json
 
@@ -99,3 +99,4 @@ if ($Json) {
 if ($script:Fails.Count -gt 0) {
     throw "Token economy policy verification failed: $($script:Fails.Count) issue(s)."
 }
+exit 0
