@@ -31,6 +31,8 @@
 .claude/discovered-patterns.json
 .claude/prediction-log.jsonl
 .claude/cross-project-evidence.json
+.claude/grounding-state.json
+.claude/grounding-report.json
 OPERATOR_JOURNAL.md
 OS_WORKSPACE_CONTEXT.md
 templates/invariant-engine/node_modules/

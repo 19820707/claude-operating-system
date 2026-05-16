@@ -85,11 +85,12 @@ Four subsystems that close the OBSERVATION → MODEL → PREDICTION → OUTCOME 
 | `tools/prediction-engine.ps1` | `predict`, `calibrate`, `log` | P1–P4 failure probabilities per file; Brier-score calibration against recorded outcomes. Persists to `.claude/prediction-log.jsonl` (gitignored). |
 | `tools/pattern-discovery.ps1` | `discover`, `promote`, `report` | Mines co-modification and cascade patterns from git history (N=200 commits). Promotes to `heuristics/operational.md`. Persists to `.claude/discovered-patterns.json` (gitignored). |
 | `tools/epistemic-tracker.ps1` | `update`, `assert`, `gate`, `debt-report`, `auto-discover` | KNOWN/INFERRED/ASSUMED/UNKNOWN fact management with decay. Gates push on HARD FAIL. Persists to `.claude/epistemic-state.json` (gitignored). |
+| `tools/verify-grounding.ps1` | `verify`, `auto-generate`, `assert`, `report`, `score`, `contradiction-resolve` | **Grounding Verification Engine** — formal proof obligations per assertion (git_state, file_exists, pattern_absent, invariant_holds, external_query). Composite score = Coverage × Accuracy × (1 − Staleness). Gap declared when score < 0.6. Contradiction detection with resolution strategies. Bundle: `tools/dist/grounding-engine.cjs`. |
 
 **Cycles:**
-- **SessionEnd (CICLO DIÁRIO):** `session-digest.ps1` triggers all 4 subsystems in order.
+- **SessionEnd (CICLO DIÁRIO):** `session-digest.ps1` triggers all 4 cognitive subsystems + grounding auto-generate + verify in order.
 - **Pre-push (CICLO PRE-PUSH):** `.git/hooks/pre-push` runs world-model context + predictions + epistemic gate before intervention check.
-- **Health:** `verify-os-health.ps1` includes `cognitive-layer` step (parse + epistemic debt advisory).
+- **Health:** `verify-os-health.ps1` includes `cognitive-layer` step (parse + epistemic debt advisory + grounding score advisory).
 
 ---
 

@@ -258,6 +258,9 @@
     },
     {
       "id": "verify-exit-codes"
+    },
+    {
+      "id": "verify-grounding"
     }
   ]
 }

@@ -1042,6 +1042,10 @@
         {
           "kind": "tool",
           "id": "epistemic-tracker"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-grounding"
         }
       ]
     }

@@ -82,6 +82,11 @@ try {
     & pwsh -NoProfile -File (Join-Path $PSScriptRoot 'prediction-engine.ps1') -Mode calibrate 2>$null | Out-Null
 } catch { }
 try {
+    # Grounding: refresh assertions from updated OS artifacts, then verify
+    & node (Join-Path $PSScriptRoot 'dist/grounding-engine.cjs') $Root auto-generate 2>$null | Out-Null
+    & node (Join-Path $PSScriptRoot 'dist/grounding-engine.cjs') $Root verify 2>$null | Out-Null
+} catch { }
+try {
     & pwsh -NoProfile -File (Join-Path $PSScriptRoot 'intelligence-fabric.ps1') -Mode contribute -ProjectPath $Root 2>$null | Out-Null
 } catch { }
 

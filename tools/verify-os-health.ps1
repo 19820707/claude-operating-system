@@ -367,6 +367,18 @@ Invoke-HealthStep -Name 'cognitive-layer' -Script {
         $result = $j | ConvertFrom-Json
         if ([string]$result.status -eq 'fail') { throw 'epistemic-tracker debt-report returned fail status' }
     }
+    # Grounding score — advisory; requires node + compiled bundle
+    if (Get-Command node -ErrorAction SilentlyContinue) {
+        $gBundle = Join-Path $RepoRoot 'tools/dist/grounding-engine.cjs'
+        if (Test-Path -LiteralPath $gBundle) {
+            $scoreRaw = & node $gBundle $RepoRoot score 2>$null
+            $gScore = [double]($scoreRaw | Out-String).Trim()
+            if ($gScore -lt 0.6) {
+                # Advisory WARN — grounding gap is not a blocking health failure
+                Write-Host "  [grounding] WARN: composite score $([math]::Round($gScore * 100, 1))% < 60% threshold"
+            }
+        }
+    }
 }
 Invoke-HealthStepWithBudget -Name 'doctor' -WarnMs 10000 -FailMs 30000 -Script {
     $doctorParams = @{ Json = $true }

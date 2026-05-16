@@ -1,4 +1,4 @@
-{
+﻿{
   "schemaVersion": 1,
   "description": "Metadata for tools/*.ps1; templates/scripts governed by bootstrap-manifest projectBootstrap.scripts",
   "tools": [
@@ -1407,6 +1407,20 @@
       "writes": [],
       "exitPolicy": "exit0-always",
       "safeToRunInCI": false
+    },
+    {
+      "id": "verify-grounding",
+      "path": "tools/verify-grounding.ps1",
+      "description": "Grounding Verification Engine — formal proof obligations, composite score Coverage*Accuracy*(1-Staleness), gap detection",
+      "type": "validator",
+      "modes": [
+        "verify",
+        "auto-generate",
+        "assert",
+        "report",
+        "score",
+        "contradiction-resolve"
+      ]
     }
   ],
   "templateShell": {
