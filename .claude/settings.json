@@ -1,5 +1,8 @@
 {
   "approvalPolicy": "on-request",
+  "awaySummaryEnabled": false,
+  "spinnerTipsEnabled": false,
+  "pushWhenClaudeDecides": true,
   "hooks": {
     "SessionStart": [
       {
@@ -104,7 +107,12 @@
       "Bash(bash .claude/scripts/runbook-inject.sh *)",
       "Bash(bash .claude/scripts/context-builder.sh *)",
       "Bash(bash .claude/scripts/consolidate-runbook.sh *)",
-      "Bash(node .claude/invariant-engine/simulate-contract-delta.cjs *)"
+      "Bash(node .claude/invariant-engine/simulate-contract-delta.cjs *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(pwsh *)",
+      "PowerShell(*)"
     ],
     "deny": [
       "Read(.env)",
