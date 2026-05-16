@@ -1021,6 +1021,29 @@
       "title": "Reserved bucket for future experimental surfaces (empty until used)",
       "maturity": "experimental",
       "members": []
+    },
+    {
+      "id": "cognitive-layer",
+      "title": "World model, prediction engine, pattern discovery, epistemic state tracker",
+      "maturity": "experimental",
+      "members": [
+        {
+          "kind": "tool",
+          "id": "world-model"
+        },
+        {
+          "kind": "tool",
+          "id": "prediction-engine"
+        },
+        {
+          "kind": "tool",
+          "id": "pattern-discovery"
+        },
+        {
+          "kind": "tool",
+          "id": "epistemic-tracker"
+        }
+      ]
     }
   ]
 }

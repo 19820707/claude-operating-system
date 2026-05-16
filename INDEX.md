@@ -75,6 +75,24 @@ Navigation map. Every file, its purpose, and when to use it.
 
 ---
 
+## Cognitive Intelligence Layer
+
+Four subsystems that close the OBSERVATION → MODEL → PREDICTION → OUTCOME → MODEL feedback loop.
+
+| Tool | Mode(s) | Purpose |
+|------|---------|---------|
+| `tools/world-model.ps1` | `update`, `query`, `relations`, `export-context` | Probabilistic entity graph with Bayesian risk posteriors and confidence decay. Persists to `.claude/world-model.json` (gitignored). |
+| `tools/prediction-engine.ps1` | `predict`, `calibrate`, `log` | P1–P4 failure probabilities per file; Brier-score calibration against recorded outcomes. Persists to `.claude/prediction-log.jsonl` (gitignored). |
+| `tools/pattern-discovery.ps1` | `discover`, `promote`, `report` | Mines co-modification and cascade patterns from git history (N=200 commits). Promotes to `heuristics/operational.md`. Persists to `.claude/discovered-patterns.json` (gitignored). |
+| `tools/epistemic-tracker.ps1` | `update`, `assert`, `gate`, `debt-report`, `auto-discover` | KNOWN/INFERRED/ASSUMED/UNKNOWN fact management with decay. Gates push on HARD FAIL. Persists to `.claude/epistemic-state.json` (gitignored). |
+
+**Cycles:**
+- **SessionEnd (CICLO DIÁRIO):** `session-digest.ps1` triggers all 4 subsystems in order.
+- **Pre-push (CICLO PRE-PUSH):** `.git/hooks/pre-push` runs world-model context + predictions + epistemic gate before intervention check.
+- **Health:** `verify-os-health.ps1` includes `cognitive-layer` step (parse + epistemic debt advisory).
+
+---
+
 ## source/skills/
 
 Canonical skill layer. `source/skills` is source of truth; `init-project.ps1` installs it into `.claude/skills/`.

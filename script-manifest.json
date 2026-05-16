@@ -1351,6 +1351,62 @@
       "writes": [],
       "exitPolicy": "exit1-on-fail",
       "safeToRunInCI": false
+    },
+    {
+      "path": "tools/epistemic-tracker.ps1",
+      "id": "epistemic-tracker",
+      "description": "epistemic-tracker.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/pattern-discovery.ps1",
+      "id": "pattern-discovery",
+      "description": "pattern-discovery.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/prediction-engine.ps1",
+      "id": "prediction-engine",
+      "description": "prediction-engine.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/world-model.ps1",
+      "id": "world-model",
+      "description": "world-model.ps1",
+      "kind": "tool",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
     }
   ],
   "templateShell": {

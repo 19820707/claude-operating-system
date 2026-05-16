@@ -350,6 +350,24 @@ Invoke-HealthStep -Name 'workflow-status' -Script { Test-WorkflowStatus }
 Invoke-HealthStep -Name 'runtime-dispatcher' -Script { Test-RuntimeDispatcher }
 Invoke-HealthStep -Name 'exit-code-hygiene' -Script { & (Join-Path $RepoRoot 'tools/verify-exit-codes.ps1') }
 Invoke-HealthStep -Name 'checklists' -Script { & (Join-Path $RepoRoot 'tools/verify-checklists.ps1') }
+Invoke-HealthStep -Name 'cognitive-layer' -Script {
+    # Advisory: verify 4 cognitive tools parse and exit cleanly; never block health on missing runtime data
+    $cogTools = @('world-model.ps1','prediction-engine.ps1','pattern-discovery.ps1','epistemic-tracker.ps1')
+    foreach ($ct in $cogTools) {
+        $p = Join-Path $RepoRoot "tools/${ct}"
+        if (-not (Test-Path -LiteralPath $p)) { throw "Cognitive tool missing: ${ct}" }
+        $tokens = $null; $errors = $null
+        [void][System.Management.Automation.Language.Parser]::ParseFile($p, [ref]$tokens, [ref]$errors)
+        if ($errors -and $errors.Count -gt 0) { throw "Parse error in ${ct}: $($errors[0].Message)" }
+    }
+    # Debt report — warn only, never fail health
+    $raw = & pwsh -NoProfile -File (Join-Path $RepoRoot 'tools/epistemic-tracker.ps1') -Mode debt-report -Json 2>$null
+    $j   = ($raw | Out-String).Trim()
+    if ($j -match '^\{') {
+        $result = $j | ConvertFrom-Json
+        if ([string]$result.status -eq 'fail') { throw 'epistemic-tracker debt-report returned fail status' }
+    }
+}
 Invoke-HealthStepWithBudget -Name 'doctor' -WarnMs 10000 -FailMs 30000 -Script {
     $doctorParams = @{ Json = $true }
     if ($script:EffectiveSkipBashSyntax) { $doctorParams['SkipBashSyntax'] = $true }
@@ -422,7 +440,11 @@ Invoke-HealthStep -Name 'powershell-syntax' -Script {
         (Join-Path $RepoRoot 'tools/verify-doc-contract-consistency.ps1'),
         (Join-Path $RepoRoot 'tools/verify-runtime-budget.ps1'),
         (Join-Path $RepoRoot 'tools/verify-script-manifest.ps1'),
-        (Join-Path $RepoRoot 'tools/write-validation-history.ps1')
+        (Join-Path $RepoRoot 'tools/write-validation-history.ps1'),
+        (Join-Path $RepoRoot 'tools/world-model.ps1'),
+        (Join-Path $RepoRoot 'tools/prediction-engine.ps1'),
+        (Join-Path $RepoRoot 'tools/pattern-discovery.ps1'),
+        (Join-Path $RepoRoot 'tools/epistemic-tracker.ps1')
     )
     Test-PowerShellSyntax -Files $psSyntaxFiles
 }

@@ -26,6 +26,11 @@
 .claude/learned-baselines.json
 .claude/failure-patterns.json
 .claude/knowledge-graph.json
+.claude/world-model.json
+.claude/epistemic-state.json
+.claude/discovered-patterns.json
+.claude/prediction-log.jsonl
+.claude/cross-project-evidence.json
 OPERATOR_JOURNAL.md
 OS_WORKSPACE_CONTEXT.md
 templates/invariant-engine/node_modules/
