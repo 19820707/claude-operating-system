@@ -1239,6 +1239,48 @@
       "writes": [],
       "exitPolicy": "exit1-on-fail",
       "safeToRunInCI": false
+    },
+    {
+      "path": "tools/lib/distribution-resolve.ps1",
+      "id": "lib-distribution-resolve",
+      "description": "distribution-resolve.ps1",
+      "kind": "lib",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/lib/safe-apply.ps1",
+      "id": "lib-safe-apply",
+      "description": "safe-apply.ps1",
+      "kind": "lib",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/sync-manifests.ps1",
+      "id": "sync-manifests",
+      "description": "sync-manifests.ps1",
+      "kind": "sync",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
     }
   ],
   "templateShell": {

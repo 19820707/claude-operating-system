@@ -31,6 +31,18 @@ jobs:
           git --version
           if (Get-Command bash -ErrorAction SilentlyContinue) { bash --version } else { Write-Host 'bash: not on PATH (expected on some Windows runners)' }
 
+      - name: Manifest drift check
+        shell: pwsh
+        run: |
+          $result = & $env:GITHUB_WORKSPACE/tools/sync-manifests.ps1 -WhatIf -Json | ConvertFrom-Json
+          if ($result.findings[0].added -gt 0) {
+            Write-Host "Manifest drift detected — the following are unlisted:"
+            $result.findings[0].changes | ForEach-Object { Write-Host "  $_" }
+            Write-Error "Run 'pwsh tools/sync-manifests.ps1' locally and commit the updated manifests."
+            exit 1
+          }
+          Write-Host "Manifests in sync."
+
       - name: Profile quick (JSON artifact)
         shell: pwsh
         run: |

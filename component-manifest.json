@@ -958,6 +958,18 @@
         {
           "kind": "tool",
           "id": "predictive-intervention"
+        },
+        {
+          "kind": "tool",
+          "id": "lib-distribution-resolve"
+        },
+        {
+          "kind": "tool",
+          "id": "lib-safe-apply"
+        },
+        {
+          "kind": "tool",
+          "id": "sync-manifests"
         }
       ]
     },
