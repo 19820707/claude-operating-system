@@ -1091,6 +1091,68 @@
       "writes": [],
       "exitPolicy": "fail",
       "safeToRunInCI": true
+    },
+    {
+      "path": "tools/predictive-health.ps1",
+      "id": "predictive-health",
+      "description": "Pre-push risk scoring: churn rate, blast radius, exit hygiene, invariant risk. Score >70 blocks push.",
+      "kind": "validator",
+      "maturity": "stable",
+      "defaultEnabled": false,
+      "requires": [
+        "pwsh",
+        "git"
+      ],
+      "writes": [],
+      "exitPolicy": "fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/knowledge-sync.ps1",
+      "id": "knowledge-sync",
+      "description": "Cross-project heuristic pattern exchange: export, import confirmed patterns, report by confidence score.",
+      "kind": "sync",
+      "maturity": "stable",
+      "defaultEnabled": false,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [
+        "heuristics/cross-project-evidence.json"
+      ],
+      "exitPolicy": "fail",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/simulate-impact.ps1",
+      "id": "simulate-impact",
+      "description": "Change impact simulation: blast radius via script-graph.json, invariants at risk, test estimate. Recommends PROCEED | REVIEW | ESCALATE_TO_OPUS.",
+      "kind": "analyzer",
+      "maturity": "stable",
+      "defaultEnabled": false,
+      "requires": [
+        "pwsh"
+      ],
+      "writes": [],
+      "exitPolicy": "fail",
+      "safeToRunInCI": true
+    },
+    {
+      "path": "tools/learn-from-failures.ps1",
+      "id": "learn-from-failures",
+      "description": "Analyzes CI failure history, groups by pattern, promotes recurring failures (2+) to heuristics/operational.md automatically.",
+      "kind": "analyzer",
+      "maturity": "stable",
+      "defaultEnabled": false,
+      "requires": [
+        "pwsh",
+        "gh"
+      ],
+      "writes": [
+        ".claude/failure-patterns.json"
+      ],
+      "exitPolicy": "fail",
+      "safeToRunInCI": false
     }
   ],
   "templateShell": {

@@ -918,6 +918,22 @@
         {
           "kind": "tool",
           "id": "chaos-test"
+        },
+        {
+          "kind": "tool",
+          "id": "predictive-health"
+        },
+        {
+          "kind": "tool",
+          "id": "knowledge-sync"
+        },
+        {
+          "kind": "tool",
+          "id": "simulate-impact"
+        },
+        {
+          "kind": "tool",
+          "id": "learn-from-failures"
         }
       ]
     },
