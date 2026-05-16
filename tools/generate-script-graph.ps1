@@ -127,7 +127,7 @@ if (-not $Json) {
         $graph | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $outPath -Encoding utf8
         [void]$checks.Add([ordered]@{ name = 'write-graph'; status = 'ok'; detail = $outPath })
     } catch {
-        [void]$failures.Add("Could not write graph to $outPath: $($_.Exception.Message)")
+        [void]$failures.Add("Could not write graph to ${outPath}: $($_.Exception.Message)")
         [void]$checks.Add([ordered]@{ name = 'write-graph'; status = 'fail'; detail = $_.Exception.Message })
     }
 }

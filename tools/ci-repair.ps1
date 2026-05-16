@@ -34,7 +34,7 @@ if (Test-Path -LiteralPath $quickPath) {
         $quickData = (Get-Content -LiteralPath $quickPath -Raw -Encoding utf8) | ConvertFrom-Json
         [void]$checks.Add([ordered]@{ name = 'read-quick-json'; status = 'ok'; detail = $quickPath })
     } catch {
-        [void]$warnings.Add("Could not parse $quickPath: $($_.Exception.Message)")
+        [void]$warnings.Add("Could not parse ${quickPath}: $($_.Exception.Message)")
         [void]$checks.Add([ordered]@{ name = 'read-quick-json'; status = 'warn'; detail = 'parse error' })
     }
 } else {
