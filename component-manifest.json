@@ -902,6 +902,22 @@
           "kind": "gateValidator",
           "gateId": "gate.skills",
           "validatorId": "verify-skills-drift"
+        },
+        {
+          "kind": "tool",
+          "id": "verify-exit-codes"
+        },
+        {
+          "kind": "tool",
+          "id": "generate-script-graph"
+        },
+        {
+          "kind": "tool",
+          "id": "ci-repair"
+        },
+        {
+          "kind": "tool",
+          "id": "chaos-test"
         }
       ]
     },
