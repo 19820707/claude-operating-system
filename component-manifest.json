@@ -934,6 +934,30 @@
         {
           "kind": "tool",
           "id": "learn-from-failures"
+        },
+        {
+          "kind": "tool",
+          "id": "decision-audit-engine"
+        },
+        {
+          "kind": "tool",
+          "id": "risk-calibrator"
+        },
+        {
+          "kind": "tool",
+          "id": "knowledge-graph-engine"
+        },
+        {
+          "kind": "tool",
+          "id": "outcome-learning"
+        },
+        {
+          "kind": "tool",
+          "id": "intelligence-fabric"
+        },
+        {
+          "kind": "tool",
+          "id": "predictive-intervention"
         }
       ]
     },

@@ -22,6 +22,10 @@
 .claude/ci-repair-report.json
 /logs/
 /validate-quick.json
+.claude/risk-profile.json
+.claude/learned-baselines.json
+.claude/failure-patterns.json
+.claude/knowledge-graph.json
 OPERATOR_JOURNAL.md
 OS_WORKSPACE_CONTEXT.md
 templates/invariant-engine/node_modules/

@@ -464,6 +464,27 @@ if ($Profile -eq 'strict') {
         }
     }
 
+    # Risk calibrator scan
+    $rcCode = Invoke-PwshTool -RelativeTool 'tools/risk-calibrator.ps1' -ArgList @('-Scan', '-Json')
+    if ($rcCode -ne 0) {
+        [void]$warnings.Add('risk-calibrator scan exit non-zero')
+        Add-Step -Name 'risk-calibrator' -Status 'warn' -Detail "exit $rcCode"
+    } else { Add-Step -Name 'risk-calibrator' -Status 'ok' }
+
+    # Knowledge graph build
+    $kgCode = Invoke-PwshTool -RelativeTool 'tools/knowledge-graph-engine.ps1' -ArgList @('-Mode', 'build', '-Json')
+    if ($kgCode -ne 0) {
+        [void]$warnings.Add('knowledge-graph-engine build exit non-zero')
+        Add-Step -Name 'knowledge-graph-engine' -Status 'warn' -Detail "exit $kgCode"
+    } else { Add-Step -Name 'knowledge-graph-engine' -Status 'ok' }
+
+    # Decision audit engine
+    $daCode = Invoke-PwshTool -RelativeTool 'tools/decision-audit-engine.ps1' -ArgList @('-Json')
+    if ($daCode -ne 0) {
+        [void]$warnings.Add('decision-audit-engine exit non-zero')
+        Add-Step -Name 'decision-audit-engine' -Status 'warn' -Detail "exit $daCode"
+    } else { Add-Step -Name 'decision-audit-engine' -Status 'ok' }
+
     $va = @('-Strict')
     if ($Json) { $va += '-Json' }
     if ($SkipBashSyntax) { $va += '-SkipBashSyntax' }

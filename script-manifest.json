@@ -1153,6 +1153,92 @@
       ],
       "exitPolicy": "fail",
       "safeToRunInCI": false
+    },
+    {
+      "path": "tools/decision-audit-engine.ps1",
+      "id": "decision-audit-engine",
+      "description": "Audits decision-log.jsonl for model selection compliance, WEAK_EVIDENCE, scope boundary violations, and policy drift trend",
+      "kind": "auditor",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        ".claude/decision-log.jsonl"
+      ],
+      "writes": [],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/risk-calibrator.ps1",
+      "id": "risk-calibrator",
+      "description": "Probabilistic file risk scoring from git history: churn, bug density, incident proximity, blast radius, learned baselines",
+      "kind": "analyzer",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        ".claude/script-graph.json"
+      ],
+      "writes": [
+        ".claude/risk-profile.json"
+      ],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/knowledge-graph-engine.ps1",
+      "id": "knowledge-graph-engine",
+      "description": "Semantic knowledge graph over heuristics: build, query, enrich from decision log, export context",
+      "kind": "analyzer",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [
+        ".claude/heuristics/operational.md"
+      ],
+      "writes": [
+        ".claude/knowledge-graph.json"
+      ],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/outcome-learning.ps1",
+      "id": "outcome-learning",
+      "description": "Correlates git outcomes to file risk; calibrates learned baselines and promotes co-failure heuristics",
+      "kind": "analyzer",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [],
+      "writes": [
+        ".claude/learned-baselines.json"
+      ],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/intelligence-fabric.ps1",
+      "id": "intelligence-fabric",
+      "description": "Cross-project intelligence: contribute patterns, inherit learnings, generate risk briefs, sync-all",
+      "kind": "sync",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [],
+      "writes": [
+        "heuristics/cross-project-evidence.json"
+      ],
+      "exitPolicy": "exit0-always",
+      "safeToRunInCI": false
+    },
+    {
+      "path": "tools/predictive-intervention.ps1",
+      "id": "predictive-intervention",
+      "description": "Pre-push intervention: 4 predictions (invariant impact, regression, coverage gap, cross-project pattern); blocks if score > 0.85",
+      "kind": "validator",
+      "maturity": "experimental",
+      "defaultEnabled": true,
+      "requires": [],
+      "writes": [],
+      "exitPolicy": "exit1-on-fail",
+      "safeToRunInCI": false
     }
   ],
   "templateShell": {

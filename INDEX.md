@@ -337,6 +337,23 @@ Policy background: **`policies/multi-tool-adapters.md`**.
 
 ---
 
+## Intelligence Layer
+
+Adaptive learning system: probabilistic risk, knowledge graph, outcome learning, cross-project fabric.
+
+| Tool | Role |
+|------|------|
+| **`tools/decision-audit-engine.ps1`** | Audits `decision-log.jsonl` for model selection compliance, WEAK_EVIDENCE, scope boundary violations, policy drift trend (`-Session`, `-Trend`) |
+| **`tools/risk-calibrator.ps1`** | Probabilistic file risk scoring from git history: churn, bug density, incident proximity, blast radius, learned baselines composite (`-Scan`, `-Files`, `-Threshold`) |
+| **`tools/knowledge-graph-engine.ps1`** | Semantic knowledge graph over heuristics — build, query, enrich from decision log, export context blocks (`-Mode build|query|enrich|export-context`) |
+| **`tools/outcome-learning.ps1`** | Correlates git outcomes to file risk; calibrates `learned-baselines.json`; promotes co-failure pairs to heuristics (`-Mode calibrate|report|promote-heuristic`) |
+| **`tools/intelligence-fabric.ps1`** | Cross-project intelligence: contribute patterns, inherit learnings, generate risk brief, sync-all (`-Mode contribute|inherit|risk-brief|sync-all`) |
+| **`tools/predictive-intervention.ps1`** | Pre-push intervention: 4 predictions (invariant impact, regression probability, coverage gap, cross-project pattern match); blocks if score > 0.85 (`CLAUDE_OS_FORCE_PUSH=1` to override) |
+
+Integrated into: `tools/os-validate.ps1 -Profile strict` (risk-calibrator + knowledge-graph-engine + decision-audit-engine), `tools/session-digest.ps1` (outcome-learning calibrate + intelligence-fabric contribute), `.git/hooks/pre-push` (predictive-intervention).
+
+---
+
 ## Roadmap summary
 
 | Fase | Objective | Status |

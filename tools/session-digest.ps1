@@ -63,6 +63,14 @@ Add-Content -LiteralPath $LearningPath -Value $markdown -Encoding utf8
 Add-Content -LiteralPath $DecisionPath -Value (($record | ConvertTo-Json -Compress -Depth 4)) -Encoding utf8
 Write-Host 'Session digest recorded in .claude/learning-log.md and .claude/decision-log.jsonl'
 
+# Auto-calibrate outcome learning and contribute to cross-project intelligence fabric
+try {
+    & pwsh -NoProfile -File (Join-Path $PSScriptRoot 'outcome-learning.ps1') -Mode calibrate 2>$null | Out-Null
+} catch { }
+try {
+    & pwsh -NoProfile -File (Join-Path $PSScriptRoot 'intelligence-fabric.ps1') -Mode contribute -ProjectPath $Root 2>$null | Out-Null
+} catch { }
+
 # Auto-contribute to cross-project evidence if OS repo is reachable
 if ($Outcome -eq 'passed') {
     $osRepo = "C:\Users\pqjs2\claude\claude-operating-system"
