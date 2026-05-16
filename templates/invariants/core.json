@@ -145,6 +145,22 @@
       "status": "ACTIVE",
       "last_verified": null,
       "staleness_risk": "LOW"
+    },
+    {
+      "id": "INV-012",
+      "name": "powershell-variable-interpolation-safe",
+      "description": "No unbraced variable immediately followed by colon in double-quoted PS strings: '$var:' is a PSDrive reference, not a variable. Must be '${var}:'.",
+      "heuristic_ref": "H16",
+      "check": {
+        "type": "pattern_absent",
+        "pattern": "\"[^\"]*\\$[A-Za-z][A-Za-z0-9_]*:[^:]",
+        "scope_globs": ["tools/*.ps1", "tools/lib/*.ps1"],
+        "note": "Match '$identifier:' not followed by second colon (to avoid false-positives on $env:VAR, $HKLM:, etc.) — manual review required for borderline cases"
+      },
+      "violation_severity": "HIGH",
+      "status": "ACTIVE",
+      "last_verified": null,
+      "staleness_risk": "LOW"
     }
   ]
 }

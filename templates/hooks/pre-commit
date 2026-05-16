@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# pre-commit — script-manifest verification gate
+# Enforces H17: every new tools/*.ps1 must be registered before commit.
+# Install: cp templates/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Or wire via os-update-project (copies automatically).
+#
+# Behaviour:
+#   1. Run sync-manifests -WhatIf to detect unregistered tools (no writes).
+#   2. If drift found: run sync-manifests (writes), auto-stage manifest files, continue.
+#   3. Run verify-script-manifest -Json to confirm all invariants pass.
+#   4. Block commit if verify-script-manifest exits non-zero.
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+SYNC="$REPO_ROOT/tools/sync-manifests.ps1"
+VERIFY="$REPO_ROOT/tools/verify-script-manifest.ps1"
+
+# Require pwsh
+if ! command -v pwsh &>/dev/null; then
+  echo "[pre-commit] SKIP: pwsh not on PATH — manifest verification skipped" >&2
+  exit 0
+fi
+
+# --- Step 1: detect drift (WhatIf — no writes) --------------------------------
+DRIFT_JSON=$(pwsh -NoProfile -File "$SYNC" -WhatIf -Json 2>/dev/null || true)
+ADDED=$(echo "$DRIFT_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['findings'][0].get('added',0))" 2>/dev/null || echo "0")
+
+# --- Step 2: auto-sync if drift detected -------------------------------------
+if [ "$ADDED" -gt 0 ]; then
+  echo "[pre-commit] manifest drift: $ADDED unregistered tool(s) — running sync-manifests"
+  pwsh -NoProfile -File "$SYNC" >/dev/null 2>&1 || {
+    echo "[pre-commit] ERROR: sync-manifests failed — fix before committing" >&2
+    exit 1
+  }
+  # Auto-stage manifest files so this commit includes them
+  git add \
+    "$REPO_ROOT/script-manifest.json" \
+    "$REPO_ROOT/component-manifest.json" \
+    "$REPO_ROOT/compatibility-manifest.json" \
+    2>/dev/null || true
+  echo "[pre-commit] manifests updated and staged"
+fi
+
+# --- Step 3: verify-script-manifest ------------------------------------------
+VERIFY_OUT=$(pwsh -NoProfile -File "$VERIFY" -Json 2>/dev/null || true)
+VERIFY_STATUS=$(echo "$VERIFY_OUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status','fail'))" 2>/dev/null || echo "fail")
+
+if [ "$VERIFY_STATUS" = "fail" ]; then
+  echo "" >&2
+  echo "[pre-commit] BLOCKED: verify-script-manifest reported failures" >&2
+  echo "$VERIFY_OUT" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    for f in d.get('failures', []):
+        print('  FAIL:', f)
+    for w in d.get('warnings', []):
+        print('  WARN:', w)
+except Exception:
+    pass
+" 2>/dev/null >&2
+  echo "" >&2
+  echo "  Run: pwsh ./tools/verify-script-manifest.ps1" >&2
+  echo "  Then fix reported issues and re-commit." >&2
+  exit 1
+fi
+
+# --- Done ---------------------------------------------------------------------
+echo "[pre-commit] script-manifest ok"
+exit 0

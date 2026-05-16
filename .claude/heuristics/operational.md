@@ -40,6 +40,22 @@ Update when a new pattern is confirmed across at least one real incident.
 
 ---
 
+### H16 — PowerShell drive-prefix ambiguity: `"$var:"` is parsed as a PSDrive reference, not variable + colon
+
+**Evidence:** `"$Name: invocation error..."` and `"$n: transitive blast=..."` in double-quoted strings caused `ParserError` at runtime. PowerShell parses `$identifier:` as a PSDrive reference (like `$env:`, `$HKLM:`), not as `$identifier` followed by a literal colon. The parser fails silently or throws depending on whether a provider with that name exists.
+**Rule:** In any double-quoted PowerShell string, never write `"$varname: text"`. Always brace the variable: `"${varname}: text"`. This applies to all identifiers regardless of length — `$Name:`, `$n:`, `$tool:`, `$path:`.
+**Apply:** When writing PS1 tools, grep for `"\$[A-Za-z][A-Za-z0-9_]*:` (unbraced var followed by colon in string). Fix every match. INV-012 formalises this invariant. Add to PR checklist for any `.ps1` file.
+
+---
+
+### H17 — CI Manifest Cascade: every new `tools/*.ps1` requires updates in 4 manifests
+
+**Evidence:** Adding 5 tools in one session triggered `verify-components` failure (`universe item not mapped`) and `verify-script-manifest` warnings — both caused by manifest entries not being created for new tools. The cascade: `script-manifest.json` (tool metadata) → `component-manifest.json` (component membership) → `compatibility-manifest.json` (version compat) → `os-capabilities.json` (capability registry). Missing any one causes a different verifier to fail.
+**Rule:** After adding any `tools/*.ps1`, run `pwsh ./tools/sync-manifests.ps1` immediately — it auto-registers in script-manifest and component-manifest. Then confirm `verify-script-manifest` and `verify-components` pass before staging the commit. Never commit a new tool without running sync-manifests first.
+**Apply:** The pre-commit hook (`templates/hooks/pre-commit`) enforces this automatically. For manual commits, run `pwsh ./tools/sync-manifests.ps1 && pwsh ./tools/verify-script-manifest.ps1` before `git add`. If `verify-components` still fails, the policy file mapping is missing — add it to component-manifest manually via PowerShell object model (not Edit, to avoid CRLF).
+
+---
+
 ### H15 — PowerShell `$null -ne 0` is `True`: scripts without `exit 0` propagate stale `$LASTEXITCODE`
 
 **Evidence:** `verify-agent-adapters.ps1` succeeded but had no `exit 0`. After calling it via `&`, `$LASTEXITCODE` stayed `$null`. `sync-agent-adapters.ps1` then evaluated `$null -ne 0` → `True` (PowerShell null comparison semantics) → falsely treated a successful step as failed → exited 1. Similarly, `os-doctor.ps1` only had `exit 0` inside the `-Json` branch; the non-Json path fell off the end, leaving `$LASTEXITCODE` stale at 1 from the prior call. This triggered a cascade: `init-os-runtime.ps1` → `runtime-dispatcher` health check → CI failure.
@@ -75,6 +91,14 @@ Update when a new pattern is confirmed across at least one real incident.
 ---
 
 ## Architecture & Design
+
+### H18 — TypeScript + esbuild for intelligence-layer tools; never PowerShell for mathematical computation
+
+**Evidence:** The intelligence layer (decision-audit-engine, risk-calibrator, knowledge-graph-engine, outcome-learning, intelligence-fabric, predictive-intervention) required linear algebra, graph algorithms, statistical scoring, and probabilistic models. Implementing these in PowerShell produced fragile, verbose, hard-to-test code. TypeScript with esbuild produces a self-contained standalone bundle (no `node_modules` at runtime), native array/object algebra, type-safe contracts, and testability with Jest or Vitest.
+**Rule:** Any tool that involves matrix operations, graph traversal algorithms, statistical distributions, probabilistic models, or ML-adjacent scoring must be implemented in TypeScript and bundled with esbuild into a `tools/dist/*.js` standalone. PowerShell is the orchestration shell; TypeScript is the computation engine. PowerShell calls the bundle via `node tools/dist/tool-name.js`.
+**Apply:** Boundary test: if implementing it in PowerShell requires `[Math]::Round`, nested hashtables, and more than 20 lines of arithmetic — that's the TypeScript boundary. Use `esbuild src/tool.ts --bundle --platform=node --outfile=tools/dist/tool.js`. Never implement graph PageRank, SLO burn-rate algebra, or probabilistic risk scoring in `.ps1`.
+
+---
 
 ### H7 — Module-scope Set detects duplicates at load time, not runtime
 
